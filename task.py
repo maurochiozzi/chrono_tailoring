@@ -236,7 +236,7 @@ class ProjectSchedule:
             # `original_task_map` is a map of original IDs to original Task objects for lookups.
             def _recursively_duplicate_task_and_ancestry(
                 original_task: Task,
-                target_full_part_number: str, # e.g., "60010.1" (for the variant part number)
+                variant_suffix: str, # e.g., ".1", ".2"
                 current_variant_customizations: Dict[str, Any],
                 duplication_context: Dict[int, Task], # original_id -> new_variant_task for this variant's chain
                 original_task_map: Dict[int, Task] # All original tasks by ID
@@ -253,8 +253,8 @@ class ProjectSchedule:
                 next_task_id += 1
 
                 # Apply variant-specific attributes
-                new_task.part_number = target_full_part_number # e.g., "60010.1" for all duplicated tasks in this chain
-                new_task.variant_name = target_full_part_number.split('.')[-1] if '.' in target_full_part_number else None
+                new_task.part_number = f"{original_task.part_number}{variant_suffix}" # CHANGED
+                new_task.variant_name = variant_suffix.lstrip('.') # SET VARIANT NAME
                 new_task.variant_customizations = current_variant_customizations
 
                 # Reset predecessor/successor lists, they will be rebuilt recursively
@@ -273,7 +273,7 @@ class ProjectSchedule:
                 for original_predecessor_obj in original_task.predecessors: # Iterate through actual Task objects
                     duplicated_predecessor = _recursively_duplicate_task_and_ancestry(
                         original_predecessor_obj, # Pass the Task object
-                        target_full_part_number,
+                        variant_suffix, # PASS THE VARIANT SUFFIX
                         current_variant_customizations,
                         duplication_context,
                         original_task_map
@@ -296,9 +296,21 @@ class ProjectSchedule:
                     for extra_arg_entry in part_number_to_extra_args[base_task.part_number]:
                         duplication_context: Dict[int, Task] = {} # New context for each variant's chain
                         
+                        root_variant_suffix = ""
+                        # Determine variant suffix from extra_arg_entry["part_number"]
+                        # If extra_arg_entry["part_number"] is "60010.1", suffix is ".1"
+                        if '.' in extra_arg_entry["part_number"]:
+                            root_variant_suffix = "." + extra_arg_entry["part_number"].split('.')[-1]
+                        else:
+                            # If no suffix in the extra_arg, use a default empty suffix or raise an error
+                            # For now, let's assume extra_args will always have a suffix for variants
+                            pass # If extra_arg_entry["part_number"] is just "60010", it means original task.
+                                 # We need to make sure this path is not taken if we only want to duplicate for variants.
+                                 # Current logic is that extra_args *define* variants, so they should always have a suffix.
+                        
                         duplicated_root_task = _recursively_duplicate_task_and_ancestry(
                             base_task,
-                            extra_arg_entry["part_number"], # e.g., "60010.1"
+                            root_variant_suffix, # PASS THE VARIANT SUFFIX
                             extra_arg_entry["customizations"],
                             duplication_context,
                             base_task_id_map # Pass the map of all original tasks

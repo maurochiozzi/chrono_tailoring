@@ -3,11 +3,14 @@
     "milestone_id": 1,
     "milestone_name": "Cabinet Assembly",
     "customizations": {
-      "color": "red"
+      "color": "red",
+      "length":576
     },
     "extra_args": [
       "60010.1",
-      "60010.2"
+      "60010.2",
+      "60080.1",
+      "60080.2"
     ]
   }
 ]
