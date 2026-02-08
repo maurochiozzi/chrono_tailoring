@@ -2,6 +2,7 @@ import pandas as pd
 from typing import List, Optional, Dict
 from datetime import datetime, timedelta
 from collections import deque
+from pathlib import Path
 
 class Task:
     def __init__(self, id: int, part_number: str,
@@ -193,6 +194,103 @@ def update_customization_overview_csv(file_path: str):
     except Exception as e:
         print(f"An error occurred while updating {file_path}: {e}")
 
+def export_tasks_to_mermaid_graph(tasks: List[Task], output_file_path: Optional[Path] = None, detail_level: str = 'full') -> str:
+    """
+    Generates a Mermaid flowchart (graph TD) representation of tasks.
+    Can generate a detailed graph of individual tasks or a high-level graph based on task types.
+    """
+    mermaid_lines = ["graph TD"]
+
+    if detail_level == 'full':
+        node_styles = [] # Collect style directives here
+
+        # Define color mapping for task types
+        task_type_colors = {
+            'release': 'fill:#F96',        # Orange
+            'drawing': 'fill:#9F6',        # Light Green
+            'part_model': 'fill:#69F',     # Light Blue
+            'part_list': 'fill:#FC6',      # Yellow-Orange
+            'milestone': 'fill:#C6F'       # Purple
+        }
+
+        # Define nodes with details and shapes for individual tasks
+        for task in tasks:
+            init_date_str = task.init_date.strftime('%Y-%m-%d') if task.init_date else 'None'
+            end_date_str = task.end_date.strftime('%Y-%m-%d') if task.end_date else 'None'
+
+            shape_map = {
+                'release': '[[{}]]',
+                'drawing': '({})',
+                'part_model': '({})',
+                'part_list': '{{{}}}',
+                'milestone': '(( {} ))'
+            }
+            shape_template = shape_map.get(task.task_type.description, '[{}]')
+
+            node_label_content = (f"{task.name}<br>"
+                                  f"Type: {task.task_type.description}<br>"
+                                  f"Part No: {task.part_number}<br>"
+                                  f"Init: {init_date_str}<br>"
+                                  f"End: {end_date_str}<br>"
+                                  f"Dur: {task.duration}min")
+            
+            node_definition = f"{task.id}{shape_template.format(node_label_content)}"
+            mermaid_lines.append(f"    {node_definition}")
+
+            # Add style directive for the node
+            color_style = task_type_colors.get(task.task_type.description, 'fill:#CCC') # Default light gray
+            node_styles.append(f"    style {task.id} {color_style}")
+
+        # Define edges (dependencies) for individual tasks
+        for task in tasks:
+            for successor_task in task.successors_tasks:
+                mermaid_lines.append(f"    {task.id} --> {successor_task.id}")
+        
+        # Append node styles after all nodes and edges
+        mermaid_lines.extend(node_styles)
+
+    elif detail_level == 'type':
+        # Collect unique task types and their connections
+        unique_task_types = set()
+        type_dependencies = set() # Stores (source_type_desc, target_type_desc)
+
+        for task in tasks:
+            source_type_desc = task.task_type.description
+            unique_task_types.add(source_type_desc)
+
+            for successor_task in task.successors_tasks:
+                target_type_desc = successor_task.task_type.description
+                unique_task_types.add(target_type_desc)
+                type_dependencies.add((source_type_desc, target_type_desc))
+
+        # Define nodes for each unique task type description
+        def sanitize_id(text: str) -> str:
+            return text.replace(" ", "_").replace("-", "_").replace(".", "").lower()
+
+        for type_desc in sorted(list(unique_task_types)):
+            sanitized_id = sanitize_id(type_desc)
+            mermaid_lines.append(f"    {sanitized_id}[{type_desc}]")
+
+        # Define edges between task types
+        for source_type_desc, target_type_desc in sorted(list(type_dependencies)):
+            sanitized_source_id = sanitize_id(source_type_desc)
+            sanitized_target_id = sanitize_id(target_type_desc)
+            mermaid_lines.append(f"    {sanitized_source_id} --> {sanitized_target_id}")
+
+    else:
+        raise ValueError(f"Unknown detail_level: {detail_level}. Expected 'full' or 'type'.")
+            
+    mermaid_syntax = "\n".join(mermaid_lines)
+
+    if output_file_path:
+        try:
+            output_file_path.write_text(mermaid_syntax)
+            print(f"Mermaid graph exported to: {output_file_path}")
+        except Exception as e:
+            print(f"Error exporting Mermaid graph to {output_file_path}: {e}")
+            
+    return mermaid_syntax
+
 
 
 if __name__ == "__main__":
@@ -231,3 +329,11 @@ if __name__ == "__main__":
 
     print("\n--- Updating Customization Overview CSV ---")
     update_customization_overview_csv(customization_overview_path)
+
+    print("\n--- Exporting Task Flow to Mermaid Graph (Full Detail) ---")
+    mermaid_output_path_full = Path("task_flow.mmd")
+    export_tasks_to_mermaid_graph(all_tasks, mermaid_output_path_full, detail_level='full')
+
+    print("\n--- Exporting Task Flow to Mermaid Graph (High-Level by Type) ---")
+    mermaid_output_path_type = Path("task_flow_high_level.mmd")
+    export_tasks_to_mermaid_graph(all_tasks, mermaid_output_path_type, detail_level='type')
