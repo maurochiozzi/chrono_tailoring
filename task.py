@@ -293,10 +293,13 @@ class ProjectSchedule:
             # --- Process tasks for duplication ---
             # All tasks that are explicitly defined in extra_args (e.g., 60010)
             # and their full predecessor chains will be duplicated.
-            # Other tasks (like 70000 storage_cabinet) will be added as original tasks later
-            # if they are not predecessors of duplicated tasks.
 
             for base_task in base_tasks:
+                # If this original task has already been consumed as part of a *previous* duplication chain
+                # (i.e., it was a predecessor of another root that was duplicated earlier in this loop), skip it.
+                if base_task.id in consumed_original_task_ids:
+                    continue
+
                 if base_task.part_number in part_number_to_extra_args:
                     # This task is a "root" for duplication
                     
@@ -327,14 +330,13 @@ class ProjectSchedule:
                             final_task_map[new_variant_task.id] = new_variant_task
                             # consumed_original_task_ids is updated inside the recursive function (original_task.id)
 
-            # Now, add any original tasks that were not part of any duplication chain (neither as root nor as predecessor)
-            # and were not added to final_task_map by the recursive calls
-            for base_task in base_tasks:
-                if base_task.id not in consumed_original_task_ids:
-                    # This original task was never touched by any duplication process, add it as is
-                    final_task_map[base_task.id] = base_task
-                    original_id_to_final_ids_map[base_task.id] = [base_task.id]
-                    consumed_original_task_ids.add(base_task.id) # Mark as consumed
+                else:
+                    # This base task is not explicitly duplicated. Add it to final tasks.
+                    if base_task.id not in consumed_original_task_ids:
+                        # This original task was never touched by any duplication process, add it as is
+                        final_task_map[base_task.id] = base_task
+                        original_id_to_final_ids_map[base_task.id] = [base_task.id]
+                        consumed_original_task_ids.add(base_task.id) # Mark as consumed
 
             # Convert final_task_map values to a list for the rest of the processing
             final_tasks = list(final_task_map.values())
