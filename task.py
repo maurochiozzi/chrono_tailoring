@@ -57,7 +57,9 @@ class CustomizationType:
         return f"CustomizationType(name='{self.name}', file_path='{self.file_path}')"
 
 class ProjectSchedule: # Renamed from CustomizationDeliverable
-    def __init__(self, task_csv_path: Optional[str] = None, tasks: Optional[List[Task]] = None, num_resources: int = 1, customization_overview_csv_path: Optional[str] = None):
+    def __init__(self, task_csv_path: Optional[str] = None, tasks: Optional[List[Task]] = None, num_resources: int = 1, 
+                 customization_overview_csv_path: Optional[str] = None, 
+                 applied_customizations: Optional[List[str]] = None): # Added this parameter
         self.num_resources = num_resources
         
         if tasks is not None:
@@ -71,6 +73,10 @@ class ProjectSchedule: # Renamed from CustomizationDeliverable
         if customization_overview_csv_path:
             self.customization_types = self._load_customization_types(customization_overview_csv_path)
         
+        # Apply customizations after tasks and customization types are loaded
+        if applied_customizations: # Only apply if customizations are provided
+            self._apply_customization_durations(applied_customizations)
+
         # Assuming "today's date" for scheduling start is fixed or passed in.
         today_str = "2026-02-08"
         today_date_obj = datetime.strptime(today_str, '%Y-%m-%d')
@@ -117,6 +123,135 @@ class ProjectSchedule: # Renamed from CustomizationDeliverable
         except FileNotFoundError:
             print(f"Error: File not found at {file_path}")
             return []
+
+        
+    def _read_customization_duration(self, customization_file_path: str, task_name: str) -> Optional[int]:
+        """
+        Reads a customization CSV file, finds the task_name, and returns its _st duration.
+        Assumes the customization file has a column for task name and a column ending with '_st'.
+        """
+        try:
+            df = pd.read_csv(customization_file_path, delimiter=';')
+
+            # Find the column that likely contains the task names (e.g., 'task_description', 'name')
+            # For now, let's assume a column named 'task_description' or 'name'
+            task_name_column = None
+            possible_task_name_columns = ['task_description', 'name', 'document_name'] # Add document_name as it's in Task class
+            for col in possible_task_name_columns:
+                if col in df.columns:
+                    task_name_column = col
+                    break
+            
+            if not task_name_column:
+                print(f"Warning: Could not find a suitable task name column in {customization_file_path}. "
+                      f"Expected one of {possible_task_name_columns}. Skipping duration for this customization.")
+                return None
+
+            # Find the _st column
+            st_column = None
+            for col in df.columns:
+                if col.endswith('_st'):
+                    st_column = col
+                    break
+            
+            if not st_column:
+                print(f"Warning: Could not find an '_st' duration column in {customization_file_path}. Skipping.")
+                return None
+
+            # Find the row matching the task_name
+            task_row = df[df[task_name_column] == task_name]
+
+            if not task_row.empty:
+                # Assuming the _st value is an integer
+                duration = task_row[st_column].iloc[0]
+                return int(duration) if pd.notna(duration) else None
+            else:
+                # print(f"Info: Task '{task_name}' not found in customization file '{customization_file_path}'.")
+                return None
+        except FileNotFoundError:
+            print(f"Error: Customization file not found at {customization_file_path}.")
+            return None
+        except Exception as e:
+            print(f"Error reading customization file {customization_file_path} for task '{task_name}': {e}")
+            return None
+
+    def _apply_customization_durations(self, applied_customization_names: List[str]):
+        """
+        Applies customization durations to tasks based on the provided list of customization names.
+        Tasks with a final duration of 0 minutes are removed from the schedule.
+        When a task is removed, its predecessors become predecessors of its successors.
+        """
+        customization_map = {ct.name: ct for ct in self.customization_types}
+        
+        original_tasks_map = {task.id: task for task in self.tasks}
+        tasks_to_keep: List[Task] = []
+        
+        # Store info about removed tasks to re-wire dependencies later
+        removed_task_info: Dict[int, Dict[str, List[int]]] = {}
+
+        for task in self.tasks:
+            applicable_durations = []
+            
+            for customization_name in applied_customization_names:
+                if customization_name in customization_map:
+                    customization_type = customization_map[customization_name]
+                    duration = self._read_customization_duration(customization_type.file_path, task.name)
+                    if duration is not None:
+                        applicable_durations.append(duration)
+            
+            final_duration = task.duration # Start with current duration (default 10)
+            if applicable_durations:
+                max_custom_duration = max(applicable_durations)
+                if max_custom_duration == 0:
+                    # Capture predecessors and successors before removing
+                    removed_task_info[task.id] = {
+                        'predecessors': [p.id for p in task.predecessors],
+                        'successors': task.successors_ids
+                    }
+                    continue # Skip this task, effectively removing it
+                else:
+                    final_duration = max_custom_duration
+            
+            task.duration = final_duration
+            tasks_to_keep.append(task)
+        
+        self.tasks = tasks_to_keep
+        
+        # Now, re-wire successors_ids for the remaining tasks
+        # and then rebuild full relationships based on the new graph structure.
+
+        # Rebuild the task_id_to_task_map with only the remaining tasks
+        task_id_to_task_map = {task.id: task for task in self.tasks}
+
+        # First pass: Adjust successors_ids for remaining tasks
+        for task in self.tasks:
+            new_successors_ids = set()
+            for original_successor_id in task.successors_ids:
+                if original_successor_id in task_id_to_task_map:
+                    # Successor still exists, keep the direct link
+                    new_successors_ids.add(original_successor_id)
+                elif original_successor_id in removed_task_info:
+                    # Successor was removed, re-route to its successors
+                    removed_succ_info = removed_task_info[original_successor_id]
+                    for indirect_successor_id in removed_succ_info['successors']:
+                        if indirect_successor_id in task_id_to_task_map:
+                            new_successors_ids.add(indirect_successor_id)
+                # else: Successor was removed and had no further valid successors, or already processed (shouldn't happen with sets)
+            task.successors_ids = sorted(list(new_successors_ids)) # Keep consistent order
+
+        # Second pass: Clear and rebuild all successors_tasks and predecessors lists based on updated successors_ids
+        for task in self.tasks:
+            task.successors_tasks.clear()
+            task.predecessors.clear() # Clear predecessors before rebuilding
+
+        for task in self.tasks:
+            for successor_id in task.successors_ids:
+                if successor_id in task_id_to_task_map:
+                    successor_task = task_id_to_task_map[successor_id]
+                    task.successors_tasks.append(successor_task)
+                    successor_task.predecessors.append(task)
+                # else: This successor_id should have been handled by the re-wiring logic already.
+
 
     def _load_customization_types(self, file_path: str) -> List[CustomizationType]:
         """Reads customization types from a CSV file and constructs their file paths."""
@@ -531,7 +666,8 @@ def plot_resource_vs_duration(
     task_csv_path: str,
     customization_overview_csv_path: Optional[str] = None,
     max_resources: int = 10,
-    output_plot_path: Optional[Path] = None
+    output_plot_path: Optional[Path] = None,
+    applied_customizations: Optional[List[str]] = None # Added this parameter
 ):
     """
     Runs scheduling for 1 to max_resources, collects total durations, and plots the results.
@@ -553,7 +689,8 @@ def plot_resource_vs_duration(
             tasks=tasks_for_run, # Pass pre-loaded and copied tasks
             task_csv_path=None, # Indicate that tasks are already provided
             num_resources=num_res,
-            customization_overview_csv_path=customization_overview_csv_path
+            customization_overview_csv_path=customization_overview_csv_path,
+            applied_customizations=applied_customizations # Pass applied customizations
         )
         
         total_duration = temp_project_schedule.get_total_duration()
@@ -591,13 +728,17 @@ def plot_resource_vs_duration(
 if __name__ == "__main__":
     csv_path = '/Users/mchiozzi/sdev/personal/chrono_tailoring/deliverable_structure.csv'
     customization_overview_csv_path = '/Users/mchiozzi/sdev/personal/chrono_tailoring/customization_overview.csv'
+    
+    # Define applied customizations
+    applied_custs = ['color'] # Example customizations to apply
 
     # Create ProjectSchedule instance
     num_resources_for_project = 2
     project_schedule = ProjectSchedule(
         task_csv_path=csv_path,
         num_resources=num_resources_for_project,
-        customization_overview_csv_path=customization_overview_csv_path
+        customization_overview_csv_path=customization_overview_csv_path,
+        applied_customizations=applied_custs # Pass applied customizations
     )
 
     print(f"\n--- Project Schedule Summary ({num_resources_for_project} Resources) ---")
@@ -651,5 +792,6 @@ if __name__ == "__main__":
         task_csv_path=csv_path,
         customization_overview_csv_path=customization_overview_csv_path,
         max_resources=70,
-        output_plot_path=plot_output_path
+        output_plot_path=plot_output_path,
+        applied_customizations=applied_custs # Pass applied customizations
     )
