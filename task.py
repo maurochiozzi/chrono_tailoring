@@ -3,6 +3,7 @@ from typing import List, Optional, Dict
 from datetime import datetime, timedelta
 from collections import deque
 from pathlib import Path
+import copy # Added import
 
 class Task:
     def __init__(self, id: int, part_number: str,
@@ -55,114 +56,242 @@ class CustomizationType:
     def __repr__(self):
         return f"CustomizationType(name='{self.name}', file_path='{self.file_path}')"
 
-def load_tasks(file_path: str) -> List[Task]:
-    """Reads tasks from a semicolon-delimited CSV file."""
-    try:
-        df = pd.read_csv(file_path, delimiter=';')
-        # Fill NaN values in 'strategy' column with empty strings specifically
-        df['strategy'] = df['strategy'].fillna('')
-        df.fillna('', inplace=True)  # Replace remaining NaN with empty strings
-
-        task_type_cache = {} # Cache for TaskType objects
-
-        tasks = []
-        for _, row in df.iterrows():
-            # Get description and strategy for TaskType
-            description = row['document_type']
-            strategy = row['strategy'] if row['strategy'] else None # Convert empty string to None for consistency in cache key
-
-            # Check if TaskType already exists in cache
-            cache_key = (description, strategy)
-            if cache_key not in task_type_cache:
-                task_type_cache[cache_key] = TaskType(description=description, strategy=strategy)
-            
-            current_task_type = task_type_cache[cache_key]
-
-            tasks.append(
-                Task(
-                    id=row['document_id'],
-                    part_number=row['document_part_number'],
-                    name=row['document_name'],
-                    successors_str=row['successors'], # Pass the raw string
-                    task_type=current_task_type
-                )
-            )
+class ProjectSchedule: # Renamed from CustomizationDeliverable
+    def __init__(self, task_csv_path: Optional[str] = None, tasks: Optional[List[Task]] = None, num_resources: int = 1, customization_overview_csv_path: Optional[str] = None):
+        self.num_resources = num_resources
         
-        # Second pass: Create a map of all tasks for successor resolution
-        task_id_to_task_map = {task.id: task for task in tasks}
+        if tasks is not None:
+            self.tasks = tasks
+        elif task_csv_path:
+            self.tasks = self._load_tasks(task_csv_path)
+        else:
+            raise ValueError("Either 'tasks' or 'task_csv_path' must be provided.")
 
-        # Third pass: Resolve successors for each task
-        for task in tasks:
-            task.resolve_successors(task_id_to_task_map)
+        self.customization_types: List[CustomizationType] = []
+        if customization_overview_csv_path:
+            self.customization_types = self._load_customization_types(customization_overview_csv_path)
+        
+        # Assuming "today's date" for scheduling start is fixed or passed in.
+        today_str = "2026-02-08"
+        today_date_obj = datetime.strptime(today_str, '%Y-%m-%d')
+        self._calculate_task_dates(today_date_obj)
 
-        # Fourth pass: Populate predecessors for each task
-        for task in tasks:
-            for successor_task in task.successors_tasks:
-                successor_task.predecessors.append(task)
+    def _load_tasks(self, file_path: str) -> List[Task]:
+        """Reads tasks from a semicolon-delimited CSV file."""
+        try:
+            df = pd.read_csv(file_path, delimiter=';')
+            df['strategy'] = df['strategy'].fillna('')
+            df.fillna('', inplace=True)
 
+            task_type_cache = {}
+            tasks = []
+            for _, row in df.iterrows():
+                description = row['document_type']
+                strategy = row['strategy'] if row['strategy'] else None
 
-        return tasks
-    except FileNotFoundError:
-        print(f"Error: File not found at {file_path}")
-        return []
+                cache_key = (description, strategy)
+                if cache_key not in task_type_cache:
+                    task_type_cache[cache_key] = TaskType(description=description, strategy=strategy)
+                
+                current_task_type = task_type_cache[cache_key]
 
-def load_customization_types(file_path: str) -> List[CustomizationType]:
-    """Reads customization types from a CSV file and constructs their file paths."""
-    try:
-        df = pd.read_csv(file_path, delimiter=';')
-        customization_types = []
-        for _, row in df.iterrows():
-            name = row['customization_type']
-            # Assuming file names are in the format customization_{name}.csv
-            file_path = f"customization_{name}.csv"
-            customization_types.append(CustomizationType(name=name, file_path=file_path))
-        return customization_types
-    except FileNotFoundError:
-        print(f"Error: Customization overview file not found at {file_path}")
-        return []
-
-def calculate_task_dates(tasks: List[Task], today_date: datetime):
-    """
-    Calculates init_date and end_date for all tasks based on dependencies and duration.
-    Implements a topological sort for scheduling.
-    """
-    # Initialize in-degrees for all tasks (count of predecessors not yet scheduled)
-    in_degree = {task.id: len(task.predecessors) for task in tasks}
-    
-    # Queue for tasks ready to be scheduled (no unscheduled predecessors)
-    ready_queue = deque()
-
-    # Find tasks with no predecessors and add them to the ready queue
-    for task in tasks:
-        if in_degree[task.id] == 0:
-            ready_queue.append(task)
-            task.init_date = today_date
-            task.end_date = task.init_date + timedelta(minutes=task.duration)
-
-    scheduled_count = 0
-    while ready_queue:
-        current_task = ready_queue.popleft()
-        scheduled_count += 1
-
-        # Propagate dates to successors
-        for successor_task in current_task.successors_tasks:
-            # Update successor's init_date based on current_task's end_date
-            # A successor's init_date is the latest end_date of all its predecessors
-            if successor_task.init_date is None or current_task.end_date > successor_task.init_date:
-                successor_task.init_date = current_task.end_date
+                tasks.append(
+                    Task(
+                        id=row['document_id'],
+                        part_number=row['document_part_number'],
+                        name=row['document_name'],
+                        successors_str=row['successors'],
+                        task_type=current_task_type
+                    )
+                )
             
-            # Decrement in-degree for successor
-            in_degree[successor_task.id] -= 1
-            if in_degree[successor_task.id] == 0:
-                # If all predecessors are scheduled, calculate its end_date and add to queue
-                if successor_task.init_date is None: # Should not happen if logic is correct
-                    successor_task.init_date = today_date # Fallback
-                successor_task.end_date = successor_task.init_date + timedelta(minutes=successor_task.duration)
-                ready_queue.append(successor_task)
-    
-    if scheduled_count != len(tasks):
-        print("Warning: Cyclic dependency detected or some tasks could not be scheduled.")
+            task_id_to_task_map = {task.id: task for task in tasks}
 
+            for task in tasks:
+                task.resolve_successors(task_id_to_task_map)
+
+            for task in tasks:
+                for successor_task in task.successors_tasks:
+                    successor_task.predecessors.append(task)
+            return tasks
+        except FileNotFoundError:
+            print(f"Error: File not found at {file_path}")
+            return []
+
+    def _load_customization_types(self, file_path: str) -> List[CustomizationType]:
+        """Reads customization types from a CSV file and constructs their file paths."""
+        try:
+            df = pd.read_csv(file_path, delimiter=';')
+            customization_types = []
+            for _, row in df.iterrows():
+                name = row['customization_type']
+                file_path = f"customization_{name}.csv"
+                customization_types.append(CustomizationType(name=name, file_path=file_path))
+            return customization_types
+        except FileNotFoundError:
+            print(f"Error: Customization overview file not found at {file_path}")
+            return []
+
+    def _calculate_task_dates(self, today_date: datetime):
+        """
+        Calculates init_date and end_date for all tasks based on dependencies and duration.
+        Implements a topological sort for scheduling with resource constraints.
+        """
+        in_degree = {task.id: len(task.predecessors) for task in self.tasks}
+        tasks_by_id = {task.id: task for task in self.tasks}
+
+        resource_free_time = [today_date] * self.num_resources
+
+        tasks_earliest_start_by_pred = {task.id: today_date for task in self.tasks}
+
+        ready_to_schedule_pq = [] 
+
+        for task in self.tasks:
+            if in_degree[task.id] == 0:
+                tasks_earliest_start_by_pred[task.id] = today_date
+                ready_to_schedule_pq.append((today_date, task.id))
+        
+        ready_to_schedule_pq.sort()
+
+        scheduled_count = 0
+        while scheduled_count < len(self.tasks):
+            if not ready_to_schedule_pq:
+                print("Warning: Cyclic dependency detected or some tasks could not be scheduled.")
+                break
+
+            best_task_index_in_pq = -1
+            earliest_feasible_start = None
+            resource_index_for_best_task = -1
+
+            for i, (pred_earliest_start, task_id) in enumerate(ready_to_schedule_pq):
+                current_task_obj = tasks_by_id[task_id]
+
+                earliest_possible_start_on_any_resource = None
+                assigned_resource_index_for_this_task = -1
+
+                for res_idx, res_time in enumerate(resource_free_time):
+                    potential_start_time_on_this_resource = max(pred_earliest_start, res_time)
+
+                    if assigned_resource_index_for_this_task == -1 or potential_start_time_on_this_resource < earliest_possible_start_on_any_resource:
+                        earliest_possible_start_on_any_resource = potential_start_time_on_this_resource
+                        assigned_resource_index_for_this_task = res_idx
+                
+                if best_task_index_in_pq == -1 or earliest_possible_start_on_any_resource < earliest_feasible_start:
+                    best_task_index_in_pq = i
+                    earliest_feasible_start = earliest_possible_start_on_any_resource
+                    resource_index_for_best_task = assigned_resource_index_for_this_task
+                
+                elif earliest_possible_start_on_any_resource == earliest_feasible_start and task_id < tasks_by_id[ready_to_schedule_pq[best_task_index_in_pq][1]].id:
+                     best_task_index_in_pq = i
+                     earliest_feasible_start = earliest_possible_start_on_any_resource
+                     resource_index_for_best_task = assigned_resource_index_for_this_task
+
+
+            if best_task_index_in_pq == -1:
+                print("Error: Could not find a task to schedule. Check scheduling logic.")
+                break
+            
+            _, current_task_id = ready_to_schedule_pq.pop(best_task_index_in_pq)
+            current_task = tasks_by_id[current_task_id]
+
+            current_task.init_date = earliest_feasible_start
+            current_task.end_date = current_task.init_date + timedelta(minutes=current_task.duration)
+            
+            resource_free_time[resource_index_for_best_task] = current_task.end_date
+
+            scheduled_count += 1
+
+            for successor_task in current_task.successors_tasks:
+                in_degree[successor_task.id] -= 1
+                
+                tasks_earliest_start_by_pred[successor_task.id] = max(
+                    tasks_earliest_start_by_pred[successor_task.id],
+                    current_task.end_date
+                )
+
+                if in_degree[successor_task.id] == 0:
+                    if (tasks_earliest_start_by_pred[successor_task.id], successor_task.id) not in ready_to_schedule_pq:
+                        ready_to_schedule_pq.append((tasks_earliest_start_by_pred[successor_task.id], successor_task.id))
+                        ready_to_schedule_pq.sort()
+
+        if scheduled_count != len(self.tasks):
+            print("Warning: Cyclic dependency detected or some tasks could not be scheduled.")
+
+    def get_deliverable_init_date(self) -> Optional[datetime]:
+        earliest_init = None
+        for task in self.tasks:
+            if task.init_date:
+                if earliest_init is None or task.init_date < earliest_init:
+                    earliest_init = task.init_date
+        return earliest_init
+
+    def get_deliverable_end_date(self) -> Optional[datetime]:
+        latest_end = None
+        for task in self.tasks:
+            if task.end_date:
+                if latest_end is None or task.end_date > latest_end:
+                    latest_end = task.end_date
+        return latest_end
+
+    def get_total_duration(self) -> Optional[timedelta]:
+        earliest_init = self.get_deliverable_init_date()
+        latest_end = self.get_deliverable_end_date()
+        if earliest_init and latest_end:
+            return latest_end - earliest_init
+        return None
+
+    def __repr__(self):
+        init_date_str = self.get_deliverable_init_date().strftime('%Y-%m-%d %H:%M') if self.get_deliverable_init_date() else 'None'
+        end_date_str = self.get_deliverable_end_date().strftime('%Y-%m-%d %H:%M') if self.get_deliverable_end_date() else 'None'
+        total_duration = self.get_total_duration()
+        total_duration_str = str(total_duration) if total_duration else 'None'
+        return (f"ProjectSchedule(num_tasks={len(self.tasks)}, "
+                f"num_resources={self.num_resources}, "
+                f"earliest_init='{init_date_str}', latest_end='{end_date_str}', "
+                f"total_duration='{total_duration_str}')")
+
+    @staticmethod
+    def _load_tasks_static(file_path: str) -> List[Task]:
+        """Reads tasks from a semicolon-delimited CSV file (static version)."""
+        try:
+            df = pd.read_csv(file_path, delimiter=';')
+            df['strategy'] = df['strategy'].fillna('')
+            df.fillna('', inplace=True)
+
+            task_type_cache = {}
+            tasks = []
+            for _, row in df.iterrows():
+                description = row['document_type']
+                strategy = row['strategy'] if row['strategy'] else None
+
+                cache_key = (description, strategy)
+                if cache_key not in task_type_cache:
+                    task_type_cache[cache_key] = TaskType(description=description, strategy=strategy)
+                
+                current_task_type = task_type_cache[cache_key]
+
+                tasks.append(
+                    Task(
+                        id=row['document_id'],
+                        part_number=row['document_part_number'],
+                        name=row['document_name'],
+                        successors_str=row['successors'],
+                        task_type=current_task_type
+                    )
+                )
+            
+            task_id_to_task_map = {task.id: task for task in tasks}
+
+            for task in tasks:
+                task.resolve_successors(task_id_to_task_map)
+
+            for task in tasks:
+                for successor_task in task.successors_tasks:
+                    successor_task.predecessors.append(task)
+            return tasks
+        except FileNotFoundError:
+            print(f"Error: File not found at {file_path}")
+            return []
 
 
 import os
@@ -357,7 +486,7 @@ def export_tasks_to_mermaid_gantt(tasks: List[Task], output_file_path: Optional[
                 type_date_spans[type_desc]['min_init'] = task.init_date
             
             # Update max_end_date for the type
-            if task.end_date and (type_date_spans[type_desc]['max_end'] is None or task.end_date > type_date_spans[type_desc]['max_end']):
+            if task.end_date and (type_date_spans[type_desc]['max_end'] is None or type_date_spans[type_desc]['max_end'] < task.end_date):
                 type_date_spans[type_desc]['max_end'] = task.end_date
         
         gantt_styles = [] # Collect style directives for types
@@ -387,23 +516,95 @@ def export_tasks_to_mermaid_gantt(tasks: List[Task], output_file_path: Optional[
             output_file_path.write_text(mermaid_syntax)
             print(f"Mermaid Gantt chart exported to: {output_file_path}")
         except Exception as e:
-            print(f"Error exporting Mermaid Gantt chart to {output_file_path}: {e}")
+            print(f"Error exporting Mermaid Gantt chart to {output_plot_path}: {e}")
             
     return mermaid_syntax
+
+try:
+    import matplotlib.pyplot as plt
+    MATPLOTLIB_AVAILABLE = True
+except ImportError:
+    print("Warning: Matplotlib not found. Plotting will be skipped. Install with 'pip install matplotlib'.")
+    MATPLOTLIB_AVAILABLE = False
+
+def plot_resource_vs_duration(
+    task_csv_path: str,
+    customization_overview_csv_path: Optional[str] = None,
+    max_resources: int = 10,
+    output_plot_path: Optional[Path] = None
+):
+    """
+    Runs scheduling for 1 to max_resources, collects total durations, and plots the results.
+    """
+    num_resources_list = []
+    total_duration_minutes_list = []
+
+    print(f"\n--- Analyzing Resource vs. Duration (1 to {max_resources} Resources) ---")
+    
+    # Load tasks once outside the loop to avoid redundant loading
+    base_tasks = ProjectSchedule._load_tasks_static(task_csv_path)
+
+    for num_res in range(1, max_resources + 1):
+        # Create a deep copy of the base tasks list to ensure a fresh state for each scheduling run
+        tasks_for_run = copy.deepcopy(base_tasks)
+        
+        # Create ProjectSchedule instance, which will schedule the tasks
+        temp_project_schedule = ProjectSchedule(
+            tasks=tasks_for_run, # Pass pre-loaded and copied tasks
+            task_csv_path=None, # Indicate that tasks are already provided
+            num_resources=num_res,
+            customization_overview_csv_path=customization_overview_csv_path
+        )
+        
+        total_duration = temp_project_schedule.get_total_duration()
+        if total_duration:
+            # Convert timedelta to total minutes for plotting
+            total_duration_minutes = total_duration.total_seconds() / 60
+            num_resources_list.append(num_res)
+            total_duration_minutes_list.append(total_duration_minutes)
+            print(f"  Resources: {num_res}, Total Duration: {total_duration_minutes:.2f} minutes")
+        else:
+            print(f"  Resources: {num_res}, Could not calculate total duration.")
+
+    if MATPLOTLIB_AVAILABLE:
+        plt.figure(figsize=(10, 6))
+        plt.plot(num_resources_list, total_duration_minutes_list, marker='o', linestyle='-')
+        plt.title('Project Duration vs. Number of Resources')
+        plt.xlabel('Number of Resources')
+        plt.ylabel('Total Project Duration (minutes)')
+        plt.grid(True)
+        plt.xticks(num_resources_list)
+        plt.tight_layout()
+
+        if output_plot_path:
+            plt.savefig(output_plot_path)
+            print(f"Plot saved to: {output_plot_path}")
+        else:
+            plt.show()
+    else:
+        print("\nRaw Data (Number of Resources, Total Duration in Minutes):")
+        for i in range(len(num_resources_list)):
+            print(f"{num_resources_list[i]}, {total_duration_minutes_list[i]:.2f}")
 
 
 
 if __name__ == "__main__":
-    # Example usage
     csv_path = '/Users/mchiozzi/sdev/personal/chrono_tailoring/deliverable_structure.csv'
-    all_tasks = load_tasks(csv_path)
-    
-    today_str = "2026-02-08" # As per user context "Sunday, February 8, 2026"
-    today_date_obj = datetime.strptime(today_str, '%Y-%m-%d')
-    calculate_task_dates(all_tasks, today_date_obj)
+    customization_overview_csv_path = '/Users/mchiozzi/sdev/personal/chrono_tailoring/customization_overview.csv'
+
+    # Create ProjectSchedule instance
+    num_resources_for_project = 2
+    project_schedule = ProjectSchedule(
+        task_csv_path=csv_path,
+        num_resources=num_resources_for_project,
+        customization_overview_csv_path=customization_overview_csv_path
+    )
+
+    print(f"\n--- Project Schedule Summary ({num_resources_for_project} Resources) ---")
+    print(project_schedule)
 
     print("\n--- First 5 Tasks ---")
-    for t in all_tasks[:5]:
+    for t in project_schedule.tasks[:5]:
         print(t)
         if t.successors_tasks:
             print(f"  Successor Tasks (IDs): {[st.id for st in t.successors_tasks]}")
@@ -412,7 +613,7 @@ if __name__ == "__main__":
 
     print("\n--- Task with no predecessors (if any) ---")
     found_no_predecessor_task = False
-    for t in all_tasks:
+    for t in project_schedule.tasks:
         if not t.predecessors:
             print(t)
             found_no_predecessor_task = True
@@ -422,26 +623,33 @@ if __name__ == "__main__":
 
 
     print("\n--- Customization Types ---")
-    customization_overview_path = '/Users/mchiozzi/sdev/personal/chrono_tailoring/customization_overview.csv'
-    all_customization_types = load_customization_types(customization_overview_path)
-    for ct in all_customization_types[:5]:
+    for ct in project_schedule.customization_types[:5]:
         print(ct)
 
     print("\n--- Updating Customization Overview CSV ---")
-    update_customization_overview_csv(customization_overview_path)
+    update_customization_overview_csv(customization_overview_csv_path)
 
     print("\n--- Exporting Task Flow to Mermaid Graph (Full Detail) ---")
     mermaid_output_path_full = Path("task_flow.mmd")
-    export_tasks_to_mermaid_graph(all_tasks, mermaid_output_path_full, detail_level='full')
+    export_tasks_to_mermaid_graph(project_schedule.tasks, mermaid_output_path_full, detail_level='full')
 
     print("\n--- Exporting Task Flow to Mermaid Graph (High-Level by Type) ---")
     mermaid_output_path_type = Path("task_flow_high_level.mmd")
-    export_tasks_to_mermaid_graph(all_tasks, mermaid_output_path_type, detail_level='type')
+    export_tasks_to_mermaid_graph(project_schedule.tasks, mermaid_output_path_type, detail_level='type')
 
     print("\n--- Exporting Task Flow to Mermaid Gantt Chart (Full Detail) ---")
     mermaid_output_path_gantt_full = Path("task_flow_gantt.mmd")
-    export_tasks_to_mermaid_gantt(all_tasks, mermaid_output_path_gantt_full, detail_level='full')
+    export_tasks_to_mermaid_gantt(project_schedule.tasks, mermaid_output_path_gantt_full, detail_level='full')
 
     print("\n--- Exporting Task Flow to Mermaid Gantt Chart (High-Level by Type) ---")
     mermaid_output_path_gantt_type = Path("task_flow_gantt_high_level.mmd")
-    export_tasks_to_mermaid_gantt(all_tasks, mermaid_output_path_gantt_type, detail_level='type')
+    export_tasks_to_mermaid_gantt(project_schedule.tasks, mermaid_output_path_gantt_type, detail_level='type')
+
+    # Add resource vs duration plotting
+    plot_output_path = Path("resource_vs_duration.png")
+    plot_resource_vs_duration(
+        task_csv_path=csv_path,
+        customization_overview_csv_path=customization_overview_csv_path,
+        max_resources=70,
+        output_plot_path=plot_output_path
+    )

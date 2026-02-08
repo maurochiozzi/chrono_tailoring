@@ -24,3 +24,6 @@ bin/
 # My custom files
 *.csv
 !customization_overview.csv
+*.mmd
+*.svg
+*.png
