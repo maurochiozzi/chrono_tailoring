@@ -198,12 +198,19 @@ class ProjectSchedule:
                         for arg_entry in entry['extra_args']:
                             if isinstance(arg_entry, dict):
                                 # Original format: {"part_number": "60010", "customizations": {"color": "red"}}
-                                pn_for_lookup = str(arg_entry['part_number'])
-                                if pn_for_lookup not in part_number_to_extra_args:
-                                    part_number_to_extra_args[pn_for_lookup] = []
-                                part_number_to_extra_args[pn_for_lookup].append({
-                                    "part_number": pn_for_lookup,
-                                    "customizations": {**milestone_customizations, **arg_entry.get('customizations', {})} # Merge with milestone customizations
+                                full_part_number_from_arg = str(arg_entry['part_number']) # This is "60010.1"
+                                base_pn_for_lookup = full_part_number_from_arg.split('.')[0] # This is "60010"
+
+                                if base_pn_for_lookup not in part_number_to_extra_args:
+                                    part_number_to_extra_args[base_pn_for_lookup] = []
+                                custom_from_arg = arg_entry.get('customizations', {})
+                                if custom_from_arg:
+                                    variant_customs = custom_from_arg
+                                else:
+                                    variant_customs = milestone_customizations
+                                part_number_to_extra_args[base_pn_for_lookup].append({
+                                    "part_number": full_part_number_from_arg, # Store "60010.1" here
+                                    "customizations": variant_customs
                                 })
                             elif isinstance(arg_entry, str):
                                 # New format: "60010.1"
