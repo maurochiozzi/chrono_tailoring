@@ -6,6 +6,7 @@ from pathlib import Path
 import copy
 import json
 import os
+import heapq
 
 class Task:
     def __init__(self, id: int, part_number: str,
@@ -573,87 +574,68 @@ class ProjectSchedule:
     def _calculate_task_dates(self, today_date: datetime):
         """
         Calculates init_date and end_date for all tasks based on dependencies and duration.
-        Implements a topological sort for scheduling with resource constraints.
+        Implements a topological sort for scheduling with resource constraints using a min-heap.
         """
         in_degree = {task.id: len(task.predecessors) for task in self.tasks}
         tasks_by_id = {task.id: task for task in self.tasks}
 
+        # Initialize resource availability times
         resource_free_time = [today_date] * self.num_resources
 
+        # tasks_earliest_start_by_pred stores the earliest time a task can start due to predecessor completion
         tasks_earliest_start_by_pred = {task.id: today_date for task in self.tasks}
 
+        # Priority queue for tasks ready to be scheduled: (earliest_start_time, task_id)
         ready_to_schedule_pq = [] 
 
+        # Initialize ready_to_schedule_pq with tasks that have no predecessors
         for task in self.tasks:
             if in_degree[task.id] == 0:
-                tasks_earliest_start_by_pred[task.id] = today_date
-                ready_to_schedule_pq.append((today_date, task.id))
-        
-        ready_to_schedule_pq.sort()
+                # Use today_date as the earliest start for tasks with no predecessors
+                heapq.heappush(ready_to_schedule_pq, (today_date, task.id))
 
-        scheduled_count = 0
-        while scheduled_count < len(self.tasks):
-            if not ready_to_schedule_pq:
-                print("Warning: Cyclic dependency detected or some tasks could not be scheduled.")
-                break
+        scheduled_tasks_count = 0
+        while ready_to_schedule_pq:
+            earliest_start_time, task_id = heapq.heappop(ready_to_schedule_pq)
+            task = tasks_by_id[task_id]
 
-            best_task_index_in_pq = -1
-            earliest_feasible_start = None
-            resource_index_for_best_task = -1
+            # Find the earliest time a resource is available for this task
+            earliest_resource_free_time = min(resource_free_time)
+            assigned_resource_index = resource_free_time.index(earliest_resource_free_time)
 
-            for i, (pred_earliest_start, task_id) in enumerate(ready_to_schedule_pq):
-                current_task_obj = tasks_by_id[task_id]
-
-                earliest_possible_start_on_any_resource = None
-                assigned_resource_index_for_this_task = -1
-
-                for res_idx, res_time in enumerate(resource_free_time):
-                    potential_start_time_on_this_resource = max(pred_earliest_start, res_time)
-
-                    if assigned_resource_index_for_this_task == -1 or earliest_possible_start_on_any_resource is None or potential_start_time_on_this_resource < earliest_possible_start_on_any_resource:
-                        earliest_possible_start_on_any_resource = potential_start_time_on_this_resource
-                        assigned_resource_index_for_this_task = res_idx
-                
-                if best_task_index_in_pq == -1 or earliest_feasible_start is None or earliest_possible_start_on_any_resource < earliest_feasible_start:
-                    best_task_index_in_pq = i
-                    earliest_feasible_start = earliest_possible_start_on_any_resource
-                    resource_index_for_best_task = assigned_resource_index_for_this_task
-                
-                elif earliest_possible_start_on_any_resource == earliest_feasible_start and task_id < tasks_by_id[ready_to_schedule_pq[best_task_index_in_pq][1]].id:
-                     best_task_index_in_pq = i
-                     earliest_feasible_start = earliest_possible_start_on_any_resource
-                     resource_index_for_best_task = assigned_resource_index_for_this_task
-
-
-            if best_task_index_in_pq == -1:
-                print("Error: Could not find a task to schedule. Check scheduling logic.")
-                break
+            # Actual start time is max of when task is ready (pred completion) and when resource is free
+            actual_start_time = max(earliest_start_time, earliest_resource_free_time)
             
-            _, current_task_id = ready_to_schedule_pq.pop(best_task_index_in_pq)
-            current_task = tasks_by_id[current_task_id]
+            task.init_date = actual_start_time
+            task.end_date = actual_start_time + timedelta(minutes=task.duration)
+            task.resources = assigned_resource_index + 1 # Store which resource scheduled it
 
-            current_task.init_date = earliest_feasible_start
-            current_task.end_date = current_task.init_date + timedelta(minutes=current_task.duration)
-            
-            resource_free_time[resource_index_for_best_task] = current_task.end_date
+            # Update resource's free time
+            resource_free_time[assigned_resource_index] = task.end_date
+            scheduled_tasks_count += 1
 
-            scheduled_count += 1
-
-            for successor_task in current_task.successors_tasks:
+            # Update successors
+            for successor_task in task.successors_tasks:
                 in_degree[successor_task.id] -= 1
                 
+                # Successor cannot start before current task finishes
                 tasks_earliest_start_by_pred[successor_task.id] = max(
                     tasks_earliest_start_by_pred[successor_task.id],
-                    current_task.end_date
+                    task.end_date
                 )
 
                 if in_degree[successor_task.id] == 0:
-                    if (tasks_earliest_start_by_pred[successor_task.id], successor_task.id) not in ready_to_schedule_pq:
-                        ready_to_schedule_pq.append((tasks_earliest_start_by_pred[successor_task.id], successor_task.id))
-                        ready_to_schedule_pq.sort()
-
-        if scheduled_count != len(self.tasks):
-            print("Warning: Cyclic dependency detected or some tasks could not be scheduled.")
+                    heapq.heappush(ready_to_schedule_pq, (tasks_earliest_start_by_pred[successor_task.id], successor_task.id))
+        
+        # Diagnostic prints
+        # print(f"DEBUG: Scheduled {scheduled_tasks_count} out of {len(self.tasks)} tasks.")
+        if scheduled_tasks_count != len(self.tasks):
+            print(f"Warning: Only {scheduled_tasks_count} out of {len(self.tasks)} tasks were scheduled. "
+                  "This might indicate a problem with dependencies (e.g., cycles) or data.")
+            for task in self.tasks:
+                if task.init_date is None:
+                    print(f"DEBUG: Unscheduled task: {task.name} (ID: {task.id})")
+        self.scheduled_tasks_count = scheduled_tasks_count
 
     def get_deliverable_init_date(self) -> Optional[datetime]:
         earliest_init = None
@@ -687,52 +669,6 @@ class ProjectSchedule:
                 f"num_resources={self.num_resources}, "
                 f"earliest_init='{init_date_str}', latest_end='{end_date_str}', "
                 f"total_duration='{total_duration_str}')")
-
-    @staticmethod
-    def _load_tasks_static(file_path: str) -> List[Task]:
-        """Reads tasks from a semicolon-delimited CSV file (static version)."""
-        try:
-            df = pd.read_csv(file_path, delimiter=';')
-            df['strategy'] = df['strategy'].fillna('')
-            df.fillna('', inplace=True)
-
-            task_type_cache = {}
-            tasks = []
-            for _, row in df.iterrows():
-                description = row['document_type']
-                strategy = row['strategy'] if row['strategy'] else None
-
-                cache_key = (description, strategy)
-                if cache_key not in task_type_cache:
-                    task_type_cache[cache_key] = TaskType(description=description, strategy=strategy)
-                
-                current_task_type = task_type_cache[cache_key]
-
-                tasks.append(
-                    Task(
-                        id=row['document_id'],
-                        part_number=row['document_part_number'],
-                        name=row['document_name'],
-                        successors_str=row['successors'],
-                        task_type=current_task_type
-                    )
-                )
-            
-            task_id_to_task_map = {task.id: task for task in tasks}
-
-            for task in tasks:
-                task.resolve_successors(task_id_to_task_map)
-
-            for task in tasks:
-                for successor_task in task.successors_tasks:
-                    successor_task.predecessors.append(task)
-            return tasks
-        except FileNotFoundError:
-            print(f"Error: File not found at {file_path}")
-            return []
-
-
-import os
 
 def update_customization_overview_csv(file_path: str):
     """
@@ -979,22 +915,17 @@ def plot_resource_vs_duration(
 
     print(f"\n--- Analyzing Resource vs. Duration (1 to {max_resources} Resources) ---")
     
-    # Load tasks once outside the loop to avoid redundant loading
-    base_tasks = ProjectSchedule._load_tasks_static(task_csv_path)
-
     for num_res in range(1, max_resources + 1):
-        # Create a deep copy of the base tasks list to ensure a fresh state for each scheduling run
-        tasks_for_run = copy.deepcopy(base_tasks)
-        
-        # Create ProjectSchedule instance, which will schedule the tasks
         temp_project_schedule = ProjectSchedule(
-            tasks=tasks_for_run, # Pass pre-loaded and copied tasks
-            task_csv_path=None, # Indicate that tasks are already provided
+            task_csv_path=task_csv_path, # Pass the original task CSV path
             num_resources=num_res,
             customization_overview_csv_path=customization_overview_csv_path,
-            project_requirements_path=project_requirements_path # Pass project requirements path
+            project_requirements_path=project_requirements_path # Ensure project requirements path is passed
         )
         
+        # Diagnostic prints to show scheduling status for each resource run
+        print(f"DEBUG (Resource Analysis): Scheduled {temp_project_schedule.scheduled_tasks_count} out of {len(temp_project_schedule.tasks)} tasks for {num_res} resources.")
+
         total_duration = temp_project_schedule.get_total_duration()
         if total_duration:
             # Convert timedelta to total minutes for plotting

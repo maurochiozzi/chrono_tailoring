@@ -22,8 +22,11 @@ bin/
 .ipynb_checkpoints
 
 # My custom files
-*.csv
+# Ignore all .csv files except those specifically used for customization data
 !customization_overview.csv
+!customization_length.csv
+!customization_color.csv
+*.csv
 *.mmd
 *.svg
 *.png

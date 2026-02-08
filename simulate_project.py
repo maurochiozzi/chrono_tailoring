@@ -52,7 +52,7 @@ def simulate_project_schedule():
     plot_resource_vs_duration(
         task_csv_path=csv_path,
         customization_overview_csv_path=customization_overview_csv_path,
-        max_resources=10,
+        max_resources=2,
         output_plot_path=plot_output_path,
         project_requirements_path=project_requirements_path
     )

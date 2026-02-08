@@ -1,0 +1,13 @@
+[
+  {
+    "milestone_id": 1,
+    "milestone_name": "Cabinet Assembly",
+    "customizations": {
+      "color": "red"
+    },
+    "extra_args": [
+      "60010.1",
+      "60010.2"
+    ]
+  }
+]
