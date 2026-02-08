@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+lib/
+include/
+bin/
+
+# IDEs
+.idea/
+.vscode/
+
+# OS generated files
+.DS_Store
+*.numbers
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# My custom files
+*.csv
+!customization_overview.csv
