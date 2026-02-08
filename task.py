@@ -1,5 +1,7 @@
 import pandas as pd
-from typing import List, Optional
+from typing import List, Optional, Dict
+from datetime import datetime, timedelta
+from collections import deque
 
 class Task:
     def __init__(self, id: int, part_number: str,
@@ -10,6 +12,10 @@ class Task:
         self.successors_ids = self._parse_successor_ids(successors_str)
         self.task_type = task_type
         self.successors_tasks: List['Task'] = [] # To be populated in a second pass
+        self.init_date: Optional[datetime] = None
+        self.end_date: Optional[datetime] = None
+        self.predecessors: List['Task'] = [] # To be populated in a later pass
+        self.duration: int = 10
 
     def _parse_successor_ids(self, successors_str: str) -> List[int]:
         """Parses a comma-separated string of successor IDs into a list of integers."""
@@ -18,8 +24,11 @@ class Task:
         return [int(s.strip()) for s in str(successors_str).split(',') if s.strip()]
 
     def __repr__(self):
+        init_date_str = self.init_date.strftime('%Y-%m-%d') if self.init_date else 'None'
+        end_date_str = self.end_date.strftime('%Y-%m-%d') if self.end_date else 'None'
         return (f"Task(id={self.id}, type='{self.task_type.description}', "
-                f"name='{self.name}', successors={self.successors_ids})")
+                f"name='{self.name}', successors_ids={self.successors_ids}, "
+                f"init_date='{init_date_str}', end_date='{end_date_str}', duration={self.duration})")
 
     def resolve_successors(self, all_tasks_map: Dict[int, 'Task']):
         """Resolves successor IDs into actual Task objects."""
@@ -85,6 +94,12 @@ def load_tasks(file_path: str) -> List[Task]:
         for task in tasks:
             task.resolve_successors(task_id_to_task_map)
 
+        # Fourth pass: Populate predecessors for each task
+        for task in tasks:
+            for successor_task in task.successors_tasks:
+                successor_task.predecessors.append(task)
+
+
         return tasks
     except FileNotFoundError:
         print(f"Error: File not found at {file_path}")
@@ -104,6 +119,50 @@ def load_customization_types(file_path: str) -> List[CustomizationType]:
     except FileNotFoundError:
         print(f"Error: Customization overview file not found at {file_path}")
         return []
+
+def calculate_task_dates(tasks: List[Task], today_date: datetime):
+    """
+    Calculates init_date and end_date for all tasks based on dependencies and duration.
+    Implements a topological sort for scheduling.
+    """
+    # Initialize in-degrees for all tasks (count of predecessors not yet scheduled)
+    in_degree = {task.id: len(task.predecessors) for task in tasks}
+    
+    # Queue for tasks ready to be scheduled (no unscheduled predecessors)
+    ready_queue = deque()
+
+    # Find tasks with no predecessors and add them to the ready queue
+    for task in tasks:
+        if in_degree[task.id] == 0:
+            ready_queue.append(task)
+            task.init_date = today_date
+            task.end_date = task.init_date + timedelta(minutes=task.duration)
+
+    scheduled_count = 0
+    while ready_queue:
+        current_task = ready_queue.popleft()
+        scheduled_count += 1
+
+        # Propagate dates to successors
+        for successor_task in current_task.successors_tasks:
+            # Update successor's init_date based on current_task's end_date
+            # A successor's init_date is the latest end_date of all its predecessors
+            if successor_task.init_date is None or current_task.end_date > successor_task.init_date:
+                successor_task.init_date = current_task.end_date
+            
+            # Decrement in-degree for successor
+            in_degree[successor_task.id] -= 1
+            if in_degree[successor_task.id] == 0:
+                # If all predecessors are scheduled, calculate its end_date and add to queue
+                if successor_task.init_date is None: # Should not happen if logic is correct
+                    successor_task.init_date = today_date # Fallback
+                successor_task.end_date = successor_task.init_date + timedelta(minutes=successor_task.duration)
+                ready_queue.append(successor_task)
+    
+    if scheduled_count != len(tasks):
+        print("Warning: Cyclic dependency detected or some tasks could not be scheduled.")
+
+
 
 import os
 
@@ -140,10 +199,29 @@ if __name__ == "__main__":
     # Example usage
     csv_path = '/Users/mchiozzi/sdev/personal/chrono_tailoring/deliverable_structure.csv'
     all_tasks = load_tasks(csv_path)
+    
+    today_str = "2026-02-08" # As per user context "Sunday, February 8, 2026"
+    today_date_obj = datetime.strptime(today_str, '%Y-%m-%d')
+    calculate_task_dates(all_tasks, today_date_obj)
+
+    print("\n--- First 5 Tasks ---")
     for t in all_tasks[:5]:
         print(t)
         if t.successors_tasks:
-            print(f"  Successor Tasks: {[st.id for st in t.successors_tasks]}")
+            print(f"  Successor Tasks (IDs): {[st.id for st in t.successors_tasks]}")
+        if t.predecessors:
+            print(f"  Predecessor Tasks (IDs): {[pt.id for pt in t.predecessors]}")
+
+    print("\n--- Task with no predecessors (if any) ---")
+    found_no_predecessor_task = False
+    for t in all_tasks:
+        if not t.predecessors:
+            print(t)
+            found_no_predecessor_task = True
+            break
+    if not found_no_predecessor_task:
+        print("No task found with no predecessors.")
+
 
     print("\n--- Customization Types ---")
     customization_overview_path = '/Users/mchiozzi/sdev/personal/chrono_tailoring/customization_overview.csv'
