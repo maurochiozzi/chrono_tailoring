@@ -291,6 +291,106 @@ def export_tasks_to_mermaid_graph(tasks: List[Task], output_file_path: Optional[
             
     return mermaid_syntax
 
+def export_tasks_to_mermaid_gantt(tasks: List[Task], output_file_path: Optional[Path] = None, detail_level: str = 'full') -> str:
+    """
+    Generates a Mermaid Gantt chart representation of tasks.
+    Can generate a detailed chart of individual tasks or a high-level chart based on task types.
+    """
+    mermaid_lines = [
+        "gantt",
+        "    dateFormat  YYYY-MM-DD HH:mm",
+        "    axisFormat %H:%M",
+        "    title       Task Schedule Overview"
+    ]
+
+    # Define color mapping for task types
+    task_type_colors = {
+        'release': 'fill:#F96',        # Orange
+        'drawing': 'fill:#9F6',        # Light Green
+        'part_model': 'fill:#69F',     # Light Blue
+        'part_list': 'fill:#FC6',      # Yellow-Orange
+        'milestone': 'fill:#C6F'       # Purple
+    }
+
+    # Helper to sanitize ID for Mermaid class names (if needed for type-level)
+    def sanitize_id(text: str) -> str:
+        return text.replace(" ", "_").replace("-", "_").replace(".", "").lower()
+
+    # SECTION: Full Detail Gantt Chart
+    if detail_level == 'full':
+        mermaid_lines.append("    section All Tasks")
+        gantt_styles = [] # Collect style directives here
+
+        for task in tasks:
+            init_date_str = task.init_date.strftime('%Y-%m-%d %H:%M') if task.init_date else 'None'
+            end_date_str = task.end_date.strftime('%Y-%m-%d %H:%M') if task.end_date else 'None'
+
+            # Task label for the Gantt bar
+            task_label = f"{task.name} ({task.part_number}) ({task.task_type.description})"
+
+            # Gantt task syntax: Task Name :id, start_date, end_date
+            if task.init_date and task.end_date:
+                mermaid_lines.append(f"    {task_label} :{task.id}, {init_date_str}, {end_date_str}")
+            else:
+                # Fallback for tasks without calculated dates (should not happen with scheduling logic)
+                mermaid_lines.append(f"    {task_label} :{task.id}, {init_date_str}, {task.duration}min") 
+
+            # Add style directive for the task
+            color_style = task_type_colors.get(task.task_type.description, 'fill:#CCC') # Default light gray
+            gantt_styles.append(f"    style {task.id} {color_style},stroke:#333")
+
+        # Append style directives
+        mermaid_lines.extend(gantt_styles)
+
+    # SECTION: Type Detail Gantt Chart
+    elif detail_level == 'type':
+        mermaid_lines.append("    section Task Types Overview")
+        type_date_spans = {} # {type_desc: {'min_init': datetime, 'max_end': datetime}}
+
+        for task in tasks:
+            type_desc = task.task_type.description
+            if type_desc not in type_date_spans:
+                type_date_spans[type_desc] = {'min_init': task.init_date, 'max_end': task.end_date}
+            
+            # Update min_init_date for the type
+            if task.init_date and (type_date_spans[type_desc]['min_init'] is None or task.init_date < type_date_spans[type_desc]['min_init']):
+                type_date_spans[type_desc]['min_init'] = task.init_date
+            
+            # Update max_end_date for the type
+            if task.end_date and (type_date_spans[type_desc]['max_end'] is None or task.end_date > type_date_spans[type_desc]['max_end']):
+                type_date_spans[type_desc]['max_end'] = task.end_date
+        
+        gantt_styles = [] # Collect style directives for types
+        for type_desc in sorted(type_date_spans.keys()):
+            type_info = type_date_spans[type_desc]
+            type_id = sanitize_id(type_desc) # Use sanitized ID for Gantt bar
+            min_init_str = type_info['min_init'].strftime('%Y-%m-%d %H:%M') if type_info['min_init'] else 'None'
+            max_end_str = type_info['max_end'].strftime('%Y-%m-%d %H:%M') if type_info['max_end'] else 'None'
+
+            if type_info['min_init'] and type_info['max_end']:
+                mermaid_lines.append(f"    {type_desc} :{type_id}, {min_init_str}, {max_end_str}")
+            else:
+                mermaid_lines.append(f"    {type_desc} :{type_id}, {min_init_str}, 0min") # Fallback for types without calculated dates
+
+            color_style = task_type_colors.get(type_desc, 'fill:#CCC') # Default light gray
+            gantt_styles.append(f"    style {type_id} {color_style},stroke:#333")
+        
+        mermaid_lines.extend(gantt_styles)
+
+    else:
+        raise ValueError(f"Unknown detail_level: {detail_level}. Expected 'full' or 'type'.")
+            
+    mermaid_syntax = "\n".join(mermaid_lines)
+
+    if output_file_path:
+        try:
+            output_file_path.write_text(mermaid_syntax)
+            print(f"Mermaid Gantt chart exported to: {output_file_path}")
+        except Exception as e:
+            print(f"Error exporting Mermaid Gantt chart to {output_file_path}: {e}")
+            
+    return mermaid_syntax
+
 
 
 if __name__ == "__main__":
@@ -337,3 +437,11 @@ if __name__ == "__main__":
     print("\n--- Exporting Task Flow to Mermaid Graph (High-Level by Type) ---")
     mermaid_output_path_type = Path("task_flow_high_level.mmd")
     export_tasks_to_mermaid_graph(all_tasks, mermaid_output_path_type, detail_level='type')
+
+    print("\n--- Exporting Task Flow to Mermaid Gantt Chart (Full Detail) ---")
+    mermaid_output_path_gantt_full = Path("task_flow_gantt.mmd")
+    export_tasks_to_mermaid_gantt(all_tasks, mermaid_output_path_gantt_full, detail_level='full')
+
+    print("\n--- Exporting Task Flow to Mermaid Gantt Chart (High-Level by Type) ---")
+    mermaid_output_path_gantt_type = Path("task_flow_gantt_high_level.mmd")
+    export_tasks_to_mermaid_gantt(all_tasks, mermaid_output_path_gantt_type, detail_level='type')
