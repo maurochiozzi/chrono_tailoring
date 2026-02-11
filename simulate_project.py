@@ -46,10 +46,10 @@ def simulate_project_schedule(num_resources: int = 2):
 
     # Export to Mermaid Gantt Chart
     print(f"\n--- Exporting Task Flow to Mermaid Gantt Chart (Full Detail) ---")
-    export_tasks_to_mermaid_gantt(project_schedule.tasks, Path("task_flow_gantt.mmd"), detail_level='full')
+    export_tasks_to_mermaid_gantt(project_schedule.tasks, Path("task_flow_gantt.mmd"), detail_level='full', project_requirements_data=project_schedule.project_requirements_data)
 
     print(f"\n--- Exporting Task Flow to Mermaid Gantt Chart (High-Level by Type) ---")
-    export_tasks_to_mermaid_gantt(project_schedule.tasks, Path("task_flow_gantt_high_level.mmd"), detail_level='type')
+    export_tasks_to_mermaid_gantt(project_schedule.tasks, Path("task_flow_gantt_high_level.mmd"), detail_level='type', project_requirements_data=project_schedule.project_requirements_data)
 
     # Plot resource vs duration
     plot_resource_vs_duration(

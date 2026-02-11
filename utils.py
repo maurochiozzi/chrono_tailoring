@@ -140,90 +140,136 @@ def export_tasks_to_mermaid_graph(tasks: List[Task], output_file_path: Optional[
             
     return mermaid_syntax
 
-def export_tasks_to_mermaid_gantt(tasks: List[Task], output_file_path: Optional[Path] = None, detail_level: str = 'full') -> str:
+def export_tasks_to_mermaid_gantt(tasks: List[Task], output_file_path: Optional[Path] = None, detail_level: str = 'full', project_requirements_data: Optional[List[Dict[str, Any]]] = None) -> str:
     """
     Generates a Mermaid Gantt chart representation of tasks.
     Can generate a detailed chart of individual tasks or a high-level chart based on task types.
     """
     mermaid_lines = [
         "gantt",
-        "    dateFormat  YYYY-MM-DD HH:mm",
-        "    axisFormat %H:%M",
-        "    title       Task Schedule Overview"
+        "    dateFormat  YYYY-MM-DD",
+        "    axisFormat %d-%dm",
+        "    title       Task Schedule Overview",
+        "    excludes    weekends"
     ]
 
-    # Define color mapping for task types
-    task_type_colors = {
-        'release': 'fill:#F96',        # Orange
-        'drawing': 'fill:#9F6',        # Light Green
-        'part_model': 'fill:#69F',     # Light Blue
-        'part_list': 'fill:#FC6',      # Yellow-Orange
-        'milestone': 'fill:#C6F'       # Purple
-    }
-
-    # Helper to sanitize ID for Mermaid class names (if needed for type-level)
     def sanitize_id(text: str) -> str:
         return text.replace(" ", "_").replace("-", "_").replace(".", "").lower()
 
     # SECTION: Full Detail Gantt Chart
     if detail_level == 'full':
         mermaid_lines.append("    section All Tasks")
-        gantt_styles = [] # Collect style directives here
+        
+        # Get current date for 'active' and 'done' status
+        # Using a fixed date or project_start_date for consistent rendering if actual current date is not desired
+        reference_date = datetime.now().date() 
 
         for task in tasks:
-            init_date_str = task.init_date.strftime('%Y-%m-%d %H:%M') if task.init_date else 'None'
-            end_date_str = task.end_date.strftime('%Y-%m-%d %H:%M') if task.end_date else 'None'
+            init_date_str = task.init_date.strftime('%Y-%m-%d') if task.init_date else 'None'
+            end_date_str = task.end_date.strftime('%Y-%m-%d') if task.end_date else 'None'
+            
+            task_duration_mermaid_format = ""
+            if task.duration is not None:
+                total_minutes = task.duration
+                days = total_minutes // (8 * 60) # Assuming 8 working hours per day
+                hours = (total_minutes % (8 * 60)) // 60
+                minutes = total_minutes % 60
+                
+                if days > 0:
+                    task_duration_mermaid_format += f"{days}d "
+                if hours > 0:
+                    task_duration_mermaid_format += f"{hours}h "
+                if minutes > 0:
+                    task_duration_mermaid_format += f"{minutes}m "
+                
+                if not task_duration_mermaid_format: # If duration is 0
+                    task_duration_mermaid_format = "0d"
+                else:
+                    task_duration_mermaid_format = task_duration_mermaid_format.strip()
+            
+            task_status = "" # No status prefixes
+            task_duration_mermaid_format = "0d" if task.task_type.description == "milestone" else task_duration_mermaid_format # Milestones have 0d duration
 
             # Task label for the Gantt bar
-            task_label = f"{task.name} ({task.part_number}) ({task.task_type.description})"
+            task_label_gantt = f"{task.name} ({task.part_number})"
 
-            # Gantt task syntax: Task Name :id, start_date, end_date
             if task.init_date and task.end_date:
-                mermaid_lines.append(f"    {task_label} :{task.id}, {init_date_str}, {end_date_str}")
+                mermaid_lines.append(f"    {task_label_gantt} :{task.id}, {init_date_str}, {end_date_str}")
             else:
-                # Fallback for tasks without calculated dates (should not happen with scheduling logic)
-                mermaid_lines.append(f"    {task_label} :{task.id}, {init_date_str}, {task.duration}min") 
-
-            # Add style directive for the task
-            color_style = task_type_colors.get(task.task_type.description, 'fill:#CCC') # Default light gray
-            gantt_styles.append(f"    style {task.id} {color_style},stroke:#333")
-
-        # Append style directives
-        mermaid_lines.extend(gantt_styles)
+                mermaid_lines.append(f"    {task_label_gantt} :{task.id}, {init_date_str}, {task_duration_mermaid_format}")
 
     elif detail_level == 'type':
         mermaid_lines.append("    section Task Types Overview")
-        type_date_spans = {} # {type_desc: {'min_init': datetime, 'max_end': datetime}}
+        type_date_spans = {} # {type_desc: {'min_init': datetime, 'max_end': datetime, 'total_duration': timedelta}}
 
         for task in tasks:
             type_desc = task.task_type.description
             if type_desc not in type_date_spans:
-                type_date_spans[type_desc] = {'min_init': task.init_date, 'max_end': task.end_date}
+                type_date_spans[type_desc] = {
+                    'min_init': task.init_date, 
+                    'max_end': task.end_date, 
+                    'total_duration': timedelta(minutes=0)
+                }
             
             # Update min_init_date for the type
-            if task.init_date and (type_date_spans[type_desc]['min_init'] is None or task.init_date < type_date_spans[type_desc]['min_init']):
+            if task.init_date and (type_date_spans[type_desc]['min_init'] is None or type_date_spans[type_desc]['min_init'] > task.init_date):
                 type_date_spans[type_desc]['min_init'] = task.init_date
             
             # Update max_end_date for the type
             if task.end_date and (type_date_spans[type_desc]['max_end'] is None or type_date_spans[type_desc]['max_end'] < task.end_date):
                 type_date_spans[type_desc]['max_end'] = task.end_date
+            
+            # Sum durations for the type overview
+            type_date_spans[type_desc]['total_duration'] += timedelta(minutes=task.duration)
         
-        gantt_styles = [] # Collect style directives for types
         for type_desc in sorted(type_date_spans.keys()):
             type_info = type_date_spans[type_desc]
-            type_id = sanitize_id(type_desc) # Use sanitized ID for Gantt bar
-            min_init_str = type_info['min_init'].strftime('%Y-%m-%d %H:%M') if type_info['min_init'] else 'None'
-            max_end_str = type_info['max_end'].strftime('%Y-%m-%d %H:%M') if type_info['max_end'] else 'None'
+            
+            # Convert total_duration to human-readable format (e.g., "2d 20h")
+            total_seconds = type_info['total_duration'].total_seconds()
+            total_minutes = int(total_seconds / 60)
+            
+            duration_parts = []
+            if total_minutes >= (8 * 60): # Full working days
+                days = total_minutes // (8 * 60)
+                duration_parts.append(f"{days}d")
+                total_minutes %= (8 * 60)
+            
+            if total_minutes >= 60: # Hours
+                hours = total_minutes // 60
+                duration_parts.append(f"{hours}h")
+                total_minutes %= 60
+            
+            if total_minutes > 0: # Remaining minutes
+                duration_parts.append(f"{total_minutes}m")
+            
+            duration_display = " ".join(duration_parts) if duration_parts else "0m"
+
+            min_init_str = type_info['min_init'].strftime('%Y-%m-%d') if type_info['min_init'] else 'None'
+            max_end_str = type_info['max_end'].strftime('%Y-%m-%d') if type_info['max_end'] else 'None'
+
+            # Type label: "Type Name (Duration)"
+            if type_desc == "milestone":
+                # Search for a milestone_name in project_requirements_data
+                milestone_label = "milestone" # Default if not found
+                if project_requirements_data:
+                    for entry in project_requirements_data:
+                        if "milestone_name" in entry:
+                            milestone_label = entry["milestone_name"]
+                            break # Take the first one found
+                type_label = milestone_label
+                duration_mermaid_format = "0d" # Milestones have 0d duration
+            else:
+                type_label = f"{type_desc} ({duration_display})"
+                duration_mermaid_format = f"{min_init_str}, {max_end_str}"
+            
+            # No task_status_prefix as per new requirements
 
             if type_info['min_init'] and type_info['max_end']:
-                mermaid_lines.append(f"    {type_desc} :{type_id}, {min_init_str}, {max_end_str}")
+                mermaid_lines.append(f"    {type_label} :{sanitize_id(type_desc)}, {duration_mermaid_format}")
             else:
-                mermaid_lines.append(f"    {type_desc} :{type_id}, {min_init_str}, 0min") # Fallback for types without calculated dates
-
-            color_style = task_type_colors.get(type_desc, 'fill:#CCC') # Default light gray
-            gantt_styles.append(f"    style {type_id} {color_style},stroke:#333")
-        
-        mermaid_lines.extend(gantt_styles)
+                # Fallback, similar to the example for un-dated tasks, specify an ID and duration
+                mermaid_lines.append(f"    {type_label} :{sanitize_id(type_desc)}, {duration_mermaid_format}")
 
     else:
         raise ValueError(f"Unknown detail_level: {detail_level}. Expected 'full' or 'type'.")
