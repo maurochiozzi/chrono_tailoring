@@ -63,7 +63,7 @@ class TaskType:
         return f"TaskType(description='{self.description}', strategy='{self.strategy}')"
 
 # Initialize predefined TaskType instances after class definition
-TaskType.DRAWING = TaskType(description="DRAWING")
+TaskType.DRAWING = TaskType(description="drawing", strategy="1")
 
 class CustomizationType:
     def __init__(self, name: str, file_path: str):

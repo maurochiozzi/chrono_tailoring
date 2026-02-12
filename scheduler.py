@@ -514,35 +514,32 @@ class ProjectSchedule:
         It re-wires dependencies to point to the consolidated task and removes the original drawing variants.
         """
 
-        drawing_tasks_by_part_number: Dict[str, List[Task]] = {}
+        drawing_tasks_by_base_part_number: Dict[str, List[Task]] = {}
         for task in self.tasks:
             if task.task_type.description == TaskType.DRAWING.description:
-                if task.part_number not in drawing_tasks_by_part_number:
-                    drawing_tasks_by_part_number[task.part_number] = []
-                drawing_tasks_by_part_number[task.part_number].append(task)
+                base_part_number = task.part_number.split('.')[0] # Extract base part number
+                if base_part_number not in drawing_tasks_by_base_part_number:
+                    drawing_tasks_by_base_part_number[base_part_number] = []
+                drawing_tasks_by_base_part_number[base_part_number].append(task)
         
         consolidated_tasks: List[Task] = []
-        # Mapping from original individual drawing task ID to its new consolidated task ID
         original_drawing_id_to_consolidated_id_map: Dict[int, int] = {}
 
-        for part_number, drawing_tasks in drawing_tasks_by_part_number.items():
-            if len(drawing_tasks) > 1: # Only consolidate if there's more than one drawing task for this part number
-                # Create a new consolidated drawing task
+        for base_part_number, drawing_tasks in drawing_tasks_by_base_part_number.items():
+            if len(drawing_tasks) > 1:
                 consolidated_task = Task(
                     id=self._next_task_id,
-                    part_number=part_number,
-                    name=f"Consolidated Drawing for {part_number}",
-                    task_type=TaskType(description=TaskType.DRAWING.description, strategy="consolidated"),
-                    duration=0 # Will be updated to max duration
+                    part_number=base_part_number, # Use base part number for consolidated task
+                    name=f"Consolidated Drawing for {base_part_number}",
+                    successors_str="",
+                    task_type=TaskType(description=TaskType.DRAWING.description, strategy="consolidated")
                 )
                 self._next_task_id += 1
                 
-                # Determine max duration for the consolidated task
                 max_duration = 0
                 for dt in drawing_tasks:
                     if dt.duration > max_duration:
                         max_duration = dt.duration
-                    # Populate the mapping
                     original_drawing_id_to_consolidated_id_map[dt.id] = consolidated_task.id
                 consolidated_task.duration = max_duration
                 consolidated_tasks.append(consolidated_task)

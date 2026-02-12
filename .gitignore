@@ -26,6 +26,8 @@ bin/
 !customization_overview.csv
 !customization_length.csv
 !customization_color.csv
+
+
 *.csv
 *.mmd
 *.svg
