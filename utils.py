@@ -202,7 +202,7 @@ def export_tasks_to_mermaid_gantt(milestones: List[ProjectMilestone], output_fil
     mermaid_lines = [
         "gantt",
         "    dateFormat  YYYY-MM-DD",
-        "    axisFormat %d-%dm",
+        "    axisFormat %d-%m",
         "    title       Task Schedule Overview",
         "    excludes    weekends"
     ]
@@ -325,7 +325,7 @@ def export_tasks_to_mermaid_gantt(milestones: List[ProjectMilestone], output_fil
     
     elif detail_level == 'milestone_type_summary':
         for milestone in milestones:
-            mermaid_lines.append(f"    section {milestone.milestone_id}")
+            mermaid_lines.append(f"    section {milestone.name}")
             type_date_spans_in_milestone = {} # {type_desc: {'min_init': datetime, 'max_end': datetime, 'total_duration': timedelta}}
 
             for task in milestone.tasks:
@@ -374,9 +374,9 @@ def export_tasks_to_mermaid_gantt(milestones: List[ProjectMilestone], output_fil
                 max_end_str = type_info['max_end'].strftime('%Y-%m-%d') if type_info['max_end'] else 'None'
 
                 if type_desc == "milestone":
-                    type_label = str(milestone.milestone_id) # Use milestone_id as the label
+                    type_label = str(milestone.name) # Use milestone.name as the label
                     duration_mermaid_format = "0d"
-                    mermaid_task_id = str(milestone.milestone_id) # ID for the mermaid task
+                    mermaid_task_id = "milestone" # ID for the mermaid task
                 else:
                     type_label = f"{type_desc} {milestone.milestone_id} ({duration_display})"
                     duration_mermaid_format = f"{min_init_str}, {max_end_str}"
