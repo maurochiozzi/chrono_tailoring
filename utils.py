@@ -412,7 +412,12 @@ def export_tasks_to_mermaid_gantt(milestones: List[ProjectMilestone], output_fil
                     mermaid_task_id = "milestone"
                 else:
                     # For individual tasks, use task.name and task.id for unique identification
-                    type_label = f"{task.name} ({task_duration_mermaid_format})" # Include duration in label
+                    # If task.name is "storage_cabinte", replace it with milestone_name and task_type
+                    if task.name == "storage_cabinet":
+                        type_label = f"{milestone.name} {task.task_type.description} ({task_duration_mermaid_format})"
+                    else:
+                        type_label = f"{task.name} ({task_duration_mermaid_format})" # Include duration in label
+                    
                     duration_mermaid_format = f"{init_date_str}, {end_date_str}"
                     mermaid_task_id = str(task.id) # Use the task's unique ID
                     

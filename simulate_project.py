@@ -60,7 +60,7 @@ def simulate_project_schedule(num_resources: int = 2):
     plot_resource_vs_duration(
         task_csv_path=task_csv_path,
         customization_overview_csv_path=customization_overview_csv_path,
-        max_resources=2,
+        max_resources=1,
         output_plot_path=Path("resource_vs_duration.png"),
         project_requirements_path=project_requirements_path,
         holidays_path=holidays_path
@@ -72,4 +72,4 @@ def simulate_project_schedule(num_resources: int = 2):
     print("\n--- Project Schedule Simulation Complete ---")
 
 if __name__ == "__main__":
-    simulate_project_schedule(num_resources=2)
+    simulate_project_schedule(num_resources=1)

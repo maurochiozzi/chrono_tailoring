@@ -1,0 +1,37 @@
+# Software Requirements for Chrono Tailoring Project
+
+This document summarizes the key software requirements and improvements implemented to enhance the functionality and output of the Chrono Tailoring project, particularly focusing on Gantt chart generation and task data management.
+
+## 1. Gantt Chart Milestone ID and Naming Consistency
+
+### 1.1 Milestone Task ID Correction
+- **Requirement:** Ensure that the Mermaid Gantt chart correctly displays the actual milestone ID (e.g., `70015`) as the identifier for the milestone task, rather than a generic numerical ID (e.g., `1`).
+- **Status:** Implemented in `utils.py`. The `mermaid_task_id` for milestone tasks in the `milestone_type_summary` detail level now uses `"milestone"` as per Mermaid syntax, with the label showing the correct `milestone.name`.
+
+### 1.2 Gantt Chart Section Headers
+- **Requirement:** In the `milestone_type_summary` detail level of the Mermaid Gantt chart, section headers must use the `milestone.name` (e.g., `section 70015`) for clarity and consistency.
+- **Status:** Implemented in `utils.py`.
+
+### 1.3 Gantt Chart Milestone Task Labels
+- **Requirement:** The label for the milestone task itself in the `milestone_type_summary` detail level of the Gantt chart must use the `milestone.name` (e.g., `70015`) to provide meaningful context.
+- **Status:** Implemented in `utils.py`.
+
+## 2. Task Data Management and CSV Export Enhancements
+
+### 2.1 Task Part Number Update for Milestone Association
+- **Requirement:** For tasks that are part of a specific milestone (e.g., `drawing`, `part_model`) and initially have a generic `part_number` (e.g., "70000"), their `part_number` in the `exported_tasks.csv` should be updated to reflect the associated `milestone.name` (e.g., "70015"). This excludes consolidated drawing tasks, which follow different part numbering conventions.
+- **Status:** Implemented in `scheduler.py`.
+
+## 3. Gantt Chart Formatting and Summarization Logic
+
+### 3.1 `axisFormat` Correction
+- **Requirement:** The `axisFormat` in all Mermaid Gantt chart outputs should be corrected to `%d-%m` to ensure proper month display without an extraneous character.
+- **Status:** Implemented in `utils.py`.
+
+### 3.2 Granular Task Summarization Control
+- **Requirement:** In the `milestone_type_summary` detail level, tasks whose `part_number` (or `task.type.description` in the case of the milestone task itself) directly matches the `milestone.name` should *not* be aggregated with other tasks of the same type. Instead, these specific tasks should be listed individually in the Gantt chart for distinct representation.
+- **Status:** Implemented in `utils.py`. This logic separates tasks into summarizable and individual categories.
+
+### 3.3 Dynamic Task Naming for "storage_cabinet"
+- **Requirement:** If an individual task's `task.name` is specifically "storage_cabinet", its label in the Gantt chart's `milestone_type_summary` should be dynamically formatted as `"{milestone.name} {task.task_type.description} ({task_duration_mermaid_format})"`. This provides more informative labeling for generic tasks.
+- **Status:** Implemented in `utils.py`.
