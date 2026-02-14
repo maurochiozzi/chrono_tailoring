@@ -14,5 +14,13 @@
       "color": "blue",
       "length": 576
     }
+  },
+  {
+    "milestone_id": 3,
+    "milestone_name": "70017",
+    "customizations": {
+      "color": "green",
+      "length": 576
+    }
   }
 ]

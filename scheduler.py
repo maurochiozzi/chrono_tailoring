@@ -334,6 +334,10 @@ class ProjectSchedule:
                 # 1. Create the main version of the task with a new unique ID
                 main_task = copy.deepcopy(original_base_task)
                 main_task.id = self._next_task_id
+                main_task.milestone_id = milestone_data.get('milestone_id') # Assign milestone_id
+                # Apply milestone-level customizations to main_task by default
+                main_task.variant_customizations.update(milestone_customizations) 
+                
                 print(f"DEBUG: Assigning new ID {main_task.id} to original task {original_base_task.id}")
                 self._next_task_id += 1
 
@@ -344,26 +348,52 @@ class ProjectSchedule:
                 # (e.g., 60010 variants like 60010.1, 60010.2)
                 if original_base_task.part_number in part_number_to_extra_args:
                     for extra_arg_entry in part_number_to_extra_args[original_base_task.part_number]:
-                        # Do not create a new variant if the extra_arg_entry is exactly the same as the base task
-                        # (i.e., it refers to the non-variant version which is already main_task)
-                        if original_base_task.part_number == extra_arg_entry["part_number"]:
-                            # If the original base task itself needs customizations, apply them to main_task
-                            if extra_arg_entry.get("customizations"):
+                        # If the extra_arg_entry provides customizations, these should override
+                        # the milestone-level customizations for this specific variant or base task.
+                        if extra_arg_entry.get("customizations"):
+                            if original_base_task.part_number == extra_arg_entry["part_number"]:
+                                # This is the base task, update its customizations
                                 main_task.variant_customizations.update(extra_arg_entry["customizations"])
-                            continue # Skip creating a duplicate if it's the base part number
+                                continue # Skip creating a duplicate if it's the base part number
+                            else:
+                                # This is a variant, create it with its specific customizations
+                                variant_task = copy.deepcopy(original_base_task)
+                                variant_task.id = self._next_task_id
+                                variant_task.milestone_id = milestone_data.get('milestone_id') # Assign milestone_id
+                                print(f"DEBUG: Creating variant task for original {original_base_task.id} to new ID {variant_task.id}")
+                                self._next_task_id += 1
+                                
+                                variant_task.part_number = str(extra_arg_entry["part_number"])
+                                variant_task.variant_name = variant_task.part_number.split('.')[-1] if '.' in variant_task.part_number else None
+                                # Variants should inherit from milestone_customizations first, then be overridden by specific extra_arg customizations
+                                variant_task.variant_customizations.update(milestone_customizations)
+                                variant_task.variant_customizations.update(extra_arg_entry["customizations"])
+                                
+                                final_tasks_for_milestone.append(variant_task)
+                                original_id_to_new_ids_map.setdefault(original_base_task.id, []).append(variant_task.id)
+                        elif original_base_task.part_number != extra_arg_entry["part_number"]:
+                            # Case: extra_arg_entry is a string (e.g., "60010.1") or a dict without 'customizations' key
+                            # These variants still get milestone-level customizations
+                            variant_task = copy.deepcopy(original_base_task)
+                            variant_task.id = self._next_task_id
+                            variant_task.milestone_id = milestone_data.get('milestone_id') # Assign milestone_id
+                            print(f"DEBUG: Creating variant task for original {original_base_task.id} to new ID {variant_task.id}")
+                            self._next_task_id += 1
+                            
+                            variant_task.part_number = str(extra_arg_entry["part_number"])
+                            variant_task.variant_name = variant_task.part_number.split('.')[-1] if '.' in variant_task.part_number else None
+                            # Inherit milestone-level customizations
+                            variant_task.variant_customizations.update(milestone_customizations) 
+                            
+                            final_tasks_for_milestone.append(variant_task)
+                            original_id_to_new_ids_map.setdefault(original_base_task.id, []).append(variant_task.id)
+                elif original_base_task.part_number not in part_number_to_extra_args:
+                    # If there are no extra_args for this part number, and it's not a variant
+                    # but the overall milestone has customizations, ensure they are applied.
+                    # This case is handled by the default update on main_task, but explicitly
+                    # clarifying the logic path here. No action needed as main_task already got it.
+                    pass
 
-                        # Create a new variant task
-                        variant_task = copy.deepcopy(original_base_task)
-                        variant_task.id = self._next_task_id
-                        print(f"DEBUG: Creating variant task for original {original_base_task.id} to new ID {variant_task.id}")
-                        self._next_task_id += 1
-                        
-                        variant_task.part_number = str(extra_arg_entry["part_number"])
-                        variant_task.variant_name = variant_task.part_number.split('.')[-1] if '.' in variant_task.part_number else None
-                        variant_task.variant_customizations = extra_arg_entry["customizations"]
-
-                        final_tasks_for_milestone.append(variant_task)
-                        original_id_to_new_ids_map.setdefault(original_base_task.id, []).append(variant_task.id)
 
 
             print(f"DEBUG: original_id_to_new_ids_map for milestone '{milestone_data.get('milestone_name')}': {original_id_to_new_ids_map}")
@@ -944,9 +974,15 @@ class ProjectSchedule:
         Exports all tasks with their related information to a CSV file.
         """
         try:
+            # Collect all unique customization keys first
+            all_customization_keys = set()
+            for task in self.tasks:
+                if task.variant_customizations:
+                    all_customization_keys.update(task.variant_customizations.keys())
+            
             data = []
             for task in self.tasks:
-                data.append({
+                row = {
                     'Task ID': task.id,
                     'Part Number': task.part_number,
                     'Task Name': task.name,
@@ -957,9 +993,20 @@ class ProjectSchedule:
                     'End Date': task.end_date.strftime('%Y-%m-%d %H:%M') if task.end_date else '',
                     'Predecessor IDs': ', '.join(str(p.id) for p in task.predecessors),
                     'Successor IDs': ', '.join(str(s.id) for s in task.successors_tasks),
-                    'Variant Name': task.variant_name if task.variant_name else '',
-                    'Variant Customizations': json.dumps(task.variant_customizations) if task.variant_customizations else '{}'
-                })
+                    'Variant Name': task.variant_name if task.variant_name else ''
+                }
+                
+                # Add Milestone ID column
+                if task.task_type.strategy == "consolidated":
+                    row['Milestone ID'] = '' # Consolidated drawings have empty milestone ID
+                else:
+                    row['Milestone ID'] = task.milestone_id if task.milestone_id else ''
+                
+                # Add dynamic customization columns
+                for key in all_customization_keys:
+                    row[f'Customization_{key}'] = task.variant_customizations.get(key, '')
+                
+                data.append(row)
 
             df = pd.DataFrame(data)
             df.to_csv(file_path, index=False)

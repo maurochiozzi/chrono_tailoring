@@ -7,7 +7,8 @@ class Task:
     def __init__(self, id: int, part_number: str,
                  name: str, successors_str: str, task_type: 'TaskType',
                  variant_name: Optional[str] = None,
-                 variant_customizations: Optional[Dict[str, Any]] = None):
+                 variant_customizations: Optional[Dict[str, Any]] = None,
+                 milestone_id: Optional[Any] = None):
         self.id = int(id)
         self.part_number = part_number
         self.name = name
@@ -21,6 +22,7 @@ class Task:
         self.duration: int = 10
         self.variant_name = variant_name
         self.variant_customizations = variant_customizations if variant_customizations is not None else {}
+        self.milestone_id = milestone_id
 
 
     def _parse_successor_ids(self, successors_str: str) -> List[int]:
