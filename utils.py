@@ -309,10 +309,9 @@ def plot_resource_vs_duration(
         builtins.print = _suppress_print
 
         temp_project_schedule = ProjectSchedule(
-            task_csv_path=task_csv_path, # Pass the original task CSV path
+            project_requirements_path, # Now a positional argument
             num_resources=num_res,
             customization_overview_csv_path=customization_overview_csv_path,
-            project_requirements_path=project_requirements_path, # Ensure project requirements path is passed
             holidays_path=holidays_path # Pass holidays path
         )
         # Restore print

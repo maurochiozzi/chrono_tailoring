@@ -64,6 +64,7 @@ class TaskType:
 
 # Initialize predefined TaskType instances after class definition
 TaskType.DRAWING = TaskType(description="drawing", strategy="1")
+TaskType.MILESTONE = TaskType(description="milestone", strategy="1")
 
 class CustomizationType:
     def __init__(self, name: str, file_path: str):
@@ -72,3 +73,13 @@ class CustomizationType:
     
     def __repr__(self):
         return f"CustomizationType(name='{self.name}', file_path='{self.file_path}')"
+
+class ProjectMilestone:
+    def __init__(self, milestone_id: Any, name: str, milestone_data: Dict[str, Any]):
+        self.milestone_id = milestone_id
+        self.name = name
+        self.milestone_data = milestone_data
+        self.tasks: List[Task] = []
+
+    def __repr__(self):
+        return f"ProjectMilestone(id={self.milestone_id}, name='{self.name}', tasks_count={len(self.tasks)})"

@@ -19,10 +19,9 @@ def simulate_project_schedule(num_resources: int = 2):
 
     # Initialize ProjectSchedule
     project_schedule = ProjectSchedule(
-        task_csv_path=task_csv_path,
+        project_requirements_path, # Now a positional argument
         num_resources=num_resources,
         customization_overview_csv_path=customization_overview_csv_path,
-        project_requirements_path=project_requirements_path,
         holidays_path=holidays_path,
         project_start_date=datetime.strptime(config.PROJECT_START_DATE_STR, '%Y-%m-%d')
     )

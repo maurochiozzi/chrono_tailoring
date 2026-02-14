@@ -1,0 +1,27 @@
+[
+  {
+    "milestone_id": 1,
+    "milestone_name": "Cabinet Assembly",
+    "customizations": {
+      "color": "red",
+      "length": 576
+    },
+    "extra_args": [
+      {
+        "part_number": "60010.1",
+        "customizations": {
+          "color": "red",
+          "length": 576
+        }
+      },
+      {
+        "part_number": "60010.2",
+        "customizations": {
+          "color": "blue"
+        }
+      },{
+        "part_number": "60010.3"
+      }
+    ]
+  }
+]
