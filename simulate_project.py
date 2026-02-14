@@ -38,17 +38,23 @@ def simulate_project_schedule(num_resources: int = 2):
 
     # Export to Mermaid Graph
     print(f"\n--- Exporting Task Flow to Mermaid Graph (Full Detail) ---")
-    export_tasks_to_mermaid_graph(project_schedule.tasks, Path("task_flow.mmd"), detail_level='full')
+    export_tasks_to_mermaid_graph(project_schedule.milestones, Path("task_flow.mmd"), detail_level='full')
 
     print(f"\n--- Exporting Task Flow to Mermaid Graph (High-Level by Type) ---")
-    export_tasks_to_mermaid_graph(project_schedule.tasks, Path("task_flow_high_level.mmd"), detail_level='type')
+    export_tasks_to_mermaid_graph(project_schedule.milestones, Path("task_flow_high_level.mmd"), detail_level='type')
+
+    print(f"\n--- Exporting Task Flow to Mermaid Graph (Milestone Level) ---")
+    export_tasks_to_mermaid_graph(project_schedule.milestones, Path("task_flow_milestone_level.mmd"), detail_level='milestone')
 
     # Export to Mermaid Gantt Chart
     print(f"\n--- Exporting Task Flow to Mermaid Gantt Chart (Full Detail) ---")
-    export_tasks_to_mermaid_gantt(project_schedule.tasks, Path("task_flow_gantt.mmd"), detail_level='full', project_requirements_data=project_schedule.project_requirements_data)
+    export_tasks_to_mermaid_gantt(project_schedule.milestones, Path("task_flow_gantt.mmd"), detail_level='full')
 
     print(f"\n--- Exporting Task Flow to Mermaid Gantt Chart (High-Level by Type) ---")
-    export_tasks_to_mermaid_gantt(project_schedule.tasks, Path("task_flow_gantt_high_level.mmd"), detail_level='type', project_requirements_data=project_schedule.project_requirements_data)
+    export_tasks_to_mermaid_gantt(project_schedule.milestones, Path("task_flow_gantt_high_level.mmd"), detail_level='type')
+
+    print(f"\n--- Exporting Task Flow to Mermaid Gantt Chart (Milestone Type Summary) ---")
+    export_tasks_to_mermaid_gantt(project_schedule.milestones, Path("task_flow_gantt_milestone_type_summary.mmd"), detail_level='milestone_type_summary')
 
     # Plot resource vs duration
     plot_resource_vs_duration(

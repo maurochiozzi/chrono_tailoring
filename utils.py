@@ -43,12 +43,16 @@ def update_customization_overview_csv(file_path: Path):
     except Exception as e:
         print(f"An error occurred while updating {file_path}: {e}")
 
-def export_tasks_to_mermaid_graph(tasks: List[Task], output_file_path: Optional[Path] = None, detail_level: str = 'full') -> str:
+def export_tasks_to_mermaid_graph(milestones: List[ProjectMilestone], output_file_path: Optional[Path] = None, detail_level: str = 'full') -> str:
     """
-    Generates a Mermaid flowchart (graph TD) representation of tasks.
+    Generates a Mermaid flowchart (graph TD) representation of tasks, grouped by milestone.
     Can generate a detailed graph of individual tasks or a high-level graph based on task types.
     """
     mermaid_lines = ["graph TD"]
+    all_tasks = [task for milestone in milestones for task in milestone.tasks]
+
+    def sanitize_id(text: str) -> str:
+        return text.replace(" ", "_").replace("-", "_").replace(".", "").lower()
 
     if detail_level == 'full':
         node_styles = [] # Collect style directives here
@@ -62,72 +66,122 @@ def export_tasks_to_mermaid_graph(tasks: List[Task], output_file_path: Optional[
             'milestone': 'fill:#C6F'       # Purple
         }
 
-        # Define nodes with details and shapes for individual tasks
-        for task in tasks:
-            init_date_str = task.init_date.strftime('%Y-%m-%d') if task.init_date else 'None'
-            end_date_str = task.end_date.strftime('%Y-%m-%d') if task.end_date else 'None'
-
-            shape_map = {
-                'release': '[[{}]]',
-                'drawing': '({})',
-                'part_model': '({})',
-                'part_list': '{{{}}}',
-                'milestone': '(( {} ))'
-            }
-            shape_template = shape_map.get(task.task_type.description, '[{}]')
-
-            node_label_content = (f"{task.name}<br>"
-                                  f"Type: {task.task_type.description}<br>"
-                                  f"Part No: {task.part_number}<br>"
-                                  f"Init: {init_date_str}<br>"
-                                  f"End: {end_date_str}<br>"
-                                  f"Dur: {task.duration}min")
+        for milestone in milestones:
+            mermaid_lines.append(f"    subgraph M_{milestone.milestone_id}[Milestone {milestone.milestone_id} - {milestone.name}]")
             
-            node_definition = f"{task.id}{shape_template.format(node_label_content)}"
-            mermaid_lines.append(f"    {node_definition}")
+            # Define nodes with details and shapes for individual tasks within the milestone
+            for task in milestone.tasks:
+                init_date_str = task.init_date.strftime('%Y-%m-%d') if task.init_date else 'None'
+                end_date_str = task.end_date.strftime('%Y-%m-%d') if task.end_date else 'None'
 
-            # Add style directive for the node
-            color_style = task_type_colors.get(task.task_type.description, 'fill:#CCC') # Default light gray
-            node_styles.append(f"    style {task.id} {color_style}")
+                shape_map = {
+                    'release': '[[{}]]',
+                    'drawing': '({})',
+                    'part_model': '({})',
+                    'part_list': '{{{}}}',
+                    'milestone': '(( {} ))'
+                }
+                shape_template = shape_map.get(task.task_type.description, '[{}]')
 
-        # Define edges (dependencies) for individual tasks
-        for task in tasks:
+                node_label_content = (f"{task.name}<br>"
+                                      f"Type: {task.task_type.description}<br>"
+                                      f"Part No: {task.part_number}<br>"
+                                      f"Init: {init_date_str}<br>"
+                                      f"End: {end_date_str}<br>"
+                                      f"Dur: {task.duration}min")
+                
+                node_definition = f"{task.id}{shape_template.format(node_label_content)}"
+                mermaid_lines.append(f"        {node_definition}")
+
+                # Add style directive for the node
+                color_style = task_type_colors.get(task.task_type.description, 'fill:#CCC') # Default light gray
+                node_styles.append(f"        style {task.id} {color_style}")
+            mermaid_lines.append("    end") # End subgraph
+        
+        # Define edges (dependencies) for individual tasks across all tasks
+        for task in all_tasks:
             for successor_task in task.successors_tasks:
-                mermaid_lines.append(f"    {task.id} --> {successor_task.id}")
+                # Only draw edge if successor is also in a known milestone task list
+                # This prevents drawing edges to tasks that might have been filtered out or not yet processed.
+                if any(s_task.id == successor_task.id for m in milestones for s_task in m.tasks):
+                    mermaid_lines.append(f"    {task.id} --> {successor_task.id}")
         
         # Append node styles after all nodes and edges
         mermaid_lines.extend(node_styles)
 
     elif detail_level == 'type':
-        # Collect unique task types and their connections
-        unique_task_types = set()
-        type_dependencies = set() # Stores (source_type_desc, target_type_desc)
-
-        for task in tasks:
-            source_type_desc = task.task_type.description
-            unique_task_types.add(source_type_desc)
-
-            for successor_task in task.successors_tasks:
-                target_type_desc = successor_task.task_type.description
-                unique_task_types.add(target_type_desc)
-                type_dependencies.add((source_type_desc, target_type_desc))
-
-        # Define nodes for each unique task type description
         def sanitize_id(text: str) -> str:
             return text.replace(" ", "_").replace("-", "_").replace(".", "").lower()
 
-        for type_desc in sorted(list(unique_task_types)):
-            sanitized_id = sanitize_id(type_desc)
-            mermaid_lines.append(f"    {sanitized_id}[{type_desc}]")
+        for milestone in milestones:
+            mermaid_lines.append(f"    subgraph M_{milestone.milestone_id}[Milestone {milestone.milestone_id} - {milestone.name} (Types)]")
+            
+            unique_task_types_in_milestone = set()
+            type_dependencies_in_milestone = set() # Stores (source_type_desc, target_type_desc)
 
-        # Define edges between task types
-        for source_type_desc, target_type_desc in sorted(list(type_dependencies)):
-            sanitized_source_id = sanitize_id(source_type_desc)
-            sanitized_target_id = sanitize_id(target_type_desc)
-            mermaid_lines.append(f"    {sanitized_source_id} --> {sanitized_target_id}")
+            for task in milestone.tasks:
+                source_type_desc = task.task_type.description
+                unique_task_types_in_milestone.add(source_type_desc)
+
+                for successor_task in task.successors_tasks:
+                    # Check if successor task also belongs to the current milestone
+                    if successor_task.milestone_id == milestone.milestone_id:
+                        target_type_desc = successor_task.task_type.description
+                        unique_task_types_in_milestone.add(target_type_desc)
+                        type_dependencies_in_milestone.add((source_type_desc, target_type_desc))
+
+            # Define nodes for each unique task type description within this milestone
+            for type_desc in sorted(list(unique_task_types_in_milestone)):
+                sanitized_id = sanitize_id(type_desc)
+                # Prefix with milestone ID to ensure uniqueness across milestones if types repeat
+                mermaid_lines.append(f"        {sanitized_id}_{milestone.milestone_id}[{type_desc}]")
+
+            # Define edges between task types within this milestone
+            for source_type_desc, target_type_desc in sorted(list(type_dependencies_in_milestone)):
+                sanitized_source_id = sanitize_id(source_type_desc)
+                sanitized_target_id = sanitize_id(target_type_desc)
+                mermaid_lines.append(f"        {sanitized_source_id}_{milestone.milestone_id} --> {sanitized_target_id}_{milestone.milestone_id}")
+            mermaid_lines.append("    end") # End subgraph
+        
+        # Add global dependencies between milestones (if a type in one milestone depends on a type in another)
+        # This part requires iterating through all_tasks to find cross-milestone type dependencies
+        global_type_dependencies = set()
+        for task in all_tasks:
+            for successor_task in task.successors_tasks:
+                if task.milestone_id != successor_task.milestone_id:
+                    source_type_desc = task.task_type.description
+                    target_type_desc = successor_task.task_type.description
+                    global_type_dependencies.add((task.milestone_id, source_type_desc, successor_task.milestone_id, target_type_desc))
+
+        for source_mid, source_td, target_mid, target_td in sorted(list(global_type_dependencies)):
+            sanitized_source_id_node = sanitize_id(source_td) + f"_{source_mid}"
+            sanitized_target_id_node = sanitize_id(target_td) + f"_{target_mid}"
+            mermaid_lines.append(f"    {sanitized_source_id_node} --> {sanitized_target_id_node}")
+
+    elif detail_level == 'milestone':
+        milestone_dependencies = set()
+        # Create a mapping from task ID to its milestone ID for efficient lookup
+        task_to_milestone_map = {task.id: milestone.milestone_id for milestone in milestones for task in milestone.tasks}
+
+        for milestone in milestones:
+            # Add node for the milestone itself
+            sanitized_milestone_id = sanitize_id(str(milestone.milestone_id))
+            mermaid_lines.append(f"    {sanitized_milestone_id}[Milestone {milestone.milestone_id} - {milestone.name}]")
+
+            for task in milestone.tasks:
+                for successor_task in task.successors_tasks:
+                    successor_milestone_id = task_to_milestone_map.get(successor_task.id)
+                    if successor_milestone_id and successor_milestone_id != milestone.milestone_id:
+                        milestone_dependencies.add((milestone.milestone_id, successor_milestone_id))
+        
+        # Add edges between milestones
+        for source_milestone_id, target_milestone_id in sorted(list(milestone_dependencies), key=lambda x: (x[0], x[1])):
+            sanitized_source_milestone_id = sanitize_id(str(source_milestone_id))
+            sanitized_target_milestone_id = sanitize_id(str(target_milestone_id))
+            mermaid_lines.append(f"    {sanitized_source_milestone_id} --> {sanitized_target_milestone_id}")
 
     else:
-        raise ValueError(f"Unknown detail_level: {detail_level}. Expected 'full' or 'type'.")
+        raise ValueError(f"Unknown detail_level: {detail_level}. Expected 'full', 'type', or 'milestone'.")
             
     mermaid_syntax = "\n".join(mermaid_lines)
 
@@ -140,9 +194,9 @@ def export_tasks_to_mermaid_graph(tasks: List[Task], output_file_path: Optional[
             
     return mermaid_syntax
 
-def export_tasks_to_mermaid_gantt(tasks: List[Task], output_file_path: Optional[Path] = None, detail_level: str = 'full', project_requirements_data: Optional[List[Dict[str, Any]]] = None) -> str:
+def export_tasks_to_mermaid_gantt(milestones: List[ProjectMilestone], output_file_path: Optional[Path] = None, detail_level: str = 'full') -> str:
     """
-    Generates a Mermaid Gantt chart representation of tasks.
+    Generates a Mermaid Gantt chart representation of tasks, grouped by milestone.
     Can generate a detailed chart of individual tasks or a high-level chart based on task types.
     """
     mermaid_lines = [
@@ -158,51 +212,54 @@ def export_tasks_to_mermaid_gantt(tasks: List[Task], output_file_path: Optional[
 
     # SECTION: Full Detail Gantt Chart
     if detail_level == 'full':
-        mermaid_lines.append("    section All Tasks")
-        
-        # Get current date for 'active' and 'done' status
-        # Using a fixed date or project_start_date for consistent rendering if actual current date is not desired
-        reference_date = datetime.now().date() 
-
-        for task in tasks:
-            init_date_str = task.init_date.strftime('%Y-%m-%d') if task.init_date else 'None'
-            end_date_str = task.end_date.strftime('%Y-%m-%d') if task.end_date else 'None'
+        for milestone in milestones:
+            mermaid_lines.append(f"    section Milestone {milestone.milestone_id} - {milestone.name}")
             
-            task_duration_mermaid_format = ""
-            if task.duration is not None:
-                total_minutes = task.duration
-                days = total_minutes // (8 * 60) # Assuming 8 working hours per day
-                hours = (total_minutes % (8 * 60)) // 60
-                minutes = total_minutes % 60
+            # Get current date for 'active' and 'done' status
+            # Using a fixed date or project_start_date for consistent rendering if actual current date is not desired
+            reference_date = datetime.now().date() 
+
+            for task in milestone.tasks:
+                init_date_str = task.init_date.strftime('%Y-%m-%d') if task.init_date else 'None'
+                end_date_str = task.end_date.strftime('%Y-%m-%d') if task.end_date else 'None'
                 
-                if days > 0:
-                    task_duration_mermaid_format += f"{days}d "
-                if hours > 0:
-                    task_duration_mermaid_format += f"{hours}h "
-                if minutes > 0:
-                    task_duration_mermaid_format += f"{minutes}m "
+                task_duration_mermaid_format = ""
+                if task.duration is not None:
+                    total_minutes = task.duration
+                    days = total_minutes // (8 * 60) # Assuming 8 working hours per day
+                    hours = (total_minutes % (8 * 60)) // 60
+                    minutes = total_minutes % 60
+                    
+                    if days > 0:
+                        task_duration_mermaid_format += f"{days}d "
+                    if hours > 0:
+                        task_duration_mermaid_format += f"{hours}h "
+                    if minutes > 0:
+                        task_duration_mermaid_format += f"{minutes}m "
+                    
+                    if not task_duration_mermaid_format: # If duration is 0
+                        task_duration_mermaid_format = "0d"
+                    else:
+                        task_duration_mermaid_format = task_duration_mermaid_format.strip()
                 
-                if not task_duration_mermaid_format: # If duration is 0
-                    task_duration_mermaid_format = "0d"
+                task_status = "" # No status prefixes
+                task_duration_mermaid_format = "0d" if task.task_type.description == "milestone" else task_duration_mermaid_format # Milestones have 0d duration
+
+                # Task label for the Gantt bar
+                task_label_gantt = f"{task.name} ({task.part_number})"
+
+                if task.init_date and task.end_date:
+                    mermaid_lines.append(f"    {task_label_gantt} :{task.id}, {init_date_str}, {end_date_str}")
                 else:
-                    task_duration_mermaid_format = task_duration_mermaid_format.strip()
-            
-            task_status = "" # No status prefixes
-            task_duration_mermaid_format = "0d" if task.task_type.description == "milestone" else task_duration_mermaid_format # Milestones have 0d duration
-
-            # Task label for the Gantt bar
-            task_label_gantt = f"{task.name} ({task.part_number})"
-
-            if task.init_date and task.end_date:
-                mermaid_lines.append(f"    {task_label_gantt} :{task.id}, {init_date_str}, {end_date_str}")
-            else:
-                mermaid_lines.append(f"    {task_label_gantt} :{task.id}, {init_date_str}, {task_duration_mermaid_format}")
+                    mermaid_lines.append(f"    {task_label_gantt} :{task.id}, {init_date_str}, {task_duration_mermaid_format}")
 
     elif detail_level == 'type':
+        # Aggregate all tasks from all milestones for type overview
+        all_tasks = [task for milestone in milestones for task in milestone.tasks]
         mermaid_lines.append("    section Task Types Overview")
         type_date_spans = {} # {type_desc: {'min_init': datetime, 'max_end': datetime, 'total_duration': timedelta}}
 
-        for task in tasks:
+        for task in all_tasks:
             type_desc = task.task_type.description
             if type_desc not in type_date_spans:
                 type_date_spans[type_desc] = {
@@ -250,14 +307,9 @@ def export_tasks_to_mermaid_gantt(tasks: List[Task], output_file_path: Optional[
 
             # Type label: "Type Name (Duration)"
             if type_desc == "milestone":
-                # Search for a milestone_name in project_requirements_data
-                milestone_label = "milestone" # Default if not found
-                if project_requirements_data:
-                    for entry in project_requirements_data:
-                        if "milestone_name" in entry:
-                            milestone_label = entry["milestone_name"]
-                            break # Take the first one found
-                type_label = milestone_label
+                # For high-level type view, the milestone task itself is a type.
+                # Just use the generic 'milestone' type_desc
+                type_label = type_desc
                 duration_mermaid_format = "0d" # Milestones have 0d duration
             else:
                 type_label = f"{type_desc} ({duration_display})"
@@ -270,6 +322,71 @@ def export_tasks_to_mermaid_gantt(tasks: List[Task], output_file_path: Optional[
             else:
                 # Fallback, similar to the example for un-dated tasks, specify an ID and duration
                 mermaid_lines.append(f"    {type_label} :{sanitize_id(type_desc)}, {duration_mermaid_format}")
+    
+    elif detail_level == 'milestone_type_summary':
+        for milestone in milestones:
+            mermaid_lines.append(f"    section {milestone.milestone_id}")
+            type_date_spans_in_milestone = {} # {type_desc: {'min_init': datetime, 'max_end': datetime, 'total_duration': timedelta}}
+
+            for task in milestone.tasks:
+                type_desc = task.task_type.description
+                if type_desc not in type_date_spans_in_milestone:
+                    type_date_spans_in_milestone[type_desc] = {
+                        'min_init': task.init_date, 
+                        'max_end': task.end_date, 
+                        'total_duration': timedelta(minutes=0)
+                    }
+                
+                # Update min_init_date for the type within this milestone
+                if task.init_date and (type_date_spans_in_milestone[type_desc]['min_init'] is None or type_date_spans_in_milestone[type_desc]['min_init'] > task.init_date):
+                    type_date_spans_in_milestone[type_desc]['min_init'] = task.init_date
+                
+                # Update max_end_date for the type within this milestone
+                if task.end_date and (type_date_spans_in_milestone[type_desc]['max_end'] is None or type_date_spans_in_milestone[type_desc]['max_end'] < task.end_date):
+                    type_date_spans_in_milestone[type_desc]['max_end'] = task.end_date
+                
+                # Sum durations for the type overview within this milestone
+                type_date_spans_in_milestone[type_desc]['total_duration'] += timedelta(minutes=task.duration)
+            
+            for type_desc in sorted(type_date_spans_in_milestone.keys()):
+                type_info = type_date_spans_in_milestone[type_desc]
+                
+                total_seconds = type_info['total_duration'].total_seconds()
+                total_minutes = int(total_seconds / 60)
+                
+                duration_parts = []
+                if total_minutes >= (8 * 60): # Full working days
+                    days = total_minutes // (8 * 60)
+                    duration_parts.append(f"{days}d")
+                    total_minutes %= (8 * 60)
+                
+                if total_minutes >= 60: # Hours
+                    hours = total_minutes // 60
+                    duration_parts.append(f"{hours}h")
+                    total_minutes %= 60
+                
+                if total_minutes > 0: # Remaining minutes
+                    duration_parts.append(f"{total_minutes}m")
+                
+                duration_display = " ".join(duration_parts) if duration_parts else "0m"
+
+                min_init_str = type_info['min_init'].strftime('%Y-%m-%d') if type_info['min_init'] else 'None'
+                max_end_str = type_info['max_end'].strftime('%Y-%m-%d') if type_info['max_end'] else 'None'
+
+                if type_desc == "milestone":
+                    type_label = str(milestone.milestone_id) # Use milestone_id as the label
+                    duration_mermaid_format = "0d"
+                    mermaid_task_id = str(milestone.milestone_id) # ID for the mermaid task
+                else:
+                    type_label = f"{type_desc} ({duration_display})"
+                    duration_mermaid_format = f"{min_init_str}, {max_end_str}"
+                    mermaid_task_id = f"{sanitize_id(type_desc)}_{milestone.milestone_id}" # Keep current ID for other types
+                
+                if type_info['min_init'] and type_info['max_end']:
+                    mermaid_lines.append(f"    {type_label} :{mermaid_task_id}, {duration_mermaid_format}")
+                else:
+                    mermaid_lines.append(f"    {type_label} :{mermaid_task_id}, {duration_mermaid_format}")
+
 
     else:
         raise ValueError(f"Unknown detail_level: {detail_level}. Expected 'full' or 'type'.")

@@ -95,6 +95,20 @@ class ProjectSchedule:
             project_start_date = datetime.strptime(config.PROJECT_START_DATE_STR, '%Y-%m-%d')
         self._calculate_task_dates(project_start_date)
 
+        # After all processing, re-populate milestone.tasks to reflect the final scheduled tasks
+        # and ensure consolidated drawing tasks are correctly associated.
+        milestone_id_to_object_map = {m.milestone_id: m for m in self.milestones}
+        for milestone in self.milestones:
+            milestone.tasks = [] # Clear existing tasks
+
+        for task in self.tasks:
+            if task.milestone_id in milestone_id_to_object_map:
+                milestone_id_to_object_map[task.milestone_id].tasks.append(task)
+            # Consolidated drawing tasks and other non-milestone-specific tasks might not have a direct milestone_id.
+            # They are part of the overall project schedule and will be included in the aggregated self.tasks.
+            # If a consolidated task needs to be explicitly linked to a specific milestone,
+            # that logic would need to be added here. For now, rely on task.milestone_id if set.
+
     # --- Internal Helper Methods ---
     def _load_project_requirements(self, file_path: Path) -> List[Dict]:
         """Reads project requirements from a JSON file."""
@@ -677,7 +691,8 @@ class ProjectSchedule:
                     part_number=base_part_number, # Use base part number for consolidated task
                     name=f"Consolidated Drawing for {base_part_number}",
                     successors_str="",
-                    task_type=TaskType(description=TaskType.DRAWING.description, strategy="consolidated")
+                    task_type=TaskType(description=TaskType.DRAWING.description, strategy="consolidated"),
+                    milestone_id=drawing_tasks[0].milestone_id if drawing_tasks else None # Inherit milestone_id
                 )
                 self._next_task_id += 1
                 
