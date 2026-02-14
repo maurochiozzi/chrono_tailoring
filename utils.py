@@ -326,28 +326,45 @@ def export_tasks_to_mermaid_gantt(milestones: List[ProjectMilestone], output_fil
     elif detail_level == 'milestone_type_summary':
         for milestone in milestones:
             mermaid_lines.append(f"    section {milestone.name}")
-            type_date_spans_in_milestone = {} # {type_desc: {'min_init': datetime, 'max_end': datetime, 'total_duration': timedelta}}
+
+            # Separate tasks into those to be summarized and those to be listed individually
+            tasks_to_summarize = []
+            individual_tasks = []
+            
+            milestone_id_as_str = str(milestone.milestone_id) # The original numerical ID for comparison
+            milestone_name_str = str(milestone.name) # The user-friendly name, e.g., "70015"
 
             for task in milestone.tasks:
+                # Check for tasks whose ID or name matches the milestone name
+                # This logic assumes the "70000 drawing task" means a task whose part_number or id is the milestone ID
+                # and its name might contain the milestone name.
+                # However, the clearest interpretation is: if a task's part_number (which I'm now using as milestone name)
+                # is the same as the milestone's name, or if its id is the milestone's id.
+                
+                # Check if task is the special 'milestone' task itself, or if its part_number is the milestone's name
+                if task.task_type.description == "milestone" or str(task.part_number) == milestone_name_str:
+                    individual_tasks.append(task)
+                else:
+                    tasks_to_summarize.append(task)
+
+            type_date_spans_in_milestone = {}
+
+            # Aggregate tasks_to_summarize
+            for task in tasks_to_summarize:
                 type_desc = task.task_type.description
                 if type_desc not in type_date_spans_in_milestone:
                     type_date_spans_in_milestone[type_desc] = {
-                        'min_init': task.init_date, 
-                        'max_end': task.end_date, 
+                        'min_init': task.init_date,
+                        'max_end': task.end_date,
                         'total_duration': timedelta(minutes=0)
                     }
-                
-                # Update min_init_date for the type within this milestone
                 if task.init_date and (type_date_spans_in_milestone[type_desc]['min_init'] is None or type_date_spans_in_milestone[type_desc]['min_init'] > task.init_date):
                     type_date_spans_in_milestone[type_desc]['min_init'] = task.init_date
-                
-                # Update max_end_date for the type within this milestone
                 if task.end_date and (type_date_spans_in_milestone[type_desc]['max_end'] is None or type_date_spans_in_milestone[type_desc]['max_end'] < task.end_date):
                     type_date_spans_in_milestone[type_desc]['max_end'] = task.end_date
-                
-                # Sum durations for the type overview within this milestone
                 type_date_spans_in_milestone[type_desc]['total_duration'] += timedelta(minutes=task.duration)
-            
+
+            # Generate Gantt lines for summarized tasks
             for type_desc in sorted(type_date_spans_in_milestone.keys()):
                 type_info = type_date_spans_in_milestone[type_desc]
                 
@@ -355,34 +372,51 @@ def export_tasks_to_mermaid_gantt(milestones: List[ProjectMilestone], output_fil
                 total_minutes = int(total_seconds / 60)
                 
                 duration_parts = []
-                if total_minutes >= (8 * 60): # Full working days
-                    days = total_minutes // (8 * 60)
-                    duration_parts.append(f"{days}d")
-                    total_minutes %= (8 * 60)
-                
-                if total_minutes >= 60: # Hours
-                    hours = total_minutes // 60
-                    duration_parts.append(f"{hours}h")
-                    total_minutes %= 60
-                
-                if total_minutes > 0: # Remaining minutes
-                    duration_parts.append(f"{total_minutes}m")
-                
+                if total_minutes >= (8 * 60): days = total_minutes // (8 * 60); duration_parts.append(f"{days}d"); total_minutes %= (8 * 60)
+                if total_minutes >= 60: hours = total_minutes // 60; duration_parts.append(f"{hours}h"); total_minutes %= 60
+                if total_minutes > 0: duration_parts.append(f"{total_minutes}m")
                 duration_display = " ".join(duration_parts) if duration_parts else "0m"
 
                 min_init_str = type_info['min_init'].strftime('%Y-%m-%d') if type_info['min_init'] else 'None'
                 max_end_str = type_info['max_end'].strftime('%Y-%m-%d') if type_info['max_end'] else 'None'
 
-                if type_desc == "milestone":
-                    type_label = str(milestone.name) # Use milestone.name as the label
-                    duration_mermaid_format = "0d"
-                    mermaid_task_id = "milestone" # ID for the mermaid task
-                else:
-                    type_label = f"{type_desc} {milestone.milestone_id} ({duration_display})"
-                    duration_mermaid_format = f"{min_init_str}, {max_end_str}"
-                    mermaid_task_id = f"{sanitize_id(type_desc)}_{milestone.milestone_id}" # Keep current ID for other types
+                type_label = f"{type_desc} {milestone.name} ({duration_display})" # Use milestone.name
+                duration_mermaid_format = f"{min_init_str}, {max_end_str}"
+                mermaid_task_id = f"{sanitize_id(type_desc)}_{milestone.name}" # Use milestone.name
                 
                 if type_info['min_init'] and type_info['max_end']:
+                    mermaid_lines.append(f"    {type_label} :{mermaid_task_id}, {duration_mermaid_format}")
+                else:
+                    mermaid_lines.append(f"    {type_label} :{mermaid_task_id}, {duration_mermaid_format}")
+
+            # Generate Gantt lines for individual tasks (those not summarized)
+            for task in individual_tasks:
+                init_date_str = task.init_date.strftime('%Y-%m-%d') if task.init_date else 'None'
+                end_date_str = task.end_date.strftime('%Y-%m-%d') if task.end_date else 'None'
+                
+                task_duration_mermaid_format = ""
+                if task.duration is not None:
+                    total_minutes = task.duration
+                    days = total_minutes // (8 * 60)
+                    hours = (total_minutes % (8 * 60)) // 60
+                    minutes = total_minutes % 60
+                    
+                    if days > 0: task_duration_mermaid_format += f"{days}d "
+                    if hours > 0: task_duration_mermaid_format += f"{hours}h "
+                    if minutes > 0: task_duration_mermaid_format += f"{minutes}m "
+                    task_duration_mermaid_format = task_duration_mermaid_format.strip() if task_duration_mermaid_format else "0d"
+
+                if task.task_type.description == "milestone":
+                    type_label = str(milestone.name)
+                    duration_mermaid_format = "0d"
+                    mermaid_task_id = "milestone"
+                else:
+                    # For individual tasks, use task.name and task.id for unique identification
+                    type_label = f"{task.name} ({task_duration_mermaid_format})" # Include duration in label
+                    duration_mermaid_format = f"{init_date_str}, {end_date_str}"
+                    mermaid_task_id = str(task.id) # Use the task's unique ID
+                    
+                if task.init_date and task.end_date:
                     mermaid_lines.append(f"    {type_label} :{mermaid_task_id}, {duration_mermaid_format}")
                 else:
                     mermaid_lines.append(f"    {type_label} :{mermaid_task_id}, {duration_mermaid_format}")
