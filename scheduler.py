@@ -475,11 +475,18 @@ class ProjectSchedule:
                     else:
                         print(f"Error: Successor task {successor_id} for task {task.id} not found in new_id_to_task_map during final rebuild.")
 
-            # Ensure milestone task part_number is correct for final output
+            # Ensure all relevant tasks have their part_number updated to the milestone_id
             for task in final_tasks_for_milestone:
-                if task.task_type.description == TaskType.MILESTONE.description and task.part_number == "70000":
-                    task.part_number = milestone_data.get('milestone_name', "UNKNOWN_MILESTONE")
-                    print(f"DEBUG: Final check: Milestone task {task.id} part_number set to '{task.part_number}'")
+                # Update part_number for tasks that initially have "70000" and are not consolidated drawings
+                if task.part_number == "70000" and not \
+                   (task.task_type.description == TaskType.DRAWING.description and task.task_type.strategy == "consolidated"):
+                    task.part_number = str(milestone_data.get('milestone_id', "UNKNOWN_MILESTONE"))
+                    print(f"DEBUG: Final check: Task {task.id} part_number set to '{task.part_number}' (from 70000)")
+                # For the special case of the milestone task itself, ensure it's set correctly.
+                # This ensures the milestone task specifically gets its ID, even if its original part_number wasn't "70000".
+                if task.task_type.description == TaskType.MILESTONE.description:
+                    task.part_number = str(milestone_data.get('milestone_id', "UNKNOWN_MILESTONE"))
+                    print(f"DEBUG: Final check: Milestone task {task.id} part_number explicitly set to '{task.part_number}'")
 
 
             print(f"DEBUG: Final tasks for milestone '{milestone_data.get('milestone_name')}':")

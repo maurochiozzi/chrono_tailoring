@@ -378,7 +378,7 @@ def export_tasks_to_mermaid_gantt(milestones: List[ProjectMilestone], output_fil
                     duration_mermaid_format = "0d"
                     mermaid_task_id = str(milestone.milestone_id) # ID for the mermaid task
                 else:
-                    type_label = f"{type_desc} ({duration_display})"
+                    type_label = f"{type_desc} {milestone.milestone_id} ({duration_display})"
                     duration_mermaid_format = f"{min_init_str}, {max_end_str}"
                     mermaid_task_id = f"{sanitize_id(type_desc)}_{milestone.milestone_id}" # Keep current ID for other types
                 
