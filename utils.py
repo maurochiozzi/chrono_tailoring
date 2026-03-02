@@ -464,19 +464,29 @@ def plot_resource_vs_duration(
     if DEBUG:
         print(f"\n--- Analyzing Resource vs. Duration ({min_resources} to {max_resources} Resources) ---")
     
+    # Create base schedule once outside the loop to avoid severe repetitive I/O
+    with open(os.devnull, 'w') as f, redirect_stdout(f):
+        base_schedule = ProjectSchedule(
+            project_requirements_path, # Now a positional argument
+            num_resources=min_resources,
+            customization_overview_csv_path=customization_overview_csv_path,
+            holidays_path=holidays_path # Pass holidays path
+        )
+        # Import datetime and config inside function or ensure they are available at module level
+        import config
+        from datetime import datetime
+        project_start_date = datetime.strptime(config.PROJECT_START_DATE_STR, '%Y-%m-%d')
+
     for num_res in range(min_resources, max_resources + 1):
         # Temporarily suppress print statements from ProjectSchedule and its helpers
         with open(os.devnull, 'w') as f, redirect_stdout(f):
-            temp_project_schedule = ProjectSchedule(
-                project_requirements_path, # Now a positional argument
-                num_resources=num_res,
-                customization_overview_csv_path=customization_overview_csv_path,
-                holidays_path=holidays_path # Pass holidays path
-            )
+            base_schedule.num_resources = num_res
+            for task in base_schedule.tasks:
+                task.init_date = None
+                task.end_date = None
+            base_schedule._calculate_task_dates(project_start_date)
 
-
-
-        total_duration = temp_project_schedule.get_total_duration()
+        total_duration = base_schedule.get_total_duration()
         if total_duration:
             # Convert timedelta to total minutes for plotting
             total_duration_minutes = total_duration.total_seconds() / 60
