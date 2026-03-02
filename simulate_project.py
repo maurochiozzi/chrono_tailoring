@@ -4,6 +4,7 @@ from datetime import datetime
 from pathlib import Path
 
 import config
+from config import DEBUG
 from scheduler import ProjectSchedule
 from utils import update_customization_overview_csv, export_tasks_to_mermaid_graph, \
                     export_tasks_to_mermaid_gantt, plot_resource_vs_duration
@@ -26,12 +27,13 @@ def simulate_project_schedule(num_resources: int = 2):
         project_start_date=datetime.strptime(config.PROJECT_START_DATE_STR, '%Y-%m-%d')
     )
 
-    print(f"\n--- Project Schedule Summary ({num_resources} Resources) ---")
-    print(project_schedule)
+    if DEBUG:
+        print(f"\n--- Project Schedule Summary ({num_resources} Resources) ---")
+        print(project_schedule)
 
-    print(f"\n--- Customization Types ---")
-    for ct in project_schedule.customization_types:
-        print(ct)
+        print(f"\n--- Customization Types ---")
+        for ct in project_schedule.customization_types:
+            print(ct)
 
     print(f"\n--- Updating Customization Overview CSV ---")
     update_customization_overview_csv(customization_overview_csv_path)
@@ -60,7 +62,8 @@ def simulate_project_schedule(num_resources: int = 2):
     plot_resource_vs_duration(
         task_csv_path=task_csv_path,
         customization_overview_csv_path=customization_overview_csv_path,
-        max_resources=1,
+        min_resources=5,
+        max_resources=15,
         output_plot_path=Path("resource_vs_duration.png"),
         project_requirements_path=project_requirements_path,
         holidays_path=holidays_path

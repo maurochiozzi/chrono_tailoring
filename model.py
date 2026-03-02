@@ -2,6 +2,7 @@
 
 from typing import List, Optional, Dict, Any
 from datetime import datetime
+from config import DEBUG
 
 class Task:
     def __init__(self, id: int, part_number: str,
@@ -45,6 +46,22 @@ class Task:
             repr_str += f", variant_customizations={self.variant_customizations}"
         repr_str += ")"
         return repr_str
+
+    def clone(self) -> 'Task':
+        """Creates a shallow copy without duplicating the entire task graph."""
+        new_task = Task(
+            id=self.id,
+            part_number=self.part_number,
+            name=self.name,
+            successors_str=self.successors_str,
+            task_type=self.task_type,
+            variant_name=self.variant_name,
+            variant_customizations=self.variant_customizations.copy() if self.variant_customizations else {},
+            milestone_id=self.milestone_id
+        )
+        new_task.successors_ids = self.successors_ids.copy()
+        new_task.duration = self.duration
+        return new_task
 
     def resolve_successors(self, all_tasks_map: Dict[int, 'Task']):
         """Resolves successor IDs into actual Task objects."""

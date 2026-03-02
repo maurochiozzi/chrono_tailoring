@@ -14,3 +14,6 @@ HOLIDAYS_PATH = BASE_DIR / 'holidays.csv'
 
 # Other configuration settings can be added here
 PROJECT_START_DATE_STR = "2026-02-08"
+
+# Debugging flag
+DEBUG = False

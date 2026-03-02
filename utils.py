@@ -6,6 +6,7 @@ from typing import List, Optional, Any, Dict
 from datetime import datetime, timedelta
 from pathlib import Path
 import builtins # Import builtins module
+from config import DEBUG
 
 from model import Task
 from scheduler import ProjectSchedule # Import ProjectSchedule for plot_resource_vs_duration
@@ -36,7 +37,8 @@ def update_customization_overview_csv(file_path: Path):
         
         # Write the updated DataFrame back to the CSV
         df.to_csv(file_path, sep=';', index=False)
-        print(f"Updated {file_path} with 'path' and 'status' columns.")
+        if DEBUG:
+            print(f"Updated {file_path} with 'path' and 'status' columns.")
 
     except FileNotFoundError:
         print(f"Error: Customization overview file not found at {file_path}")
@@ -188,7 +190,8 @@ def export_tasks_to_mermaid_graph(milestones: List[ProjectMilestone], output_fil
     if output_file_path:
         try:
             output_file_path.write_text(mermaid_syntax)
-            print(f"Mermaid graph exported to: {output_file_path}")
+            if DEBUG:
+                print(f"Mermaid graph exported to: {output_file_path}")
         except Exception as e:
             print(f"Error exporting Mermaid graph to {output_file_path}: {e}")
             
@@ -435,7 +438,8 @@ def export_tasks_to_mermaid_gantt(milestones: List[ProjectMilestone], output_fil
     if output_file_path:
         try:
             output_file_path.write_text(mermaid_syntax)
-            print(f"Mermaid Gantt chart exported to: {output_file_path}")
+            if DEBUG:
+                print(f"Mermaid Gantt chart exported to: {output_file_path}")
         except Exception as e:
             print(f"Error exporting Mermaid Gantt chart to {output_file_path}: {e}") # Corrected this line
             
@@ -445,6 +449,7 @@ def plot_resource_vs_duration(
     task_csv_path: Path,
     customization_overview_csv_path: Optional[Path] = None,
     max_resources: int = 10,
+    min_resources: int = 1,
     output_plot_path: Optional[Path] = None,
     project_requirements_path: Optional[Path] = None,
     holidays_path: Optional[Path] = None
@@ -455,9 +460,10 @@ def plot_resource_vs_duration(
     num_resources_list = []
     total_duration_minutes_list = []
 
-    print(f"\n--- Analyzing Resource vs. Duration (1 to {max_resources} Resources) ---")
+    if DEBUG:
+        print(f"\n--- Analyzing Resource vs. Duration ({min_resources} to {max_resources} Resources) ---")
     
-    for num_res in range(1, max_resources + 1):
+    for num_res in range(min_resources, max_resources + 1):
         # Temporarily suppress print statements from ProjectSchedule and its helpers
         _original_print = builtins.print
         def _suppress_print(*args, **kwargs):
@@ -481,9 +487,11 @@ def plot_resource_vs_duration(
             total_duration_minutes = total_duration.total_seconds() / 60
             num_resources_list.append(num_res)
             total_duration_minutes_list.append(total_duration_minutes)
-            print(f"  Resources: {num_res}, Total Duration: {total_duration_minutes:.2f} minutes")
+            if DEBUG:
+                print(f"  Resources: {num_res}, Total Duration: {total_duration_minutes:.2f} minutes")
         else:
-            print(f"  Resources: {num_res}, Could not calculate total duration.")
+            if DEBUG:
+                print(f"  Resources: {num_res}, Could not calculate total duration.")
 
     if MATPLOTLIB_AVAILABLE:
         plt.figure(figsize=(10, 6))
@@ -497,10 +505,12 @@ def plot_resource_vs_duration(
 
         if output_plot_path:
             plt.savefig(output_plot_path)
-            print(f"Plot saved to: {output_plot_path}")
+            if DEBUG:
+                print(f"Plot saved to: {output_plot_path}")
         else:
             plt.show()
     else:
-        print("\nRaw Data (Number of Resources, Total Duration in Minutes):")
-        for i in range(len(num_resources_list)):
-            print(f"{num_resources_list[i]}, {total_duration_minutes_list[i]:.2f}")
+        if DEBUG:
+            print("\nRaw Data (Number of Resources, Total Duration in Minutes):")
+            for i in range(len(num_resources_list)):
+                print(f"{num_resources_list[i]}, {total_duration_minutes_list[i]:.2f}")

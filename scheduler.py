@@ -6,10 +6,10 @@ from datetime import datetime, timedelta, date
 from pathlib import Path
 import json
 import heapq
-import copy # Needed for deepcopy in Task
 
 from model import Task, TaskType, CustomizationType, ProjectMilestone # Import classes from model.py
 import config # Import config for constants
+from config import DEBUG # Import DEBUG flag
 
 class ProjectSchedule:
     WORKING_START_HOUR = 8
@@ -83,12 +83,15 @@ class ProjectSchedule:
         applied_customizations_from_reqs = list(global_applied_customization_names)
 
         self._group_drawing_tasks()
-        print(f"DEBUG: After _group_drawing_tasks, self.tasks has {len(self.tasks)} tasks.")
+        if DEBUG:
+            print(f"DEBUG: After _group_drawing_tasks, self.tasks has {len(self.tasks)} tasks.")
 
-        print(f"DEBUG: Before _apply_customization_durations, self.tasks has {len(self.tasks)} tasks.")
+        if DEBUG:
+            print(f"DEBUG: Before _apply_customization_durations, self.tasks has {len(self.tasks)} tasks.")
         if applied_customizations_from_reqs:
             self._apply_customization_durations(applied_customizations_from_reqs)
-            print(f"DEBUG: After _apply_customization_durations, self.tasks has {len(self.tasks)} tasks.")
+            if DEBUG:
+                print(f"DEBUG: After _apply_customization_durations, self.tasks has {len(self.tasks)} tasks.")
 
         # Use project_start_date from argument or config
         if project_start_date is None:
@@ -246,7 +249,9 @@ class ProjectSchedule:
         Generates milestone-specific tasks by copying from a template, handling task duplication,
         and re-wiring dependencies.
         """
-        print(f"DEBUG: Entering _process_milestone_tasks for milestone_name='{milestone_data.get('milestone_name')}', current self._next_task_id={self._next_task_id}")
+        if DEBUG:
+            print(f"DEBUG: Entering _process_milestone_tasks for milestone_name='{milestone_data.get('milestone_name')}', current self._next_task_id={self._next_task_id}")
+
         
         try:
             required_part_numbers_for_variants: Set[str] = set() # This set controls which tasks have variants
@@ -266,18 +271,18 @@ class ProjectSchedule:
                 
                 for template_task in milestone_template.tasks:
                     if template_task.part_number.split('.')[0] in required_part_numbers_for_selection:
-                        base_tasks_for_milestone.append(copy.deepcopy(template_task))
+                        base_tasks_for_milestone.append(template_task.clone())
             else:
                 # If deliverable_structure is not present or empty, include all non-milestone tasks from template
                 for template_task in milestone_template.tasks:
                     if template_task.task_type.description != TaskType.MILESTONE.description: # Exclude milestone task from bulk copy
-                        base_tasks_for_milestone.append(copy.deepcopy(template_task))
+                        base_tasks_for_milestone.append(template_task.clone())
 
             # Always ensure the special milestone task (original ID 257) is included
             milestone_template_task = next((t for t in milestone_template.tasks if t.id == 257 and t.task_type.description == TaskType.MILESTONE.description), None)
             if milestone_template_task:
                 if not any(t.id == milestone_template_task.id for t in base_tasks_for_milestone):
-                    base_tasks_for_milestone.append(copy.deepcopy(milestone_template_task))
+                    base_tasks_for_milestone.append(milestone_template_task.clone())
 
             # Populate required_part_numbers_for_variants from extra_args for variant generation
             extra_args = milestone_data.get('extra_args', [])
@@ -346,13 +351,14 @@ class ProjectSchedule:
                 # This ensures no ID collisions across milestones.
 
                 # 1. Create the main version of the task with a new unique ID
-                main_task = copy.deepcopy(original_base_task)
+                main_task = original_base_task.clone()
                 main_task.id = self._next_task_id
                 main_task.milestone_id = milestone_data.get('milestone_id') # Assign milestone_id
                 # Apply milestone-level customizations to main_task by default
                 main_task.variant_customizations.update(milestone_customizations) 
                 
-                print(f"DEBUG: Assigning new ID {main_task.id} to original task {original_base_task.id}")
+                if DEBUG:
+                    print(f"DEBUG: Assigning new ID {main_task.id} to original task {original_base_task.id}")
                 self._next_task_id += 1
 
                 final_tasks_for_milestone.append(main_task)
@@ -371,10 +377,11 @@ class ProjectSchedule:
                                 continue # Skip creating a duplicate if it's the base part number
                             else:
                                 # This is a variant, create it with its specific customizations
-                                variant_task = copy.deepcopy(original_base_task)
+                                variant_task = original_base_task.clone()
                                 variant_task.id = self._next_task_id
                                 variant_task.milestone_id = milestone_data.get('milestone_id') # Assign milestone_id
-                                print(f"DEBUG: Creating variant task for original {original_base_task.id} to new ID {variant_task.id}")
+                                if DEBUG:
+                                    print(f"DEBUG: Creating variant task for original {original_base_task.id} to new ID {variant_task.id}")
                                 self._next_task_id += 1
                                 
                                 variant_task.part_number = str(extra_arg_entry["part_number"])
@@ -388,10 +395,11 @@ class ProjectSchedule:
                         elif original_base_task.part_number != extra_arg_entry["part_number"]:
                             # Case: extra_arg_entry is a string (e.g., "60010.1") or a dict without 'customizations' key
                             # These variants still get milestone-level customizations
-                            variant_task = copy.deepcopy(original_base_task)
+                            variant_task = original_base_task.clone()
                             variant_task.id = self._next_task_id
                             variant_task.milestone_id = milestone_data.get('milestone_id') # Assign milestone_id
-                            print(f"DEBUG: Creating variant task for original {original_base_task.id} to new ID {variant_task.id}")
+                            if DEBUG:
+                                print(f"DEBUG: Creating variant task for original {original_base_task.id} to new ID {variant_task.id}")
                             self._next_task_id += 1
                             
                             variant_task.part_number = str(extra_arg_entry["part_number"])
@@ -410,7 +418,8 @@ class ProjectSchedule:
 
 
 
-            print(f"DEBUG: original_id_to_new_ids_map for milestone '{milestone_data.get('milestone_name')}': {original_id_to_new_ids_map}")
+            if DEBUG:
+                print(f"DEBUG: original_id_to_new_ids_map for milestone '{milestone_data.get('milestone_name')}': {original_id_to_new_ids_map}")
 
             # --- Phase 2: Re-wiring Dependencies for final_tasks_for_milestone ---
             # Build a map of new IDs to task objects for efficient lookup
@@ -481,17 +490,20 @@ class ProjectSchedule:
                 if task.part_number == "70000" and not \
                    (task.task_type.description == TaskType.DRAWING.description and task.task_type.strategy == "consolidated"):
                     task.part_number = str(milestone_data.get('milestone_name', "UNKNOWN_MILESTONE"))
-                    print(f"DEBUG: Final check: Task {task.id} part_number set to '{task.part_number}' (from 70000)")
+                    if DEBUG:
+                        print(f"DEBUG: Final check: Task {task.id} part_number set to '{task.part_number}' (from 70000)")
                 # For the special case of the milestone task itself, ensure it's set correctly.
                 # This ensures the milestone task specifically gets its name, even if its original part_number wasn't "70000".
                 if task.task_type.description == TaskType.MILESTONE.description:
                     task.part_number = str(milestone_data.get('milestone_name', "UNKNOWN_MILESTONE"))
-                    print(f"DEBUG: Final check: Milestone task {task.id} part_number explicitly set to '{task.part_number}'")
+                    if DEBUG:
+                        print(f"DEBUG: Final check: Milestone task {task.id} part_number explicitly set to '{task.part_number}'")
 
 
-            print(f"DEBUG: Final tasks for milestone '{milestone_data.get('milestone_name')}':")
-            for task in final_tasks_for_milestone:
-                print(f"  Task ID: {task.id}, Part Number: {task.part_number}, Successors: {task.successors_ids}")
+            if DEBUG:
+                print(f"DEBUG: Final tasks for milestone '{milestone_data.get('milestone_name')}':")
+                for task in final_tasks_for_milestone:
+                    print(f"  Task ID: {task.id}, Part Number: {task.part_number}, Successors: {task.successors_ids}")
             return final_tasks_for_milestone
 
         except Exception as e: # Simplified exception handling
@@ -1032,7 +1044,8 @@ class ProjectSchedule:
 
             df = pd.DataFrame(data)
             df.to_csv(file_path, index=False)
-            print(f"Successfully exported {len(self.tasks)} tasks to {file_path}")
+            if DEBUG:
+                print(f"Successfully exported {len(self.tasks)} tasks to {file_path}")
 
         except Exception as e:
             print(f"Error exporting tasks to CSV: {e}")
