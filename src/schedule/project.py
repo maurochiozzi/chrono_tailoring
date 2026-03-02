@@ -23,8 +23,13 @@ class ProjectSchedule:
         project_start_date: Optional[datetime] = None
     ):
         self.num_resources = num_resources
-        self.project_requirements_data: List[Dict[str, Any]] = load_project_requirements(project_requirements_path)
+        pr_settings, pr_milestones = load_project_requirements(project_requirements_path)
+        self.project_requirements_data: List[Dict[str, Any]] = pr_milestones
         self.holidays: Set[datetime.date] = load_holidays(holidays_path) if holidays_path else set()
+
+        # Read working hours from settings, fall back to defaults
+        self.working_start_hour: int = int(pr_settings.get('working_start_hour', 8))
+        self.working_end_hour: int = int(pr_settings.get('working_end_hour', 16))
         
         self.milestones: List[ProjectMilestone] = []
         self.tasks: List[Task] = []
@@ -68,10 +73,19 @@ class ProjectSchedule:
         if global_applied_customization_names:
             self._apply_customization_durations(list(global_applied_customization_names))
 
-        start_date = project_start_date or datetime.strptime(config.PROJECT_START_DATE_STR, '%Y-%m-%d')
+        # Resolve project start date: explicit arg > settings > config default
+        if project_start_date is not None:
+            start_date = project_start_date
+        elif 'project_start_date' in pr_settings:
+            start_date = datetime.strptime(pr_settings['project_start_date'], '%Y-%m-%d')
+        else:
+            start_date = datetime.strptime(config.PROJECT_START_DATE_STR, '%Y-%m-%d')
         
-        # Delegate heavy lifting to engine
-        calculate_task_dates(self.tasks, start_date, self.holidays, self.num_resources)
+        # Delegate heavy lifting to engine, passing working hours from settings
+        calculate_task_dates(
+            self.tasks, start_date, self.holidays, self.num_resources,
+            self.working_start_hour, self.working_end_hour
+        )
 
         milestone_id_to_object_map = {m.milestone_id: m for m in self.milestones}
         for milestone in self.milestones:

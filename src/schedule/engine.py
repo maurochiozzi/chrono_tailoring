@@ -9,7 +9,9 @@ def calculate_task_dates(
     tasks: List[Task], 
     project_start_date: datetime, 
     holidays: Set[date],
-    num_resources: int
+    num_resources: int,
+    working_start_hour: int = 8,
+    working_end_hour: int = 16,
 ) -> None:
     """
     Calculates the initiation and end dates for all tasks in the given list,
@@ -64,7 +66,7 @@ def calculate_task_dates(
     # Identify initially ready tasks (in_degree 0)
     for task in tasks:
         if in_degree[task.id] == 0:
-            task_start_time = get_next_working_time(project_start_date, 0, holidays)
+            task_start_time = get_next_working_time(project_start_date, 0, holidays, working_start_hour, working_end_hour)
             heapq.heappush(ready_tasks_pq, (task_start_time, task.id))
     
     # Track currently active tasks: (finish_time, task_id)
@@ -104,7 +106,7 @@ def calculate_task_dates(
                 )
                 in_degree[successor.id] -= 1
                 if in_degree[successor.id] == 0:
-                    successor_ready_time = get_next_working_time(earliest_start_from_predecessors[successor.id], 0, holidays)
+                    successor_ready_time = get_next_working_time(earliest_start_from_predecessors[successor.id], 0, holidays, working_start_hour, working_end_hour)
                     heapq.heappush(ready_tasks_pq, (successor_ready_time, successor.id))
         
         # 2. Schedule new tasks
@@ -121,8 +123,8 @@ def calculate_task_dates(
                 current_event_time
             )
             
-            task_to_schedule.init_date = get_next_working_time(actual_start_time, 0, holidays)
-            task_to_schedule.end_date = get_next_working_time(task_to_schedule.init_date, task_to_schedule.duration_minutes, holidays)
+            task_to_schedule.init_date = get_next_working_time(actual_start_time, 0, holidays, working_start_hour, working_end_hour)
+            task_to_schedule.end_date = get_next_working_time(task_to_schedule.init_date, task_to_schedule.duration_minutes, holidays, working_start_hour, working_end_hour)
             
             heapq.heappush(active_tasks_finish_times, (task_to_schedule.end_date, task_to_schedule.id))
             num_active_resources += 1
@@ -130,7 +132,7 @@ def calculate_task_dates(
     # Final pass to ensure all tasks have dates (defense against edge cases)
     for task in tasks:
         if task.init_date is None:
-            task.init_date = get_next_working_time(project_start_date, 0, holidays)
-            task.end_date = get_next_working_time(task.init_date, task.duration_minutes, holidays)
+            task.init_date = get_next_working_time(project_start_date, 0, holidays, working_start_hour, working_end_hour)
+            task.end_date = get_next_working_time(task.init_date, task.duration_minutes, holidays, working_start_hour, working_end_hour)
     
     tasks.sort(key=lambda t: t.init_date if t.init_date else datetime.min)

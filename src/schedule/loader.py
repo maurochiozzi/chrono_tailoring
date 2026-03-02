@@ -7,18 +7,34 @@ from typing import List, Dict, Any, Set, Optional
 from src.core.models import Task, TaskType, CustomizationType
 from src import config
 
-def load_project_requirements(file_path: Path) -> List[Dict]:
-    """Reads project requirements from a JSON file."""
+def load_project_requirements(file_path: Path):
+    """
+    Reads project requirements from a JSON file.
+
+    Supports two formats:
+      - New: { "settings": {...}, "milestones": [...] }
+      - Legacy: [...] (flat array of milestone dicts)
+
+    Returns a tuple: (settings: dict, milestones: List[Dict])
+    """
     try:
         with open(file_path, 'r') as f:
-            requirements_data = json.load(f)
-        return requirements_data
+            data = json.load(f)
+
+        if isinstance(data, list):
+            # Legacy format — no settings block
+            return {}, data
+
+        settings = data.get('settings', {})
+        milestones = data.get('milestones', [])
+        return settings, milestones
+
     except FileNotFoundError:
         print(f"Error: Project requirements file not found at {file_path}")
-        return []
+        return {}, []
     except json.JSONDecodeError as e:
         print(f"Error decoding JSON from project requirements file {file_path}: {e}")
-        return []
+        return {}, []
 
 def load_holidays(file_path: Path) -> Set[date]:
     """Loads holidays from a CSV file into a set of date objects."""

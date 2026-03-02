@@ -11,7 +11,8 @@ HOLIDAYS_PATH = INPUT_DIR / 'holidays.csv'
 OUTPUT_DIR = BASE_DIR / 'output'
 
 # Other configuration settings can be added here
-PROJECT_START_DATE_STR = "2026-02-08"
+# Note: project_start_date, working_start_hour, and working_end_hour
+# are now configured in input/project_requirements.txt under "settings".
 
 # Debugging flag
 DEBUG = True
