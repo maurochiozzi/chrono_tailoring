@@ -6,6 +6,7 @@ from typing import List, Optional, Any, Dict
 from datetime import datetime, timedelta
 from pathlib import Path
 import builtins # Import builtins module
+from contextlib import redirect_stdout
 from config import DEBUG
 
 from model import Task
@@ -465,19 +466,13 @@ def plot_resource_vs_duration(
     
     for num_res in range(min_resources, max_resources + 1):
         # Temporarily suppress print statements from ProjectSchedule and its helpers
-        _original_print = builtins.print
-        def _suppress_print(*args, **kwargs):
-            pass
-        builtins.print = _suppress_print
-
-        temp_project_schedule = ProjectSchedule(
-            project_requirements_path, # Now a positional argument
-            num_resources=num_res,
-            customization_overview_csv_path=customization_overview_csv_path,
-            holidays_path=holidays_path # Pass holidays path
-        )
-        # Restore print
-        builtins.print = _original_print
+        with open(os.devnull, 'w') as f, redirect_stdout(f):
+            temp_project_schedule = ProjectSchedule(
+                project_requirements_path, # Now a positional argument
+                num_resources=num_res,
+                customization_overview_csv_path=customization_overview_csv_path,
+                holidays_path=holidays_path # Pass holidays path
+            )
 
 
 

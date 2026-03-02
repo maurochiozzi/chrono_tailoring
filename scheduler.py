@@ -851,6 +851,33 @@ class ProjectSchedule:
         if not self.tasks:
             return
 
+        # --- Cycle Detection (Kahn's Algorithm) ---
+        in_degree_check: Dict[int, int] = {task.id: 0 for task in self.tasks}
+        for task in self.tasks:
+            for successor in task.successors_tasks:
+                if successor.id in in_degree_check:
+                    in_degree_check[successor.id] += 1
+        
+        zero_in_degree_queue = [tid for tid, degree in in_degree_check.items() if degree == 0]
+        visited_count = 0
+        
+        while zero_in_degree_queue:
+            u_id = zero_in_degree_queue.pop(0)
+            visited_count += 1
+            # Find the task object to get its successors
+            u_task = next((t for t in self.tasks if t.id == u_id), None)
+            if u_task:
+                for successor in u_task.successors_tasks:
+                    if successor.id in in_degree_check:
+                        in_degree_check[successor.id] -= 1
+                        if in_degree_check[successor.id] == 0:
+                            zero_in_degree_queue.append(successor.id)
+
+        if visited_count != len(self.tasks):
+            raise RuntimeError(f"Circular dependency detected in project schedule! "
+                               f"Could only resolve {visited_count} out of {len(self.tasks)} tasks.")
+        # ------------------------------------------
+
 
 
         in_degree: Dict[int, int] = {task.id: 0 for task in self.tasks}
@@ -899,13 +926,11 @@ class ProjectSchedule:
                 current_event_time = min(next_ready_event_time, next_finish_event_time)
 
             if current_event_time == datetime.max:
-                print(f"Warning: ProjectSchedule._calculate_task_dates got stuck.")
-                print(f"  {len(self.tasks) - completed_tasks_count} tasks remaining unscheduled.")
-                print(f"  Ready tasks PQ empty: {not bool(ready_tasks_pq)}")
-                print(f"  Active tasks finish times empty: {not bool(active_tasks_finish_times)}")
-                print(f"  Possible circular dependencies or logical error preventing tasks from becoming ready or completing.")
-                print(f"  Remaining unscheduled tasks IDs: {[task.id for task in self.tasks if task.init_date is None]}")
-                break
+                raise RuntimeError(
+                    f"ProjectSchedule._calculate_task_dates got stuck. "
+                    f"Remaining unscheduled tasks: {len(self.tasks) - completed_tasks_count}. "
+                    f"Possible logical error preventing tasks from becoming ready or completing."
+                )
             
 
 
