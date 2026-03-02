@@ -201,47 +201,45 @@ class ProjectSchedule:
         if duration_minutes == 0:
             return current_time # 0-duration tasks finish immediately
 
-        remaining_minutes = duration_minutes
-        
-        # Adjust start time to the next working hour if outside
+        # Fast forward start time to a valid working slot
         if current_time.hour < self.WORKING_START_HOUR:
             current_time = current_time.replace(hour=self.WORKING_START_HOUR, minute=0, second=0, microsecond=0)
         elif current_time.hour >= self.WORKING_END_HOUR:
             current_time = current_time.replace(hour=self.WORKING_START_HOUR, minute=0, second=0, microsecond=0) + timedelta(days=1)
         
-        # Ensure current_time is on a working day at a working hour
-        while not self._is_working_day(current_time.date()) or current_time.hour < self.WORKING_START_HOUR or current_time.hour >= self.WORKING_END_HOUR:
-            if current_time.hour >= self.WORKING_END_HOUR:
-                current_time += timedelta(days=1)
-                current_time = current_time.replace(hour=self.WORKING_START_HOUR, minute=0, second=0, microsecond=0)
-            elif current_time.hour < self.WORKING_START_HOUR:
-                current_time = current_time.replace(hour=self.WORKING_START_HOUR, minute=0, second=0, microsecond=0)
-            elif not self._is_working_day(current_time.date()):
-                current_time += timedelta(days=1)
-                current_time = current_time.replace(hour=self.WORKING_START_HOUR, minute=0, second=0, microsecond=0)
-            
+        while not self._is_working_day(current_time.date()):
+            current_time += timedelta(days=1)
+            current_time = current_time.replace(hour=self.WORKING_START_HOUR, minute=0, second=0, microsecond=0)
+
         end_time = current_time
+        working_minutes_per_day = (self.WORKING_END_HOUR - self.WORKING_START_HOUR) * 60
 
-        while remaining_minutes > 0:
-            minutes_to_end_of_working_day = (self.WORKING_END_HOUR - end_time.hour) * 60 - end_time.minute
+        minutes_to_end_of_working_day = (self.WORKING_END_HOUR - end_time.hour) * 60 - end_time.minute
+        
+        if duration_minutes <= minutes_to_end_of_working_day:
+            end_time += timedelta(minutes=duration_minutes)
+        else:
+            duration_minutes -= minutes_to_end_of_working_day
+            end_time = end_time.replace(hour=self.WORKING_START_HOUR, minute=0, second=0, microsecond=0) + timedelta(days=1)
 
-            if minutes_to_end_of_working_day > 0:
-                # Can fit some or all remaining minutes in current working day
-                if remaining_minutes <= minutes_to_end_of_working_day:
-                    end_time += timedelta(minutes=remaining_minutes)
-                    remaining_minutes = 0
-                else:
-                    end_time += timedelta(minutes=minutes_to_end_of_working_day)
-                    remaining_minutes -= minutes_to_end_of_working_day
-            
-            if remaining_minutes > 0:
-                # Move to the next working day
-                end_time += timedelta(days=1)
-                end_time = end_time.replace(hour=self.WORKING_START_HOUR, minute=0, second=0, microsecond=0)
+            # Calculate full working days needed
+            full_days = int(duration_minutes // working_minutes_per_day)
+            remaining_mins = int(duration_minutes % working_minutes_per_day)
+
+            # Advance by full working days efficiently
+            while full_days > 0:
                 while not self._is_working_day(end_time.date()):
                     end_time += timedelta(days=1)
-                    end_time = end_time.replace(hour=self.WORKING_START_HOUR, minute=0, second=0, microsecond=0)
-        
+                full_days -= 1
+                if full_days > 0:
+                    end_time += timedelta(days=1)
+            
+            # Ensure we land on a working day before adding remaining minutes
+            while not self._is_working_day(end_time.date()):
+                end_time += timedelta(days=1)
+
+            end_time += timedelta(minutes=remaining_mins)
+
         return end_time
 
     def _process_milestone_tasks(self, milestone_template: ProjectMilestone, milestone_data: Dict[str, Any]) -> List[Task]:
@@ -451,9 +449,9 @@ class ProjectSchedule:
                 # milestone_task.predecessors = sorted(milestone_task.predecessors, key=lambda t: t.id) # Will be rebuilt below
             
             for task in final_tasks_for_milestone:
-                # Clear existing dependency lists before rebuilding (important if milestone_task was modified)
-                task.successors_tasks.clear()
-                task.predecessors.clear()
+                # Re-initialize dependency lists to avoid alias side-effects mutating a shared object.
+                task.successors_tasks = []
+                task.predecessors = []
 
                 new_successors_ids_for_task = set()
                 for original_successor_id in task.successors_ids: # These are still original CSV IDs
@@ -749,8 +747,8 @@ class ProjectSchedule:
 
         # --- Phase 3: Final Graph Rebuild (Clear and Re-populate predecessors and successors_tasks) ---
         for task in self.tasks:
-            task.predecessors.clear()
-            task.successors_tasks.clear()
+            task.predecessors = []
+            task.successors_tasks = []
 
         for task in self.tasks:
             for successor_id in task.successors_ids:
@@ -799,47 +797,45 @@ class ProjectSchedule:
         if duration_minutes == 0:
             return current_time # 0-duration tasks finish immediately
 
-        remaining_minutes = duration_minutes
-        
-        # Adjust start time to the next working hour if outside
+        # Fast forward start time to a valid working slot
         if current_time.hour < self.WORKING_START_HOUR:
             current_time = current_time.replace(hour=self.WORKING_START_HOUR, minute=0, second=0, microsecond=0)
         elif current_time.hour >= self.WORKING_END_HOUR:
             current_time = current_time.replace(hour=self.WORKING_START_HOUR, minute=0, second=0, microsecond=0) + timedelta(days=1)
         
-        # Ensure current_time is on a working day at a working hour
-        while not self._is_working_day(current_time.date()) or current_time.hour < self.WORKING_START_HOUR or current_time.hour >= self.WORKING_END_HOUR:
-            if current_time.hour >= self.WORKING_END_HOUR:
-                current_time += timedelta(days=1)
-                current_time = current_time.replace(hour=self.WORKING_START_HOUR, minute=0, second=0, microsecond=0)
-            elif current_time.hour < self.WORKING_START_HOUR:
-                current_time = current_time.replace(hour=self.WORKING_START_HOUR, minute=0, second=0, microsecond=0)
-            elif not self._is_working_day(current_time.date()):
-                current_time += timedelta(days=1)
-                current_time = current_time.replace(hour=self.WORKING_START_HOUR, minute=0, second=0, microsecond=0)
-            
+        while not self._is_working_day(current_time.date()):
+            current_time += timedelta(days=1)
+            current_time = current_time.replace(hour=self.WORKING_START_HOUR, minute=0, second=0, microsecond=0)
+
         end_time = current_time
+        working_minutes_per_day = (self.WORKING_END_HOUR - self.WORKING_START_HOUR) * 60
 
-        while remaining_minutes > 0:
-            minutes_to_end_of_working_day = (self.WORKING_END_HOUR - end_time.hour) * 60 - end_time.minute
+        minutes_to_end_of_working_day = (self.WORKING_END_HOUR - end_time.hour) * 60 - end_time.minute
+        
+        if duration_minutes <= minutes_to_end_of_working_day:
+            end_time += timedelta(minutes=duration_minutes)
+        else:
+            duration_minutes -= minutes_to_end_of_working_day
+            end_time = end_time.replace(hour=self.WORKING_START_HOUR, minute=0, second=0, microsecond=0) + timedelta(days=1)
 
-            if minutes_to_end_of_working_day > 0:
-                # Can fit some or all remaining minutes in current working day
-                if remaining_minutes <= minutes_to_end_of_working_day:
-                    end_time += timedelta(minutes=remaining_minutes)
-                    remaining_minutes = 0
-                else:
-                    end_time += timedelta(minutes=minutes_to_end_of_working_day)
-                    remaining_minutes -= minutes_to_end_of_working_day
-            
-            if remaining_minutes > 0:
-                # Move to the next working day
-                end_time += timedelta(days=1)
-                end_time = end_time.replace(hour=self.WORKING_START_HOUR, minute=0, second=0, microsecond=0)
+            # Calculate full working days needed
+            full_days = int(duration_minutes // working_minutes_per_day)
+            remaining_mins = int(duration_minutes % working_minutes_per_day)
+
+            # Advance by full working days efficiently
+            while full_days > 0:
                 while not self._is_working_day(end_time.date()):
                     end_time += timedelta(days=1)
-                    end_time = end_time.replace(hour=self.WORKING_START_HOUR, minute=0, second=0, microsecond=0)
-        
+                full_days -= 1
+                if full_days > 0:
+                    end_time += timedelta(days=1)
+            
+            # Ensure we land on a working day before adding remaining minutes
+            while not self._is_working_day(end_time.date()):
+                end_time += timedelta(days=1)
+
+            end_time += timedelta(minutes=remaining_mins)
+
         return end_time
 
     def _calculate_task_dates(self, project_start_date: datetime):
