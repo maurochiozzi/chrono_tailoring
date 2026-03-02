@@ -1,81 +1,88 @@
-# simulate_project.py
-
-from datetime import datetime
+import sys
 from pathlib import Path
+from src import config
+from src.schedule.project import ProjectSchedule
+from src.export.csv_export import update_customization_overview_csv, export_tasks_to_csv
+from src.export.plot import plot_resource_vs_duration
+from src.export.mermaid import export_tasks_to_mermaid_graph, export_tasks_to_mermaid_gantt
 
-import config
-from config import DEBUG
-from scheduler import ProjectSchedule
-from utils import update_customization_overview_csv, export_tasks_to_mermaid_graph, \
-                    export_tasks_to_mermaid_gantt, plot_resource_vs_duration
+def main():
+    print("--- Starting Chrono Tailoring Project Simulation ---")
 
-def simulate_project_schedule(num_resources: int = 2):
-    print("--- Starting Project Schedule Simulation ---")
+    # Update customization overview matching input structure
+    update_customization_overview_csv(config.CUSTOMIZATION_OVERVIEW_CSV_PATH)
 
-    # Define paths using config
-    task_csv_path = config.TASK_CSV_PATH
-    customization_overview_csv_path = config.CUSTOMIZATION_OVERVIEW_CSV_PATH
-    project_requirements_path = config.PROJECT_REQUIREMENTS_PATH
-    holidays_path = config.HOLIDAYS_PATH
+    # Note: For real scenarios, resources might be around 3-5.  
+    # To see the bottleneck effect clearly, we use 1 resource here.
+    num_resources_to_use = 1 
+    if config.DEBUG:
+        print(f"\nInitializing ProjectSchedule with {num_resources_to_use} resource(s)...")
 
-    # Initialize ProjectSchedule
-    project_schedule = ProjectSchedule(
-        project_requirements_path, # Now a positional argument
-        num_resources=num_resources,
-        customization_overview_csv_path=customization_overview_csv_path,
-        holidays_path=holidays_path,
-        project_start_date=datetime.strptime(config.PROJECT_START_DATE_STR, '%Y-%m-%d')
+    # Generate Project Schedule
+    schedule = ProjectSchedule(
+        project_requirements_path=config.PROJECT_REQUIREMENTS_PATH,
+        num_resources=num_resources_to_use,
+        customization_overview_csv_path=config.CUSTOMIZATION_OVERVIEW_CSV_PATH,
+        holidays_path=config.HOLIDAYS_PATH
     )
 
-    if DEBUG:
-        print(f"\n--- Project Schedule Summary ({num_resources} Resources) ---")
-        print(project_schedule)
+    if not config.OUTPUT_DIR.exists():
+        config.OUTPUT_DIR.mkdir(parents=True)
+        if config.DEBUG:
+            print(f"Created output directory: {config.OUTPUT_DIR}")
 
-        print(f"\n--- Customization Types ---")
-        for ct in project_schedule.customization_types:
-            print(ct)
+    if config.DEBUG:
+        print("\n--- Final Project Schedule Summary ---")
+        print(schedule)
 
-    print(f"\n--- Updating Customization Overview CSV ---")
-    update_customization_overview_csv(customization_overview_csv_path)
+    # 1. Export standard task data to CSV
+    export_csv_path = config.OUTPUT_DIR / "exported_tasks.csv"
+    if config.DEBUG:
+        print(f"\nExporting tasks to CSV: {export_csv_path}")
+    export_tasks_to_csv(schedule, str(export_csv_path))
 
-    # Create output directory if it doesn't exist
-    config.OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-
-    # Export to Mermaid Graph
-    print(f"\n--- Exporting Task Flow to Mermaid Graph (Full Detail) ---")
-    export_tasks_to_mermaid_graph(project_schedule.milestones, config.OUTPUT_DIR / "task_flow.mmd", detail_level='full')
-
-    print(f"\n--- Exporting Task Flow to Mermaid Graph (High-Level by Type) ---")
-    export_tasks_to_mermaid_graph(project_schedule.milestones, config.OUTPUT_DIR / "task_flow_high_level.mmd", detail_level='type')
-
-    print(f"\n--- Exporting Task Flow to Mermaid Graph (Milestone Level) ---")
-    export_tasks_to_mermaid_graph(project_schedule.milestones, config.OUTPUT_DIR / "task_flow_milestone_level.mmd", detail_level='milestone')
-
-    # Export to Mermaid Gantt Chart
-    print(f"\n--- Exporting Task Flow to Mermaid Gantt Chart (Full Detail) ---")
-    export_tasks_to_mermaid_gantt(project_schedule.milestones, config.OUTPUT_DIR / "task_flow_gantt.mmd", detail_level='full')
-
-    print(f"\n--- Exporting Task Flow to Mermaid Gantt Chart (High-Level by Type) ---")
-    export_tasks_to_mermaid_gantt(project_schedule.milestones, config.OUTPUT_DIR / "task_flow_gantt_high_level.mmd", detail_level='type')
-
-    print(f"\n--- Exporting Task Flow to Mermaid Gantt Chart (Milestone Type Summary) ---")
-    export_tasks_to_mermaid_gantt(project_schedule.milestones, config.OUTPUT_DIR / "task_flow_gantt_milestone_type_summary.mmd", detail_level='milestone_type_summary')
-
-    # Plot resource vs duration
+    # 2. Analyze resource bottleneck limits (calculates curves and exports plot map)
+    print("\n--- Analyzing Resource Constraints ---")
     plot_resource_vs_duration(
-        task_csv_path=task_csv_path,
-        customization_overview_csv_path=customization_overview_csv_path,
-        min_resources=5,
-        max_resources=15,
+        task_csv_path=config.TASK_CSV_PATH,
+        customization_overview_csv_path=config.CUSTOMIZATION_OVERVIEW_CSV_PATH,
+        max_resources=10, 
+        min_resources=1,
         output_plot_path=config.OUTPUT_DIR / "resource_vs_duration.png",
-        project_requirements_path=project_requirements_path,
-        holidays_path=holidays_path
+        project_requirements_path=config.PROJECT_REQUIREMENTS_PATH,
+        holidays_path=config.HOLIDAYS_PATH
     )
 
-    print(f"\n--- Exporting all tasks to CSV ---")
-    project_schedule.export_tasks_to_csv(config.OUTPUT_DIR / "exported_tasks.csv")
+    # 3. Export detailed Mermaid flow graph
+    print("\n--- Generating Mermaid Flow Graphs ---")
+    detailed_graph_path = config.OUTPUT_DIR / "detailed_task_graph.mmd"
+    export_tasks_to_mermaid_graph(
+        schedule.milestones, 
+        output_file_path=detailed_graph_path, 
+        detail_level='full'
+    )
+    
+    # 4. Generate Gantt charts
+    detailed_gantt_path = config.OUTPUT_DIR / "detailed_task_gantt.mmd"
+    export_tasks_to_mermaid_gantt(
+        schedule.milestones,
+        output_file_path=detailed_gantt_path,
+        detail_level='full'
+    )
+    type_gantt_path = config.OUTPUT_DIR / "type_overview_gantt.mmd"
+    export_tasks_to_mermaid_gantt(
+        schedule.milestones,
+        output_file_path=type_gantt_path,
+        detail_level='type'
+    )
+    summary_gantt_path = config.OUTPUT_DIR / "milestone_summary_gantt.mmd"
+    export_tasks_to_mermaid_gantt(
+        schedule.milestones,
+        output_file_path=summary_gantt_path,
+        detail_level='milestone_type_summary'
+    )
 
-    print("\n--- Project Schedule Simulation Complete ---")
+    print("\n--- Simulation Complete ---")
 
 if __name__ == "__main__":
-    simulate_project_schedule(num_resources=1)
+    main()
