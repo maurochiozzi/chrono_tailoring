@@ -14,6 +14,7 @@ from datetime import datetime
 from pathlib import Path
 
 from src.schedule.project import ProjectSchedule
+from src.schedule.loader import load_project_requirements
 from src import config
 
 
@@ -51,10 +52,8 @@ def exported_df(schedule):
 class TestMilestoneCoverage:
     def test_all_required_milestones_present(self, exported_df):
         """Every milestone_id from project_requirements.txt must appear in the export."""
-        import json
-        with open(config.PROJECT_REQUIREMENTS_PATH) as f:
-            requirements = json.load(f)
-        req_ids = {r['milestone_id'] for r in requirements}
+        _, milestones = load_project_requirements(config.PROJECT_REQUIREMENTS_PATH)
+        req_ids = {m['milestone_id'] for m in milestones}
         export_ids = set(exported_df['Milestone ID'].dropna().astype(int).unique())
         assert req_ids == export_ids, (
             f"Missing milestones: {req_ids - export_ids}"
@@ -181,7 +180,9 @@ class TestScheduleIntegrity:
         assert not missing, f"{len(missing)} tasks lack an end date."
 
     def test_project_starts_on_or_after_configured_start_date(self, schedule):
-        configured_start = datetime.strptime(config.PROJECT_START_DATE_STR, '%Y-%m-%d')
+        """Project earliest task must start on or after the configured project_start_date."""
+        pr_settings, _ = load_project_requirements(config.PROJECT_REQUIREMENTS_PATH)
+        configured_start = datetime.strptime(pr_settings['project_start_date'], '%Y-%m-%d')
         earliest = min(t.init_date for t in schedule.tasks if t.init_date)
         assert earliest >= configured_start
 

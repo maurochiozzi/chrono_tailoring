@@ -2,10 +2,11 @@ import os
 from contextlib import redirect_stdout
 from pathlib import Path
 from typing import Optional
+from datetime import datetime
 
 from src.schedule.project import ProjectSchedule
-from src.config import DEBUG, PROJECT_START_DATE_STR
-from datetime import datetime
+from src.schedule.loader import load_project_requirements
+from src.config import DEBUG
 
 try:
     import matplotlib.pyplot as plt
@@ -40,7 +41,16 @@ def plot_resource_vs_duration(
             customization_overview_csv_path=customization_overview_csv_path,
             holidays_path=holidays_path 
         )
-        project_start_date = datetime.strptime(PROJECT_START_DATE_STR, '%Y-%m-%d')
+    # Read settings (start date, working hours) from project_requirements.txt
+    pr_settings = {}
+    if project_requirements_path:
+        pr_settings, _ = load_project_requirements(project_requirements_path)
+    working_start_hour = int(pr_settings.get('working_start_hour', 8))
+    working_end_hour = int(pr_settings.get('working_end_hour', 16))
+    if 'project_start_date' in pr_settings:
+        project_start_date = datetime.strptime(pr_settings['project_start_date'], '%Y-%m-%d')
+    else:
+        project_start_date = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
     from src.schedule.engine import calculate_task_dates
     for num_res in range(min_resources, max_resources + 1):
@@ -49,7 +59,10 @@ def plot_resource_vs_duration(
             for task in base_schedule.tasks:
                 task.init_date = None
                 task.end_date = None
-            calculate_task_dates(base_schedule.tasks, project_start_date, base_schedule.holidays, num_res)
+            calculate_task_dates(
+                base_schedule.tasks, project_start_date, base_schedule.holidays, num_res,
+                working_start_hour, working_end_hour
+            )
 
         total_duration = base_schedule.get_total_duration()
         if total_duration:
