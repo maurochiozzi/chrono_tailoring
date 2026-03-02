@@ -31,10 +31,11 @@ def update_customization_overview_csv(file_path: Path):
         df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
         
         # Add 'path' column
-        df['path'] = df['customization_type'].apply(lambda name: f"customization_{name}.csv")
+        df['path'] = df['customization_type'].apply(lambda name: f"input/customization_{name}.csv")
         
         # Add 'status' column
-        df['status'] = df['path'].apply(lambda p: 'ok' if os.path.exists(p) else 'nok')
+        from config import INPUT_DIR
+        df['status'] = df['customization_type'].apply(lambda name: 'ok' if (INPUT_DIR / f"customization_{name}.csv").exists() else 'nok')
         
         # Write the updated DataFrame back to the CSV
         df.to_csv(file_path, sep=';', index=False)

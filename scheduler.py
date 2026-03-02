@@ -670,12 +670,14 @@ class ProjectSchedule:
     def _load_customization_types(self, file_path: Path) -> List[CustomizationType]:
         """Reads customization types from a CSV file and constructs their file paths."""
         try:
+            import config # Import config here to access INPUT_DIR
             df = pd.read_csv(file_path, delimiter=';')
             customization_types = []
             for _, row in df.iterrows():
                 name = row['customization_type']
-                file_path = f"customization_{name}.csv"
-                customization_types.append(CustomizationType(name=name, file_path=file_path))
+                # Construct file path linking to the input directory
+                customization_file_path = config.INPUT_DIR / f"customization_{name}.csv"
+                customization_types.append(CustomizationType(name=name, file_path=customization_file_path))
             return customization_types
         except FileNotFoundError:
             print(f"Error: Customization overview file not found at {file_path}")
