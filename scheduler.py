@@ -278,8 +278,8 @@ class ProjectSchedule:
                     if template_task.task_type.description != TaskType.MILESTONE.description: # Exclude milestone task from bulk copy
                         base_tasks_for_milestone.append(template_task.clone())
 
-            # Always ensure the special milestone task (original ID 257) is included
-            milestone_template_task = next((t for t in milestone_template.tasks if t.id == 257 and t.task_type.description == TaskType.MILESTONE.description), None)
+            # Always ensure the special milestone task is included
+            milestone_template_task = next((t for t in milestone_template.tasks if t.task_type.description == TaskType.MILESTONE.description), None)
             if milestone_template_task:
                 if not any(t.id == milestone_template_task.id for t in base_tasks_for_milestone):
                     base_tasks_for_milestone.append(milestone_template_task.clone())
