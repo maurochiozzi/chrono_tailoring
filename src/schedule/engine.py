@@ -135,4 +135,48 @@ def calculate_task_dates(
             task.init_date = get_next_working_time(project_start_date, 0, holidays, working_start_hour, working_end_hour)
             task.end_date = get_next_working_time(task.init_date, task.duration_minutes, holidays, working_start_hour, working_end_hour)
     
+    # --- Critical Path Calculation (Backward Pass) ---
+    if tasks:
+        # 1. Find the absolute project end date
+        project_end = max(t.end_date for t in tasks)
+        
+        # 2. Identify terminal tasks (no successors) and set their latest end to project_end
+        latest_end_times: Dict[int, datetime] = {}
+        terminal_tasks = [t for t in tasks if not t.successors_tasks]
+        for t in terminal_tasks:
+            latest_end_times[t.id] = project_end
+            
+        # 3. Traverse backwards (reverse Kahn's) to find Latest End Times
+        # We process tasks only after all their successors are processed.
+        out_degree: Dict[int, int] = {t.id: len(t.successors_tasks) for t in tasks}
+        
+        # Queue initialized with terminal tasks
+        ready_for_backward = [t.id for t in terminal_tasks]
+        
+        pred_map: Dict[int, List[Task]] = {t.id: [] for t in tasks}
+        for task in tasks:
+            for s in task.successors_tasks:
+                if s.id in pred_map:
+                    pred_map[s.id].append(task)
+                    
+        while ready_for_backward:
+            curr_id = ready_for_backward.pop(0)
+            curr_task = task_map[curr_id]
+            curr_lf = latest_end_times.get(curr_id, curr_task.end_date)
+            # Latest Start Time for current task
+            curr_ls = curr_task.init_date + (curr_lf - curr_task.end_date) # Shift backwards by slack
+            
+            for p in pred_map[curr_id]:
+                if p.id not in latest_end_times or latest_end_times[p.id] > curr_ls:
+                    latest_end_times[p.id] = curr_ls
+                
+                out_degree[p.id] -= 1
+                if out_degree[p.id] == 0:
+                    ready_for_backward.append(p.id)
+                    
+        # 4. Mark tasks as critical if Early Finish == Late Finish
+        for task in tasks:
+            task.slack = max(0, int((latest_end_times.get(task.id, task.end_date) - task.end_date).total_seconds() / 60))
+            task.is_critical = (task.slack == 0)
+
     tasks.sort(key=lambda t: t.init_date if t.init_date else datetime.min)

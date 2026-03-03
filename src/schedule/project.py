@@ -68,8 +68,6 @@ class ProjectSchedule:
         if customization_overview_csv_path:
             self.customization_types = load_customization_types(customization_overview_csv_path)
 
-        self._group_drawing_tasks()
-        
         if global_applied_customization_names:
             self._apply_customization_durations(list(global_applied_customization_names))
 
@@ -86,6 +84,9 @@ class ProjectSchedule:
             self.tasks, start_date, self.holidays, self.num_resources,
             self.working_start_hour, self.working_end_hour
         )
+
+        # Group drawings after calculating dates so dates and durations are correct
+        self._group_drawing_tasks()
 
         milestone_id_to_object_map = {m.milestone_id: m for m in self.milestones}
         for milestone in self.milestones:
@@ -185,6 +186,8 @@ class ProjectSchedule:
         for task in self.tasks:
             if task.type.description == "drawing":
                 base_part_number = task.part_number.split('.')[0]
+                if base_part_number.startswith('7'):
+                    continue  # Do not consolidate 7XXXX milestone drawings
                 if base_part_number not in drawing_tasks_by_base_part_number:
                     drawing_tasks_by_base_part_number[base_part_number] = []
                 drawing_tasks_by_base_part_number[base_part_number].append(task)
@@ -194,13 +197,21 @@ class ProjectSchedule:
 
         for base_part_number, drawing_tasks in drawing_tasks_by_base_part_number.items():
             if len(drawing_tasks) > 1:
+                valid_inits = [dt.init_date for dt in drawing_tasks if dt.init_date]
+                valid_ends = [dt.end_date for dt in drawing_tasks if dt.end_date]
+                earliest_init = min(valid_inits) if valid_inits else None
+                latest_end = max(valid_ends) if valid_ends else None
+
                 consolidated_task = Task(
                     id=self._next_task_id,
                     part_number=base_part_number,
                     name=f"Consolidated Drawing for {base_part_number}",
                     task_type=TaskType(description="drawing", strategy="consolidated"),
-                    duration_minutes=sum(dt.duration_minutes for dt in drawing_tasks)
+                    duration_minutes=int(sum(dt.duration_minutes for dt in drawing_tasks))
                 )
+                consolidated_task.init_date = earliest_init
+                consolidated_task.end_date = latest_end
+                
                 self._next_task_id += 1
                 for dt in drawing_tasks:
                     original_drawing_id_to_consolidated_id_map[dt.id] = consolidated_task.id

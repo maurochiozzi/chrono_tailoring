@@ -5,6 +5,8 @@ from src.schedule.project import ProjectSchedule
 from src.export.csv_export import update_customization_overview_csv, export_tasks_to_csv
 from src.export.plot import plot_resource_vs_duration
 from src.export.mermaid import export_tasks_to_mermaid_graph, export_tasks_to_mermaid_gantt
+from src.export.gantt_interactive import export_interactive_gantt
+from src.schedule.loader import load_project_requirements
 
 def main():
     print("--- Starting Chrono Tailoring Project Simulation ---")
@@ -12,9 +14,10 @@ def main():
     # Update customization overview matching input structure
     update_customization_overview_csv(config.CUSTOMIZATION_OVERVIEW_CSV_PATH)
 
-    # Note: For real scenarios, resources might be around 3-5.  
-    # To see the bottleneck effect clearly, we use 1 resource here.
-    num_resources_to_use = 1 
+    # Read project requirements to get num_resources setting
+    pr_settings, _ = load_project_requirements(config.PROJECT_REQUIREMENTS_PATH)
+    num_resources_to_use = pr_settings.get('num_resources', 1)
+
     if config.DEBUG:
         print(f"\nInitializing ProjectSchedule with {num_resources_to_use} resource(s)...")
 
@@ -80,6 +83,18 @@ def main():
         schedule.milestones,
         output_file_path=summary_gantt_path,
         detail_level='milestone_type_summary'
+    )
+
+    # 5. Export interactive HTML Gantt chart
+    gantt_html_path = config.OUTPUT_DIR / "gantt_interactive.html"
+    milestone_name_map = {m.milestone_id: m.name for m in schedule.milestones}
+    export_interactive_gantt(
+        schedule.tasks,
+        output_path=gantt_html_path,
+        milestone_name_map=milestone_name_map,
+        total_resources=num_resources_to_use,
+        project_requirements_path=config.PROJECT_REQUIREMENTS_PATH,
+        holidays=schedule.holidays,
     )
 
     print("\n--- Simulation Complete ---")

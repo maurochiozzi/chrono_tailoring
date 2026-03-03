@@ -3,7 +3,8 @@
     "project_start_date": "2026-02-08",
     "working_start_hour": 8,
     "working_end_hour": 16,
-    "hours_per_day": 8
+    "hours_per_day": 8,
+    "num_resources": 2
   },
   "milestones": [
     {
