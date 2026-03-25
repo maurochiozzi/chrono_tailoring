@@ -64,3 +64,8 @@ The system follows a multi-stage pipeline to transform a static template into a 
 
 - **User Guide**: Check [docs/user_guide.md](docs/user_guide.md) for detailed input formats and "start from zero" tutorials.
 - **API Reference**: Run `cd docs && make html` to generate full developer documentation.
+---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
