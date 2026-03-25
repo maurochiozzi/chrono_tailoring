@@ -1,0 +1,10 @@
+customization_type;path;status
+color;input/customization_color.csv;ok
+length;input/customization_length.csv;ok
+electronic_equipment;input/customization_electronic_equipment.csv;nok
+shelf_position;input/customization_shelf_position.csv;nok
+protective_foil;input/customization_protective_foil.csv;nok
+overtravel_hinges;input/customization_overtravel_hinges.csv;nok
+soft_hinges;input/customization_soft_hinges.csv;nok
+door_locker;input/customization_door_locker.csv;nok
+door_position;input/customization_door_position.csv;nok
