@@ -104,8 +104,8 @@ class TestLoadRawTasksFromCsv:
         p = tmp_path / 'deliverable_structure.csv'
         headers = ['document_id', 'document_type', 'document_part_number',
                    'document_name', 'successors', 'strategy', 'std_duration']
-        # std_duration = 2 (hours) → 120 minutes
-        rows = [['1', 'drawing', '70000', 'cabinet', '0', '1', '2']]
+        # std_duration = 120 (minutes)
+        rows = [['1', 'drawing', '70000', 'cabinet', '0', '1', '120']]
         _write_csv(p, headers, rows)
         tasks = load_raw_tasks_from_csv(p)
         assert len(tasks) == 1
@@ -125,9 +125,12 @@ class TestReadCustomizationDuration:
         return p
 
     def test_returns_duration_for_known_task(self, tmp_path):
-        p = self._make_customization_csv(tmp_path)
+        # The new API expects a lookup dictionary (pre-loaded from CSV)
+        lookup_dict = {
+            'assembly_door': {'drawing_st': 60, 'release_st': 120, 'part_model_st': 60, 'part_list_st': 10}
+        }
         result = read_customization_duration(
-            p, 'length', '576', 'assembly_door', 'drawing'
+            lookup_dict, 'length', '576', 'assembly_door', 'drawing'
         )
         assert result == 60
 

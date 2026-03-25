@@ -1,0 +1,783 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.schedule.loader &mdash; Chrono Tailoring 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = `pre.mermaid {
+    /* Same as .mermaid-container > pre */
+    display: block;
+    width: 100%;
+}
+
+pre.mermaid > svg {
+    /* Same as .mermaid-container > pre > svg */
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}`;
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = `.mermaid-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.mermaid-container > pre {
+    display: block;
+    width: 100%;
+}
+
+.mermaid-container > pre > svg {
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}
+
+.mermaid-fullscreen-btn {
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    color: #333;
+}
+
+.mermaid-fullscreen-btn:hover {
+    opacity: 100% !important;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-btn.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-btn.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal {
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 95vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.98);
+    z-index: 9999;
+    padding: 20px;
+    overflow: auto;
+}
+
+.mermaid-fullscreen-modal.dark-theme {
+    background: rgba(0, 0, 0, 0.98);
+}
+
+.mermaid-fullscreen-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen {
+    position: relative;
+    width: 95vw;
+    height: 90vh;
+    max-width: 95vw;
+    max-height: 90vh;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen.dark-theme {
+    background: #1a1a1a;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+.mermaid-container-fullscreen pre.mermaid {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen .mermaid svg {
+    height: 100% !important;
+    width: 100% !important;
+    cursor: grab;
+}
+
+.mermaid-fullscreen-close {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
+    font-size: 24px;
+    line-height: 1;
+    color: #333;
+}
+
+.mermaid-fullscreen-close:hover {
+    background: white;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-close.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-close.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
+    display: none !important;
+}`;
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        all_mermaids.forEach((el) => {
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+        await mermaid.run();
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
+
+    if ("False" === "True") {
+        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll("");
+            if(all_mermaids.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else if(svgs.size() !== mermaids_to_add_zoom) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else {
+                svgs.each(function() {
+                    var svg = d3.select(this);
+                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+                    var inner = svg.select("g");
+                    var zoom = d3.zoom().on("zoom", function(event) {
+                        inner.attr("transform", event.transform);
+                    });
+                    svg.call(zoom);
+                });
+            }
+        }
+    } else if(all_mermaids.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if ("True" !== "True") return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    const closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = '⛶';
+        fullscreenBtn.style.opacity = '50%';
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scroll, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.sdisplay = 'block';
+
+                if ("False" === "True") {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+const load = async () => {
+    initStyles();
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...JSON.parse(
+                    `{"startOnLoad": false}`
+                ),
+                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...JSON.parse(
+        `{"startOnLoad": false}`
+    ),
+    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+    }
+);
+
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Chrono Tailoring
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">Chrono Tailoring User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../requirements.html">System Specifications</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Chrono Tailoring</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">src.schedule.loader</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for src.schedule.loader</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">date</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.core.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Task</span><span class="p">,</span> <span class="n">TaskType</span><span class="p">,</span> <span class="n">CustomizationType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span>
+
+<span class="c1"># [Req: RF-01, RF-01.1, RF-01.2, RF-01.3, RF-01.4] — Reads project config; supports new {settings,milestones} and legacy flat-array formats</span>
+<div class="viewcode-block" id="load_project_requirements">
+<a class="viewcode-back" href="../../../index.html#src.schedule.loader.load_project_requirements">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_project_requirements</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reads project requirements from a JSON file.</span>
+
+<span class="sd">    Supports two formats:</span>
+<span class="sd">      - New: { &quot;settings&quot;: {...}, &quot;milestones&quot;: [...] }</span>
+<span class="sd">      - Legacy: [...] (flat array of milestone dicts)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        file_path (Path): Path to the project requirements JSON file.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: A tuple containing:</span>
+<span class="sd">            - settings (dict): Global project configuration settings.</span>
+<span class="sd">            - milestones (List[Dict]): The list of configured milestones.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>  <span class="c1"># [Req: RF-01.2] — Legacy format: no settings block</span>
+            <span class="c1"># Legacy format — no settings block</span>
+            <span class="k">return</span> <span class="p">{},</span> <span class="n">data</span>
+
+        <span class="c1"># [Req: RF-01.1] — New format: explicit settings + milestones keys</span>
+        <span class="n">settings</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;settings&#39;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">milestones</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;milestones&#39;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="k">return</span> <span class="n">settings</span><span class="p">,</span> <span class="n">milestones</span>
+
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>  <span class="c1"># [Req: RF-01.4] — Graceful error handling; no unhandled exception</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: Project requirements file not found at </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{},</span> <span class="p">[]</span>
+    <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error decoding JSON from project requirements file </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{},</span> <span class="p">[]</span></div>
+
+
+<span class="c1"># [Req: RF-25, RF-25.1, RF-25.2, RF-25.3] — Loads holidays into a Set[date] for O(1) lookup in is_working_day</span>
+<div class="viewcode-block" id="load_holidays">
+<a class="viewcode-back" href="../../../index.html#src.schedule.loader.load_holidays">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_holidays</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">date</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads holidays from a CSV file into a set of date objects.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        file_path (Path): Path to the holidays.csv file.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Set[date]: A set containing all valid parsed holiday dates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">holidays_set</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">date</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">holiday_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+                    <span class="n">holidays_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">holiday_date</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: Could not parse date from line in holidays.csv: </span><span class="si">{</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">holidays_set</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: Holidays file not found at </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">()</span></div>
+
+
+<span class="c1"># [Req: RF-06.1, RNF-16] — Resolves customization type name to its dedicated CSV file path under input/, and caches DataFrame in memory</span>
+<div class="viewcode-block" id="load_customization_types">
+<a class="viewcode-back" href="../../../index.html#src.schedule.loader.load_customization_types">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_customization_types</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">CustomizationType</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reads customization types from a CSV file, constructs their file paths, and caches them in memory.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        file_path (Path): Path to the customization_overview.csv file.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List[CustomizationType]: A list of resolved CustomizationType configurations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
+        
+        <span class="n">customization_types</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">custom_type</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;customization_type&#39;</span><span class="p">]:</span>
+            <span class="n">path_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;customization_</span><span class="si">{</span><span class="n">custom_type</span><span class="si">}</span><span class="s2">.csv&quot;</span>
+            <span class="n">customization_csv</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">INPUT_DIR</span> <span class="o">/</span> <span class="n">path_str</span>
+            
+            <span class="c1"># [Req: RNF-16, RNF-20] — Load CSV into memory once and convert to Hash Map</span>
+            <span class="n">lookup_dict</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">customization_csv</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="n">df_cache</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">customization_csv</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
+                <span class="n">df_cache</span> <span class="o">=</span> <span class="n">df_cache</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="o">~</span><span class="n">df_cache</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">&#39;^Unnamed&#39;</span><span class="p">)]</span>
+                <span class="n">df_cache</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">df_cache</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                
+                <span class="n">lookup_dict</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df_cache</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+                    <span class="n">doc_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;document_name&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                    <span class="n">doc_type</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;part_document_type&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                    <span class="n">row_dict</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">doc_name</span> <span class="ow">and</span> <span class="n">doc_name</span> <span class="o">!=</span> <span class="s1">&#39;nan&#39;</span><span class="p">:</span>
+                        <span class="n">lookup_dict</span><span class="p">[</span><span class="n">doc_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">row_dict</span>
+                    <span class="k">elif</span> <span class="n">doc_type</span> <span class="ow">and</span> <span class="n">doc_type</span> <span class="o">!=</span> <span class="s1">&#39;nan&#39;</span><span class="p">:</span>
+                        <span class="n">lookup_dict</span><span class="p">[</span><span class="n">doc_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">row_dict</span>
+                
+            <span class="n">customization_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CustomizationType</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">custom_type</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="n">customization_csv</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">lookup_dict</span><span class="p">))</span>
+            
+        <span class="k">return</span> <span class="n">customization_types</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: Customization overview file not found at </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[]</span></div>
+
+
+<span class="c1"># [Req: RF-02, RF-02.1, RF-02.2, RF-02.3, RF-02.4, RF-02.5] — Loads all tasks from deliverable_structure.csv into raw Task objects</span>
+<div class="viewcode-block" id="load_raw_tasks_from_csv">
+<a class="viewcode-back" href="../../../index.html#src.schedule.loader.load_raw_tasks_from_csv">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_raw_tasks_from_csv</span><span class="p">(</span><span class="n">task_csv_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Task</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Loads all tasks from the CSV file into raw Task objects.</span>
+<span class="sd">    </span>
+<span class="sd">    This is used to create a template of tasks before any milestone-specific processing.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        task_csv_path (Path): Path to the `deliverable_structure.csv` file.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List[Task]: A sequential list of un-linked baseline Task templates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">raw_tasks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Task</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">task_csv_path</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;;&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG load_raw_tasks: found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="si">}</span><span class="s2"> rows in </span><span class="si">{</span><span class="n">task_csv_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;strategy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;strategy&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="c1"># Only fill string/object columns with &#39;&#39; — numeric columns stay as NaN</span>
+        <span class="n">obj_cols</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="s1">&#39;object&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">columns</span>
+        <span class="n">df</span><span class="p">[</span><span class="n">obj_cols</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">obj_cols</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="c1"># [Req: RF-02.5] — Cache TaskType objects by (description, strategy) to avoid duplicates</span>
+        <span class="n">task_type_cache</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="n">description</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;document_type&#39;</span><span class="p">]</span>
+            <span class="n">strategy</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;strategy&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;strategy&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="kc">None</span>
+
+            <span class="n">cache_key</span> <span class="o">=</span> <span class="p">(</span><span class="n">description</span><span class="p">,</span> <span class="n">strategy</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cache_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">task_type_cache</span><span class="p">:</span>
+                <span class="n">task_type_cache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">TaskType</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="n">strategy</span><span class="p">)</span>
+            
+            <span class="n">current_task_type</span> <span class="o">=</span> <span class="n">task_type_cache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span>
+            <span class="n">task_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;document_id&#39;</span><span class="p">])</span>
+            <span class="n">part_num</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;document_part_number&#39;</span><span class="p">])</span>
+            
+            <span class="c1"># The original parsing function _parse_successor_ids expects to parse the string here</span>
+            <span class="c1"># We rewrite the basic logic locally</span>
+            <span class="n">successors_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;successors&#39;</span><span class="p">])</span>
+
+            <span class="c1"># [Req: RF-02.2] — Read standard duration directly in minutes; NaN / missing values default to 0</span>
+            <span class="n">duration_val</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="s1">&#39;std_duration&#39;</span> <span class="ow">in</span> <span class="n">row</span><span class="p">:</span>
+                <span class="n">duration_val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;std_duration&#39;</span><span class="p">])</span> <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;std_duration&#39;</span><span class="p">])</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;std_duration&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+            <span class="k">elif</span> <span class="s1">&#39;execution_std(h)&#39;</span> <span class="ow">in</span> <span class="n">row</span><span class="p">:</span>
+                <span class="n">duration_val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;execution_std(h)&#39;</span><span class="p">])</span> <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;execution_std(h)&#39;</span><span class="p">])</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;execution_std(h)&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span>
+
+            <span class="n">task</span> <span class="o">=</span> <span class="n">Task</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="n">task_id</span><span class="p">,</span>
+                <span class="n">part_number</span><span class="o">=</span><span class="n">part_num</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;document_name&#39;</span><span class="p">],</span>
+                <span class="n">task_type</span><span class="o">=</span><span class="n">current_task_type</span><span class="p">,</span>
+                <span class="n">successors_str</span><span class="o">=</span><span class="n">successors_str</span><span class="p">,</span>
+                <span class="n">duration_minutes</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">duration_val</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">raw_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+        
+        <span class="c1"># Resolve immediate successors and predecessors for raw tasks using their original CSV IDs</span>
+        <span class="c1"># [Req: RF-02.4] — Resolve successors_tasks and predecessors using original CSV IDs</span>
+        <span class="n">raw_task_id_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">task</span> <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">raw_tasks</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">raw_tasks</span><span class="p">:</span>
+            <span class="c1"># Emulating task.resolve_successors(raw_task_id_map)</span>
+            <span class="n">task</span><span class="o">.</span><span class="n">successors_tasks</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">succ_id</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">&#39;successors_ids&#39;</span><span class="p">,</span> <span class="p">[]):</span>
+                <span class="k">if</span> <span class="n">succ_id</span> <span class="ow">in</span> <span class="n">raw_task_id_map</span><span class="p">:</span>
+                    <span class="n">task</span><span class="o">.</span><span class="n">successors_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">raw_task_id_map</span><span class="p">[</span><span class="n">succ_id</span><span class="p">])</span>
+            
+        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">raw_tasks</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">successor_task</span> <span class="ow">in</span> <span class="n">task</span><span class="o">.</span><span class="n">successors_tasks</span><span class="p">:</span>
+                <span class="n">successor_task</span><span class="o">.</span><span class="n">predecessors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">raw_tasks</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error reading Task CSV file </span><span class="si">{</span><span class="n">task_csv_path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">traceback</span>
+        <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">[]</span></div>
+
+
+<span class="c1"># [Req: RF-06, RF-06.2, RF-06.3, RF-06.4, RNF-16] — Looks up a task&#39;s duration in a cached customization DataFrame, matching by name or type</span>
+<div class="viewcode-block" id="read_customization_duration">
+<a class="viewcode-back" href="../../../index.html#src.schedule.loader.read_customization_duration">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_customization_duration</span><span class="p">(</span><span class="n">lookup_dict</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">customization_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                                <span class="n">customization_value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">task_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">task_type_desc</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reads the duration from a specific customization cached Hash Map.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        lookup_dict (Any): The cached dictionary containing the CSV configurations.</span>
+<span class="sd">        customization_name (str): The customization tag.</span>
+<span class="sd">        customization_value (str): The value selected for the customization.</span>
+<span class="sd">        task_name (str): The target task name.</span>
+<span class="sd">        task_type_desc (str): The target task type.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Optional[int]: The parsed duration in minutes. None if not matched.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">lookup_dict</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">lookup_dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+        <span class="n">column_candidate</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">task_type_desc</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">_st&quot;</span>
+        
+        <span class="n">match</span> <span class="o">=</span> <span class="n">lookup_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">task_name</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">match</span><span class="p">:</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">lookup_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">task_type_desc</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+            
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+            <span class="c1"># Maybe the column name maps exactly to the customization_name (legacy approach)</span>
+            <span class="k">if</span> <span class="n">column_candidate</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">match</span><span class="p">:</span>
+                <span class="n">column_candidate</span> <span class="o">=</span> <span class="s1">&#39;duration_st&#39;</span> <span class="k">if</span> <span class="s1">&#39;duration_st&#39;</span> <span class="ow">in</span> <span class="n">match</span> <span class="k">else</span> <span class="s1">&#39;std_duration&#39;</span>
+
+            <span class="k">if</span> <span class="n">column_candidate</span> <span class="ow">in</span> <span class="n">match</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">match</span><span class="p">[</span><span class="n">column_candidate</span><span class="p">]</span>
+                <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">notna</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An unexpected error occurred while reading customization duration: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Chrono Tailoring Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -47,13 +47,10 @@ def main():
     # 2. Analyze resource bottleneck limits (calculates curves and exports plot map)
     print("\n--- Analyzing Resource Constraints ---")
     plot_resource_vs_duration(
-        task_csv_path=config.TASK_CSV_PATH,
-        customization_overview_csv_path=config.CUSTOMIZATION_OVERVIEW_CSV_PATH,
+        base_schedule=schedule,
         max_resources=10, 
         min_resources=1,
-        output_plot_path=config.OUTPUT_DIR / "resource_vs_duration.png",
-        project_requirements_path=config.PROJECT_REQUIREMENTS_PATH,
-        holidays_path=config.HOLIDAYS_PATH
+        output_plot_path=config.OUTPUT_DIR / "resource_vs_duration.png"
     )
 
     # 3. Export detailed Mermaid flow graph
@@ -96,6 +93,14 @@ def main():
         project_requirements_path=config.PROJECT_REQUIREMENTS_PATH,
         holidays=schedule.holidays,
     )
+
+    # 6. Export trace log
+    trace_log_path = config.OUTPUT_DIR / "transformation_log.json"
+    if config.DEBUG:
+        print(f"Exporting trace log to JSON: {trace_log_path}")
+    import json
+    with open(trace_log_path, "w", encoding="utf-8") as f:
+        json.dump(schedule.transformation_log, f, indent=2, ensure_ascii=False)
 
     print("\n--- Simulation Complete ---")
 

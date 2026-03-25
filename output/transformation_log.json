@@ -1,0 +1,1524 @@
+[
+  {
+    "event": "task_removed",
+    "task_id": 203,
+    "part": "60080",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      207
+    ],
+    "bridged_successors": [
+      3,
+      202,
+      204
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 207,
+    "part": "60081",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      211
+    ],
+    "bridged_successors": [
+      203,
+      206,
+      208
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 209,
+    "part": "60082",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      210,
+      212,
+      213
+    ],
+    "bridged_successors": [
+      205
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 210,
+    "part": "60082",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      211
+    ],
+    "bridged_successors": [
+      209
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 211,
+    "part": "60082",
+    "reason": "duration=0",
+    "bridged_predecessors": [],
+    "bridged_successors": [
+      207,
+      210,
+      212
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 213,
+    "part": "60083",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      214,
+      216,
+      217
+    ],
+    "bridged_successors": [
+      209
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 214,
+    "part": "60083",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      215
+    ],
+    "bridged_successors": [
+      213
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 215,
+    "part": "60083",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      219
+    ],
+    "bridged_successors": [
+      214,
+      216
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 217,
+    "part": "60084",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      218,
+      220,
+      221,
+      225
+    ],
+    "bridged_successors": [
+      213
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 218,
+    "part": "60084",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      219
+    ],
+    "bridged_successors": [
+      217
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 219,
+    "part": "60084",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      223,
+      227
+    ],
+    "bridged_successors": [
+      215,
+      218,
+      220
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 221,
+    "part": "60085",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      222,
+      224
+    ],
+    "bridged_successors": [
+      217
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 222,
+    "part": "60085",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      223
+    ],
+    "bridged_successors": [
+      221
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 223,
+    "part": "60085",
+    "reason": "duration=0",
+    "bridged_predecessors": [],
+    "bridged_successors": [
+      219,
+      222,
+      224
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 225,
+    "part": "60086",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      226,
+      228
+    ],
+    "bridged_successors": [
+      217
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 226,
+    "part": "60086",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      227
+    ],
+    "bridged_successors": [
+      225
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 227,
+    "part": "60086",
+    "reason": "duration=0",
+    "bridged_predecessors": [],
+    "bridged_successors": [
+      219,
+      226,
+      228
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 460,
+    "part": "60080",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      464
+    ],
+    "bridged_successors": [
+      260,
+      459,
+      461
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 464,
+    "part": "60081",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      468
+    ],
+    "bridged_successors": [
+      460,
+      463,
+      465
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 466,
+    "part": "60082",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      467,
+      469,
+      470
+    ],
+    "bridged_successors": [
+      462
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 467,
+    "part": "60082",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      468
+    ],
+    "bridged_successors": [
+      466
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 468,
+    "part": "60082",
+    "reason": "duration=0",
+    "bridged_predecessors": [],
+    "bridged_successors": [
+      464,
+      467,
+      469
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 470,
+    "part": "60083",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      471,
+      473,
+      474
+    ],
+    "bridged_successors": [
+      466
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 471,
+    "part": "60083",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      472
+    ],
+    "bridged_successors": [
+      470
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 472,
+    "part": "60083",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      476
+    ],
+    "bridged_successors": [
+      471,
+      473
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 474,
+    "part": "60084",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      475,
+      477,
+      478,
+      482
+    ],
+    "bridged_successors": [
+      470
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 475,
+    "part": "60084",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      476
+    ],
+    "bridged_successors": [
+      474
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 476,
+    "part": "60084",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      480,
+      484
+    ],
+    "bridged_successors": [
+      472,
+      475,
+      477
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 478,
+    "part": "60085",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      479,
+      481
+    ],
+    "bridged_successors": [
+      474
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 479,
+    "part": "60085",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      480
+    ],
+    "bridged_successors": [
+      478
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 480,
+    "part": "60085",
+    "reason": "duration=0",
+    "bridged_predecessors": [],
+    "bridged_successors": [
+      476,
+      479,
+      481
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 482,
+    "part": "60086",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      483,
+      485
+    ],
+    "bridged_successors": [
+      474
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 483,
+    "part": "60086",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      484
+    ],
+    "bridged_successors": [
+      482
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 484,
+    "part": "60086",
+    "reason": "duration=0",
+    "bridged_predecessors": [],
+    "bridged_successors": [
+      476,
+      483,
+      485
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 717,
+    "part": "60080",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      721
+    ],
+    "bridged_successors": [
+      517,
+      716,
+      718
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 721,
+    "part": "60081",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      725
+    ],
+    "bridged_successors": [
+      717,
+      720,
+      722
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 723,
+    "part": "60082",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      724,
+      726,
+      727
+    ],
+    "bridged_successors": [
+      719
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 724,
+    "part": "60082",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      725
+    ],
+    "bridged_successors": [
+      723
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 725,
+    "part": "60082",
+    "reason": "duration=0",
+    "bridged_predecessors": [],
+    "bridged_successors": [
+      721,
+      724,
+      726
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 727,
+    "part": "60083",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      728,
+      730,
+      731
+    ],
+    "bridged_successors": [
+      723
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 728,
+    "part": "60083",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      729
+    ],
+    "bridged_successors": [
+      727
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 729,
+    "part": "60083",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      733
+    ],
+    "bridged_successors": [
+      728,
+      730
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 731,
+    "part": "60084",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      732,
+      734,
+      735,
+      739
+    ],
+    "bridged_successors": [
+      727
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 732,
+    "part": "60084",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      733
+    ],
+    "bridged_successors": [
+      731
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 733,
+    "part": "60084",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      737,
+      741
+    ],
+    "bridged_successors": [
+      729,
+      732,
+      734
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 735,
+    "part": "60085",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      736,
+      738
+    ],
+    "bridged_successors": [
+      731
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 736,
+    "part": "60085",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      737
+    ],
+    "bridged_successors": [
+      735
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 737,
+    "part": "60085",
+    "reason": "duration=0",
+    "bridged_predecessors": [],
+    "bridged_successors": [
+      733,
+      736,
+      738
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 739,
+    "part": "60086",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      740,
+      742
+    ],
+    "bridged_successors": [
+      731
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 740,
+    "part": "60086",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      741
+    ],
+    "bridged_successors": [
+      739
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 741,
+    "part": "60086",
+    "reason": "duration=0",
+    "bridged_predecessors": [],
+    "bridged_successors": [
+      733,
+      740,
+      742
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 974,
+    "part": "60080",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      978
+    ],
+    "bridged_successors": [
+      774,
+      973,
+      975
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 978,
+    "part": "60081",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      982
+    ],
+    "bridged_successors": [
+      974,
+      977,
+      979
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 980,
+    "part": "60082",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      981,
+      983,
+      984
+    ],
+    "bridged_successors": [
+      976
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 981,
+    "part": "60082",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      982
+    ],
+    "bridged_successors": [
+      980
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 982,
+    "part": "60082",
+    "reason": "duration=0",
+    "bridged_predecessors": [],
+    "bridged_successors": [
+      978,
+      981,
+      983
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 984,
+    "part": "60083",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      985,
+      987,
+      988
+    ],
+    "bridged_successors": [
+      980
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 985,
+    "part": "60083",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      986
+    ],
+    "bridged_successors": [
+      984
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 986,
+    "part": "60083",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      990
+    ],
+    "bridged_successors": [
+      985,
+      987
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 988,
+    "part": "60084",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      989,
+      991,
+      992,
+      996
+    ],
+    "bridged_successors": [
+      984
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 989,
+    "part": "60084",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      990
+    ],
+    "bridged_successors": [
+      988
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 990,
+    "part": "60084",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      994,
+      998
+    ],
+    "bridged_successors": [
+      986,
+      989,
+      991
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 992,
+    "part": "60085",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      993,
+      995
+    ],
+    "bridged_successors": [
+      988
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 993,
+    "part": "60085",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      994
+    ],
+    "bridged_successors": [
+      992
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 994,
+    "part": "60085",
+    "reason": "duration=0",
+    "bridged_predecessors": [],
+    "bridged_successors": [
+      990,
+      993,
+      995
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 996,
+    "part": "60086",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      997,
+      999
+    ],
+    "bridged_successors": [
+      988
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 997,
+    "part": "60086",
+    "reason": "duration=0",
+    "bridged_predecessors": [
+      998
+    ],
+    "bridged_successors": [
+      996
+    ]
+  },
+  {
+    "event": "task_removed",
+    "task_id": 998,
+    "part": "60086",
+    "reason": "duration=0",
+    "bridged_predecessors": [],
+    "bridged_successors": [
+      990,
+      997,
+      999
+    ]
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60080",
+    "consumed_ids": [
+      202,
+      459,
+      716,
+      973
+    ],
+    "consolidated_id": 1029
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60081",
+    "consumed_ids": [
+      206,
+      463,
+      720,
+      977
+    ],
+    "consolidated_id": 1030
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60015",
+    "consumed_ids": [
+      26,
+      283,
+      540,
+      797
+    ],
+    "consolidated_id": 1031
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60016",
+    "consumed_ids": [
+      30,
+      287,
+      544,
+      801
+    ],
+    "consolidated_id": 1032
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60025",
+    "consumed_ids": [
+      54,
+      311,
+      568,
+      825
+    ],
+    "consolidated_id": 1033
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60026",
+    "consumed_ids": [
+      58,
+      315,
+      572,
+      829
+    ],
+    "consolidated_id": 1034
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60035",
+    "consumed_ids": [
+      82,
+      339,
+      596,
+      853
+    ],
+    "consolidated_id": 1035
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60036",
+    "consumed_ids": [
+      86,
+      343,
+      600,
+      857
+    ],
+    "consolidated_id": 1036
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60045",
+    "consumed_ids": [
+      110,
+      367,
+      624,
+      881
+    ],
+    "consolidated_id": 1037
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60046",
+    "consumed_ids": [
+      114,
+      371,
+      628,
+      885
+    ],
+    "consolidated_id": 1038
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60055",
+    "consumed_ids": [
+      138,
+      395,
+      652,
+      909
+    ],
+    "consolidated_id": 1039
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60056",
+    "consumed_ids": [
+      142,
+      399,
+      656,
+      913
+    ],
+    "consolidated_id": 1040
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60065",
+    "consumed_ids": [
+      166,
+      423,
+      680,
+      937
+    ],
+    "consolidated_id": 1041
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60066",
+    "consumed_ids": [
+      170,
+      427,
+      684,
+      941
+    ],
+    "consolidated_id": 1042
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60075",
+    "consumed_ids": [
+      194,
+      451,
+      708,
+      965
+    ],
+    "consolidated_id": 1043
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60076",
+    "consumed_ids": [
+      198,
+      455,
+      712,
+      969
+    ],
+    "consolidated_id": 1044
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60095",
+    "consumed_ids": [
+      250,
+      507,
+      764,
+      1021
+    ],
+    "consolidated_id": 1045
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60096",
+    "consumed_ids": [
+      254,
+      511,
+      768,
+      1025
+    ],
+    "consolidated_id": 1046
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60014",
+    "consumed_ids": [
+      22,
+      279,
+      536,
+      793
+    ],
+    "consolidated_id": 1047
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60024",
+    "consumed_ids": [
+      50,
+      307,
+      564,
+      821
+    ],
+    "consolidated_id": 1048
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60034",
+    "consumed_ids": [
+      78,
+      335,
+      592,
+      849
+    ],
+    "consolidated_id": 1049
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60044",
+    "consumed_ids": [
+      106,
+      363,
+      620,
+      877
+    ],
+    "consolidated_id": 1050
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60054",
+    "consumed_ids": [
+      134,
+      391,
+      648,
+      905
+    ],
+    "consolidated_id": 1051
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60064",
+    "consumed_ids": [
+      162,
+      419,
+      676,
+      933
+    ],
+    "consolidated_id": 1052
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60074",
+    "consumed_ids": [
+      190,
+      447,
+      704,
+      961
+    ],
+    "consolidated_id": 1053
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60094",
+    "consumed_ids": [
+      246,
+      503,
+      760,
+      1017
+    ],
+    "consolidated_id": 1054
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60013",
+    "consumed_ids": [
+      18,
+      275,
+      532,
+      789
+    ],
+    "consolidated_id": 1055
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60023",
+    "consumed_ids": [
+      46,
+      303,
+      560,
+      817
+    ],
+    "consolidated_id": 1056
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60033",
+    "consumed_ids": [
+      74,
+      331,
+      588,
+      845
+    ],
+    "consolidated_id": 1057
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60043",
+    "consumed_ids": [
+      102,
+      359,
+      616,
+      873
+    ],
+    "consolidated_id": 1058
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60053",
+    "consumed_ids": [
+      130,
+      387,
+      644,
+      901
+    ],
+    "consolidated_id": 1059
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60063",
+    "consumed_ids": [
+      158,
+      415,
+      672,
+      929
+    ],
+    "consolidated_id": 1060
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60073",
+    "consumed_ids": [
+      186,
+      443,
+      700,
+      957
+    ],
+    "consolidated_id": 1061
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60093",
+    "consumed_ids": [
+      242,
+      499,
+      756,
+      1013
+    ],
+    "consolidated_id": 1062
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60012",
+    "consumed_ids": [
+      14,
+      271,
+      528,
+      785
+    ],
+    "consolidated_id": 1063
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60022",
+    "consumed_ids": [
+      42,
+      299,
+      556,
+      813
+    ],
+    "consolidated_id": 1064
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60032",
+    "consumed_ids": [
+      70,
+      327,
+      584,
+      841
+    ],
+    "consolidated_id": 1065
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60042",
+    "consumed_ids": [
+      98,
+      355,
+      612,
+      869
+    ],
+    "consolidated_id": 1066
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60052",
+    "consumed_ids": [
+      126,
+      383,
+      640,
+      897
+    ],
+    "consolidated_id": 1067
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60062",
+    "consumed_ids": [
+      154,
+      411,
+      668,
+      925
+    ],
+    "consolidated_id": 1068
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60072",
+    "consumed_ids": [
+      182,
+      439,
+      696,
+      953
+    ],
+    "consolidated_id": 1069
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60092",
+    "consumed_ids": [
+      238,
+      495,
+      752,
+      1009
+    ],
+    "consolidated_id": 1070
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60011",
+    "consumed_ids": [
+      10,
+      267,
+      524,
+      781
+    ],
+    "consolidated_id": 1071
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60021",
+    "consumed_ids": [
+      38,
+      295,
+      552,
+      809
+    ],
+    "consolidated_id": 1072
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60031",
+    "consumed_ids": [
+      66,
+      323,
+      580,
+      837
+    ],
+    "consolidated_id": 1073
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60041",
+    "consumed_ids": [
+      94,
+      351,
+      608,
+      865
+    ],
+    "consolidated_id": 1074
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60051",
+    "consumed_ids": [
+      122,
+      379,
+      636,
+      893
+    ],
+    "consolidated_id": 1075
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60061",
+    "consumed_ids": [
+      150,
+      407,
+      664,
+      921
+    ],
+    "consolidated_id": 1076
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60071",
+    "consumed_ids": [
+      178,
+      435,
+      692,
+      949
+    ],
+    "consolidated_id": 1077
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60091",
+    "consumed_ids": [
+      234,
+      491,
+      748,
+      1005
+    ],
+    "consolidated_id": 1078
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60010",
+    "consumed_ids": [
+      6,
+      263,
+      520,
+      777
+    ],
+    "consolidated_id": 1079
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60020",
+    "consumed_ids": [
+      34,
+      291,
+      548,
+      805
+    ],
+    "consolidated_id": 1080
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60030",
+    "consumed_ids": [
+      62,
+      319,
+      576,
+      833
+    ],
+    "consolidated_id": 1081
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60040",
+    "consumed_ids": [
+      90,
+      347,
+      604,
+      861
+    ],
+    "consolidated_id": 1082
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60050",
+    "consumed_ids": [
+      118,
+      375,
+      632,
+      889
+    ],
+    "consolidated_id": 1083
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60060",
+    "consumed_ids": [
+      146,
+      403,
+      660,
+      917
+    ],
+    "consolidated_id": 1084
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60070",
+    "consumed_ids": [
+      174,
+      431,
+      688,
+      945
+    ],
+    "consolidated_id": 1085
+  },
+  {
+    "event": "drawing_consolidated",
+    "base_part": "60090",
+    "consumed_ids": [
+      230,
+      487,
+      744,
+      1001
+    ],
+    "consolidated_id": 1086
+  }
+]

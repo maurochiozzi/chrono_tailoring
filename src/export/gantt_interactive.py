@@ -48,6 +48,7 @@ def _hex_to_rgba(hex_color: str, alpha: float = 0.85) -> str:
     return f"rgba({r},{g},{b},{alpha})"
 
 
+# [Req: RF-17, RF-17.4] — Entry point: title and project_start_date are configurable per-project
 def export_interactive_gantt(
     tasks: List[Task],
     output_path: Path,
@@ -56,18 +57,22 @@ def export_interactive_gantt(
     total_resources: int = 1,
     project_requirements_path: Optional[Path] = None,
     holidays: Optional[Set[date]] = None,
+    show_task_arrows: bool = False,
 ) -> None:
-    """
-    Serialises tasks to JSON and writes a self-contained Vis.js HTML Gantt.
+    """Serialises tasks to JSON and writes a self-contained Vis.js HTML Gantt.
 
     Rows  = unique task names (swim-lanes).
     Items = individual task instances, coloured by milestone.
 
     Args:
-        tasks:              Flat list of Task objects with init_date / end_date set.
-        output_path:        Where to write the .html file.
-        title:              Browser title / header text.
-        milestone_name_map: Optional {milestone_id: 'Display name'} mapping.
+        tasks (List[Task]): Flat list of Task objects with init_date / end_date set.
+        output_path (Path): Where to write the .html file.
+        title (str, optional): Browser title / header text. Defaults to "Chrono Tailoring — Interactive Gantt Chart".
+        milestone_name_map (Optional[Dict[Any, str]], optional): Mapping of milestone IDs to names. Defaults to None.
+        total_resources (int, optional): The total number of parallel resources applied. Defaults to 1.
+        project_requirements_path (Optional[Path], optional): Path to requirements for the info sidebar. Defaults to None.
+        holidays (Optional[Set[date]], optional): Dates to format differently. Defaults to None.
+        show_task_arrows (bool, optional): Auto-enable standard dependency arrows on load. Defaults to False.
     """
     if milestone_name_map is None:
         milestone_name_map = {}
@@ -80,6 +85,7 @@ def export_interactive_gantt(
             milestone_ids.append(mid)
     milestone_ids.sort(key=str)
 
+    # [Req: RF-17.3] — Milestone colour palette (12 colours, cyclic); no-milestone tasks get grey
     milestone_color: dict = {}
     for i, mid in enumerate(milestone_ids):
         milestone_color[mid] = _MILESTONE_PALETTE[i % len(_MILESTONE_PALETTE)]
@@ -93,6 +99,7 @@ def export_interactive_gantt(
             return f"{base_part} - Consolidated drawing"
         return f"{base_part} - {t.name}"
 
+    # [Req: RF-17.2] — Swim-lanes = unique task names formatted as 'BasePart - Name', sorted alphabetically
     seen_names: list = []
     for t in tasks:
         if t.init_date is None or t.end_date is None:
@@ -109,8 +116,9 @@ def export_interactive_gantt(
     # ── 3. Items ─────────────────────────────────────────────────────────────────
     items: list = []
     
-    # ── 3.1 Links for Critical Path ──────────────────────────────────────────────
+    # ── 3.1 Links for Critical Path and all other tasks───────────────────────────
     critical_links = []
+    task_links = [] # all task links regardless of criticality
 
     for task in tasks:
         if task.init_date is None or task.end_date is None:
@@ -146,7 +154,7 @@ def export_interactive_gantt(
 
         fname = format_task_name(task)
         
-        # Track critical path links
+        # [Req: RF-19.1] — Build critical path links (both endpoints is_critical=True)
         if getattr(task, 'is_critical', False):
             for succ in getattr(task, 'successors_tasks', []):
                 if getattr(succ, 'is_critical', False):
@@ -154,6 +162,13 @@ def export_interactive_gantt(
                         "from": task.id,
                         "to": succ.id
                     })
+        
+        # [Req: RF-19.2] — All task links; non-critical ones rendered grey and togglable
+        for succ in getattr(task, 'successors_tasks', []):
+            task_links.append({
+                "from": task.id,
+                "to": succ.id
+            })
 
         items.append({
             "id":      task.id,
@@ -168,7 +183,7 @@ def export_interactive_gantt(
                 f"color:#fff;"
                 f"border-radius:4px;"
             ),
-            # Metadata for client-side filtering + export
+            # [Req: RF-22.3] — Metadata fields embedded per-item for browser-side export
             "_task_id":    task.id,
             "_name":       fname,
             "_milestone":  milestone_label,
@@ -182,7 +197,13 @@ def export_interactive_gantt(
             "_succs":      succs,
         })
         
-    # ── 3.1.5 Add Backgrounds for Weekends and Holidays ──────────────────────────
+    # Combine critical_links and task_links based on the flag
+    # Use list() to avoid mutating the original critical_links reference
+    all_links = list(critical_links)
+    if show_task_arrows:
+        all_links.extend([link for link in task_links if link not in critical_links])
+
+    # [Req: RF-20, RF-20.1] — Add background items for weekends and holidays; styled via CSS .holiday-bg
     if tasks:
         p_start = min(t.init_date for t in tasks if t.init_date)
         p_end = max(t.end_date for t in tasks if t.end_date)
@@ -230,12 +251,12 @@ def export_interactive_gantt(
             task_types.append(td)
     task_types.sort()
 
-    # ── 3.5 Resource Histogram ───────────────────────────────────────────────────
+    # [Req: RF-21.1, RF-21.2, RF-21.3] — Sweep-line resource histogram: +1 at init_date, -1 at end_date; double-point for step chart
     events = []
     for task in tasks:
         if task.init_date and task.end_date and getattr(task, 'duration_minutes', 0) > 0:
-            events.append((task.init_date, 1))
-            events.append((task.end_date, -1))
+            events.append((task.init_date, 1))   # [Req: RF-21.1] — +1 event
+            events.append((task.end_date, -1))   # [Req: RF-21.1] — -1 event
     events.sort(key=lambda x: x[0])
 
     resource_data = []
@@ -246,7 +267,7 @@ def export_interactive_gantt(
 
     for time_val, delta in events:
         time_str = time_val.strftime('%Y-%m-%dT%H:%M:%S')
-        # Inject exact previous Y at this exact X to force true step visualization in Vis js
+        # [Req: RF-21.3] — Emit previous Y then new Y at same X to force true step chart in Vis.js
         resource_data.append({"x": time_str, "y": current_load})
         current_load += delta
         resource_data.append({"x": time_str, "y": current_load})
@@ -258,8 +279,9 @@ def export_interactive_gantt(
     type_palette_json   = json.dumps(_TYPE_PALETTE,  ensure_ascii=False)
     resource_data_json  = json.dumps(resource_data,  ensure_ascii=False)
     critical_links_json = json.dumps(critical_links, ensure_ascii=False)
+    all_links_json = json.dumps(all_links, ensure_ascii=False)
 
-    # ── 3.2 Calculate Project Summary ─────────────────────────────────────────────
+    # [Req: RF-23.1] — Project summary: dates and duration computed at generation time
     if tasks:
         p_start = min(t.init_date for t in tasks if t.init_date)
         p_end = max(t.end_date for t in tasks if t.end_date)
@@ -269,6 +291,7 @@ def export_interactive_gantt(
     else:
         p_start_str, p_end_str, p_dur_days = "N/A", "N/A", 0
         
+    # [Req: RF-23.2] — Raw project_config.json embedded verbatim for context
     req_text = ""
     if project_requirements_path and project_requirements_path.exists():
         req_text = project_requirements_path.read_text('utf-8')
@@ -678,6 +701,16 @@ def export_interactive_gantt(
       </div>
       
       <hr class="section-sep"/>
+
+      <div>
+          <div class="section-label">Dependencies</div>
+          <div class="filter-item">
+            <input type="checkbox" id="toggleTaskArrows" checked onchange="onToggleTaskArrows(this)"/>
+            <span class="filter-label">Show Task Arrows</span>
+          </div>
+      </div>
+      
+      <hr class="section-sep"/>
       
       <div>
           <div class="section-label">Requirements</div>
@@ -693,6 +726,9 @@ def export_interactive_gantt(
       <defs>
         <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
           <polygon points="0 0, 6 3, 0 6" fill="#E8453C" />
+        </marker>
+        <marker id="arrowhead-task" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+          <polygon points="0 0, 6 3, 0 6" fill="#6b728e" />
         </marker>
       </defs>
     </svg>
@@ -711,10 +747,13 @@ def export_interactive_gantt(
 
   const RESOURCE_DATA  = {resource_data_json};
   const TOTAL_RESOURCES = {total_resources};
+  const CRITICAL_LINKS = {critical_links_json}; // Original critical path links
+  const ALL_TASK_LINKS = {all_links_json};
 
   // ── Active filter state ───────────────────────────────────────────────────────
   const hiddenMilestones = new Set();   // milestone_id strings that are OFF
   const hiddenTypes      = new Set();   // type strings that are OFF
+  let showAllTaskArrows = true; // State for toggling all task arrows
 
   // ── Vis.js setup ─────────────────────────────────────────────────────────────
   const dataset = new vis.DataSet(ALL_ITEMS);
@@ -811,7 +850,7 @@ def export_interactive_gantt(
     // Apply order
     groups.clear();
     groups.add(gArray);
-    drawCriticalPath();
+    drawDependencyArrows();
   }}
 
   // ── Re-apply all active filters and refresh dataset ───────────────────────────
@@ -830,7 +869,7 @@ def export_interactive_gantt(
       groups.update({{ id: g.id, visible: visibleNames.has(g.id) }});
     }});
     
-    setTimeout(drawCriticalPath, 50);
+    setTimeout(drawDependencyArrows, 50);
   }}
 
   // ── Sidebar: Milestones ───────────────────────────────────────────────────────
@@ -891,16 +930,21 @@ def export_interactive_gantt(
     applyFilters();
   }}
   
+  function onToggleTaskArrows(cb) {{
+    showAllTaskArrows = cb.checked;
+    drawDependencyArrows();
+  }}
+
   // ── Draw SVG Arrows for Critical Path ──────────────────────────────────────────
-  const CRITICAL_LINKS = {critical_links_json};
+  const CRITICAL_LINKS = {critical_links_json}; // Assuming critical_links is still passed for identification
   const svgOverlay = document.getElementById('criticalSvg');
   
-  function drawCriticalPath() {{
+  function drawDependencyArrows() {{
       // clear existing paths (keep defs)
       const paths = svgOverlay.querySelectorAll('path');
       paths.forEach(p => p.remove());
 
-      if (CRITICAL_LINKS.length === 0) return;
+      if (ALL_TASK_LINKS.length === 0 && CRITICAL_LINKS.length === 0) return;
 
       const ganttRect = document.getElementById('gantt').getBoundingClientRect();
       const panelOuter = document.querySelector('.vis-panel.vis-center');
@@ -911,7 +955,11 @@ def export_interactive_gantt(
       const offsetX = panelRect.left - ganttRect.left;
       const offsetY = panelRect.top - ganttRect.top;
 
-      CRITICAL_LINKS.forEach(link => {{
+      ALL_TASK_LINKS.forEach(link => {{
+          const isCritical = CRITICAL_LINKS.some(cl => cl.from === link.from && cl.to === link.to);
+
+          if (!showAllTaskArrows && !isCritical) return; // Skip if not showing all and not critical
+
           const itemFrom = timeline.itemSet.items[link.from];
           const itemTo = timeline.itemSet.items[link.to];
 
@@ -927,8 +975,8 @@ def export_interactive_gantt(
                const y2 = (bTo.top + bTo.height/2 - panelRect.top) + offsetY;
 
                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-               path.setAttribute('class', 'cp-path');
-               path.setAttribute('marker-end', 'url(#arrowhead)');
+               path.setAttribute('class', isCritical ? 'cp-path' : 'task-path');
+               path.setAttribute('marker-end', isCritical ? 'url(#arrowhead)' : 'url(#arrowhead-task)');
 
                // Check if successor is on a different row, if so use an S-curve, otherwise straight line
                if (Math.abs(y1 - y2) < 5) {{
@@ -942,8 +990,8 @@ def export_interactive_gantt(
       }});
   }}
 
-  timeline.on('changed', drawCriticalPath);
-  timeline.on('scroll', drawCriticalPath);
+  timeline.on('changed', drawDependencyArrows);
+  timeline.on('scroll', drawDependencyArrows);
 
   // ── Export ───────────────────────────────────────────────────────────────────
   function showToast(msg) {{
@@ -985,7 +1033,10 @@ def export_interactive_gantt(
     document.body.removeChild(a); URL.revokeObjectURL(url);
   }}
 
-  setTimeout(() => timeline.fit(), 150);
+  setTimeout(() => {{
+    timeline.fit();
+    drawDependencyArrows(); // Draw arrows after initial fit
+  }}, 150);
 </script>
 </body>
 </html>

@@ -4,18 +4,30 @@ from pathlib import Path
 from src.core.models import ProjectMilestone
 from src.config import DEBUG
 
-def export_tasks_to_mermaid_graph(milestones: List[ProjectMilestone], output_file_path: Optional[Path] = None, detail_level: str = 'full') -> str:
-    """
-    Generates a Mermaid flowchart (graph TD) representation of tasks, grouped by milestone.
+# [Req: RF-16, RF-16.1, RF-16.2, RF-16.3] — Flowchart export: three levels of detail (full / type / milestone)
+def export_tasks_to_mermaid_graph(schedule: List[ProjectMilestone], output_file_path: Optional[Path] = None, detail_level: str = 'full') -> str:
+    """Generates a Mermaid flowchart (graph TD) representation of tasks, grouped by milestone.
+
     Can generate a detailed graph of individual tasks or a high-level graph based on task types.
+
+    Args:
+        schedule (List[ProjectMilestone]): The grouped sequence of milestones and tasks.
+        output_file_path (Optional[Path], optional): Where to write the syntax file. Defaults to None.
+        detail_level (str, optional): Graph abstraction level ('full', 'type', or 'milestone'). Defaults to 'full'.
+
+    Raises:
+        ValueError: If `detail_level` is not recognized.
+
+    Returns:
+        str: The raw Mermaid syntax string.
     """
     mermaid_lines = ["graph TD"]
-    all_tasks = [task for milestone in milestones for task in milestone.tasks]
+    all_tasks = [task for milestone in schedule for task in milestone.tasks]
 
     def sanitize_id(text: str) -> str:
         return text.replace(" ", "_").replace("-", "_").replace(".", "").lower()
 
-    if detail_level == 'full':
+    if detail_level == "full":  # [Req: RF-16.1] — Full detail: one node per task, grouped in subgraphs by milestone
         node_styles = []
 
         task_type_colors = {
@@ -26,7 +38,7 @@ def export_tasks_to_mermaid_graph(milestones: List[ProjectMilestone], output_fil
             'milestone': 'fill:#C6F'
         }
 
-        for milestone in milestones:
+        for milestone in schedule:
             mermaid_lines.append(f"    subgraph M_{milestone.name}[Milestone {milestone.name}]")
             
             for task in milestone.tasks:
@@ -58,13 +70,13 @@ def export_tasks_to_mermaid_graph(milestones: List[ProjectMilestone], output_fil
         
         for task in all_tasks:
             for successor_task in getattr(task, 'successors_tasks', []):
-                if any(s_task.id == successor_task.id for m in milestones for s_task in m.tasks):
+                if any(s_task.id == successor_task.id for m in schedule for s_task in m.tasks):
                     mermaid_lines.append(f"    {task.id} --> {successor_task.id}")
         
         mermaid_lines.extend(node_styles)
 
-    elif detail_level == 'type':
-        for milestone in milestones:
+    elif detail_level == "type":  # [Req: RF-16.2] — Type detail: one node per task type per milestone; edges between types
+        for milestone in schedule:
             mermaid_lines.append(f"    subgraph M_{milestone.name}[Milestone {milestone.name} (Types)]")
             
             unique_task_types_in_milestone = set()
@@ -105,11 +117,11 @@ def export_tasks_to_mermaid_graph(milestones: List[ProjectMilestone], output_fil
             sanitized_target_id_node = sanitize_id(target_td) + f"_{target_mid}"
             mermaid_lines.append(f"    {sanitized_source_id_node} --> {sanitized_target_id_node}")
 
-    elif detail_level == 'milestone':
+    elif detail_level == "milestone":  # [Req: RF-16.3] — Milestone detail: one node per milestone; executive-level view
         milestone_dependencies = set()
-        task_to_milestone_map = {task.id: milestone.name for milestone in milestones for task in milestone.tasks}
+        task_to_milestone_map = {task.id: milestone.name for milestone in schedule for task in milestone.tasks}
 
-        for milestone in milestones:
+        for milestone in schedule:
             sanitized_milestone_id = sanitize_id(str(milestone.name))
             mermaid_lines.append(f"    {sanitized_milestone_id}[Milestone {milestone.name}]")
 
@@ -139,9 +151,20 @@ def export_tasks_to_mermaid_graph(milestones: List[ProjectMilestone], output_fil
             
     return mermaid_syntax
 
-def export_tasks_to_mermaid_gantt(milestones: List[ProjectMilestone], output_file_path: Optional[Path] = None, detail_level: str = 'full') -> str:
-    """
-    Generates a Mermaid Gantt chart representation of tasks, grouped by milestone.
+# [Req: RF-16.4, RF-16.5, RF-16.6, RF-16.7] — Gantt export: full, type-summary, or milestone-type-summary views
+def export_tasks_to_mermaid_gantt(schedule: List[ProjectMilestone], output_file_path: Optional[Path] = None, detail_level: str = 'full') -> str:
+    """Generates a Mermaid Gantt chart representation of tasks, grouped by milestone.
+
+    Args:
+        schedule (List[ProjectMilestone]): The grouped sequence of milestones and tasks.
+        output_file_path (Optional[Path], optional): Where to write the syntax file. Defaults to None.
+        detail_level (str, optional): Export abstraction level ('full', 'type', 'milestone_type_summary'). Defaults to 'full'.
+
+    Raises:
+        ValueError: If `detail_level` is not recognized.
+
+    Returns:
+        str: The raw Mermaid Gantt syntax string.
     """
     mermaid_lines = [
         "gantt",
@@ -154,8 +177,8 @@ def export_tasks_to_mermaid_gantt(milestones: List[ProjectMilestone], output_fil
     def sanitize_id(text: str) -> str:
         return text.replace(" ", "_").replace("-", "_").replace(".", "").lower()
 
-    if detail_level == 'full':
-        for milestone in milestones:
+    if detail_level == "full":  # [Req: RF-16.4] — One bar per task with real dates
+        for milestone in schedule:
             mermaid_lines.append(f"    section Milestone {milestone.name}")
             
             for task in milestone.tasks:
@@ -190,8 +213,8 @@ def export_tasks_to_mermaid_gantt(milestones: List[ProjectMilestone], output_fil
                 else:
                     mermaid_lines.append(f"    {task_label_gantt} :{task.id}, {init_date_str}, {task_duration_mermaid_format}")
 
-    elif detail_level == 'type':
-        all_tasks = [task for milestone in milestones for task in milestone.tasks]
+    elif detail_level == "type":  # [Req: RF-16.5] — One bar per task type; span = min_start to max_end across all tasks of that type
+        all_tasks = [task for milestone in schedule for task in milestone.tasks]
         mermaid_lines.append("    section Task Types Overview")
         type_date_spans = {} 
 
@@ -246,8 +269,8 @@ def export_tasks_to_mermaid_gantt(milestones: List[ProjectMilestone], output_fil
 
             mermaid_lines.append(f"    {type_label} :{sanitize_id(type_desc)}, {duration_mermaid_format}")
     
-    elif detail_level == 'milestone_type_summary':
-        for milestone in milestones:
+    elif detail_level == "milestone_type_summary":  # [Req: RF-16.6] — One section per milestone; task types grouped, specials shown individually
+        for milestone in schedule:
             mermaid_lines.append(f"    section {milestone.name}")
 
             tasks_to_summarize = []

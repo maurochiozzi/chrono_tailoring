@@ -10,7 +10,7 @@ INPUT_DIR = BASE_DIR / 'input'
 
 TASK_CSV_PATH = INPUT_DIR / 'deliverable_structure.csv'
 CUSTOMIZATION_OVERVIEW_CSV_PATH = INPUT_DIR / 'customization_overview.csv'
-PROJECT_REQUIREMENTS_PATH = INPUT_DIR / 'project_requirements.txt'
+PROJECT_REQUIREMENTS_PATH = INPUT_DIR / 'project_config.json'
 HOLIDAYS_PATH = INPUT_DIR / 'holidays.csv'
 OUTPUT_DIR = BASE_DIR / 'output'
 

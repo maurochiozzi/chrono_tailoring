@@ -1,0 +1,2319 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>System Specifications &mdash; Chrono Tailoring 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Chrono Tailoring User Guide" href="user_guide.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Chrono Tailoring
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">Chrono Tailoring User Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">System Specifications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#functional-requirements">Functional Requirements</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rf-01-project-requirements-loading">RF-01: Project Requirements Loading</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-01-1-new-requirements-format">RF-01.1: New Requirements Format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-01-2-legacy-requirements-format">RF-01.2: Legacy Requirements Format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-01-3-settings-block-fields">RF-01.3: Settings Block Fields</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-01-4-error-handling-in-loading">RF-01.4: Error Handling in Loading</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#data">Data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rf-02-deliverable-structure-loading">RF-02: Deliverable Structure Loading</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-02-1-mandatory-task-csv-fields">RF-02.1: Mandatory Task CSV Fields</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-02-2-native-duration-reading-in-minutes">RF-02.2: Native Duration Reading in Minutes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-02-3-robust-successor-parsing">RF-02.3: Robust Successor Parsing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-02-4-graph-resolution-on-loading">RF-02.4: Graph Resolution on Loading</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-02-5-tasktype-cache">RF-02.5: TaskType Cache</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-24-customization-status-verification">RF-24: Customization Status Verification</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-24-1-path-and-status-calculation">RF-24.1: Path and Status Calculation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-24-2-csv-rewrite-with-updated-columns">RF-24.2: CSV Rewrite with Updated Columns</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-24-3-unnamed-column-discard">RF-24.3: Unnamed Column Discard</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-25-external-holiday-loading">RF-25: External Holiday Loading</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-25-1-yyyy-mm-dd-format-per-line">RF-25.1: YYYY-MM-DD Format per Line</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-25-2-invalid-line-tolerance">RF-25.2: Invalid Line Tolerance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-25-3-result-as-set-date">RF-25.3: Result as Set[date]</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#schedule">Schedule</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rf-03-task-generation-per-milestone">RF-03: Task Generation per Milestone</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-03-1-selection-by-deliverable-structure">RF-03.1: Selection by deliverable_structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-03-2-default-selection-without-deliverable-structure">RF-03.2: Default Selection without deliverable_structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-03-3-forced-inclusion-of-milestone-task">RF-03.3: Forced Inclusion of Milestone Task</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-03-4-global-unique-ids-via-counter">RF-03.4: Global Unique IDs via Counter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-03-5-milestone-id-assignment-to-tasks">RF-03.5: milestone_id Assignment to Tasks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-03-6-post-copy-dependency-re-wiring">RF-03.6: Post-Copy Dependency Re-wiring</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-04-recursive-task-duplication-with-variants">RF-04: Recursive Task Duplication with Variants</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-04-1-two-extra-args-formats">RF-04.1: Two extra_args Formats</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-04-2-recursive-predecessor-duplication">RF-04.2: Recursive Predecessor Duplication</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-04-3-part-number-with-variant-suffix">RF-04.3: Part_number with Variant Suffix</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-04-4-original-id-to-new-ids-map">RF-04.4: Original_id to New IDs Map</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-04-5-non-variant-tasks-remain-unique">RF-04.5: Non-Variant Tasks Remain Unique</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-04-6-consumed-task-deduplication">RF-04.6: Consumed Task Deduplication</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-08-exclusion-of-zero-duration-tasks">RF-08: Exclusion of Zero-Duration Tasks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-08-1-removal-from-task-list">RF-08.1: Removal from Task List</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-08-2-dependency-bridging">RF-08.2: Dependency Bridging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-08-3-post-removal-graph-reconstruction">RF-08.3: Post-Removal Graph Reconstruction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-09-date-calculation-with-working-hours">RF-09: Date Calculation with Working Hours</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-09-1-configurable-working-hours">RF-09.1: Configurable Working Hours</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-09-2-pre-work-time-advance">RF-09.2: Pre-Work Time Advance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-09-3-next-day-advance-if-post-work">RF-09.3: Next Day Advance if Post-Work</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-09-4-weekend-skipping">RF-09.4: Weekend Skipping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-09-5-holiday-skipping">RF-09.5: Holiday Skipping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-09-6-progressive-daily-duration-distribution">RF-09.6: Progressive Daily Duration Distribution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-09-7-zero-duration-special-case">RF-09.7: Zero Duration Special Case</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-10-scheduling-with-resource-constraints">RF-10: Scheduling with Resource Constraints</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-10-1-ready-tasks-priority-queue">RF-10.1: Ready Tasks Priority Queue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-10-2-active-tasks-heap">RF-10.2: Active Tasks Heap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-10-3-event-driven-time-advance">RF-10.3: Event-Driven Time Advance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-10-4-block-when-resources-exhausted">RF-10.4: Block when Resources Exhausted</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-10-5-init-date-as-max-of-predecessors-and-event">RF-10.5: init_date as Max of Predecessors and Event</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-10-6-earliest-start-propagation-to-successors">RF-10.6: earliest_start Propagation to Successors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-10-7-safety-final-step">RF-10.7: Safety Final Step</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-11-circular-dependency-detection">RF-11: Circular Dependency Detection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-11-1-kahn-s-algorithm-in-degree">RF-11.1: Kahn’s Algorithm (in-degree)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-11-2-runtimeerror-with-task-count">RF-11.2: RuntimeError with Task Count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-12-critical-path-calculation">RF-12: Critical Path Calculation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-12-1-project-end-as-max-end-date">RF-12.1: project_end as max(end_date)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-12-2-terminal-task-latest-end-project-end">RF-12.2: Terminal Task latest_end = project_end</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-12-3-backward-pass-via-out-degree">RF-12.3: Backward Pass via out_degree</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-12-4-slack-calculation-in-minutes">RF-12.4: Slack Calculation in Minutes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-12-5-is-critical-flag">RF-12.5: is_critical Flag</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-12-6-final-sort-by-init-date">RF-12.6: Final Sort by init_date</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-13-drawing-task-consolidation">RF-13: Drawing Task Consolidation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-13-1-selection-criterion-type-drawing">RF-13.1: Selection Criterion: type==drawing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-13-2-exclusion-of-7xxxx-part-numbers">RF-13.2: Exclusion of 7XXXX part_numbers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-13-3-single-task-groups-not-consolidated">RF-13.3: Single Task Groups Not Consolidated</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-13-4-consolidated-task-attributes">RF-13.4: Consolidated Task Attributes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-13-5-phase-1-successors-ids-remapping">RF-13.5: Phase 1: successors_ids Remapping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-13-6-phase-2-task-array-swap">RF-13.6: Phase 2: Task Array Swap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-13-7-phase-3-full-graph-reconstruction">RF-13.7: Phase 3: Full Graph Reconstruction</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#customization">Customization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rf-05-customizations-per-milestone-and-variant">RF-05: Customizations per Milestone and Variant</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-05-1-milestone-level-default">RF-05.1: Milestone Level (Default)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-05-2-variant-level-exclusive-override">RF-05.2: Variant Level (Exclusive Override)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-05-3-milestone-customization-inheritance">RF-05.3: Milestone Customization Inheritance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-05-4-global-customization-name-collection">RF-05.4: Global Customization Name Collection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-06-duration-lookup-by-customization-type">RF-06: Duration Lookup by Customization Type</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-06-1-customization-file-resolution">RF-06.1: Customization File Resolution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-06-2-match-by-task-name-or-type">RF-06.2: Match by Task Name or Type</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-06-3-duration-column-selection">RF-06.3: Duration Column Selection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-06-4-customization-as-descriptive-tag">RF-06.4: Customization as Descriptive Tag</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-06-5-missing-file-tolerance">RF-06.5: Missing File Tolerance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-07-maximum-duration-selection">RF-07: Maximum Duration Selection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-07-1-collection-of-all-valid-durations">RF-07.1: Collection of All Valid Durations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-07-2-applying-max">RF-07.2: Applying max()</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-07-3-maintaining-default-duration-without-customization">RF-07.3: Maintaining Default Duration without Customization</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#export">Export</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rf-14-task-export-to-csv">RF-14: Task Export to CSV</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-14-1-fixed-csv-fields">RF-14.1: Fixed CSV Fields</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-14-2-dynamic-customization-columns">RF-14.2: Dynamic Customization Columns</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-14-3-blank-milestone-id-for-consolidated">RF-14.3: Blank Milestone ID for Consolidated</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-14-4-yyyy-mm-dd-hh-mm-date-format">RF-14.4: YYYY-MM-DD HH:MM Date Format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-16-mermaid-diagram-export">RF-16: Mermaid Diagram Export</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-16-1-full-flowchart-per-task">RF-16.1: Full Flowchart (per Task)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-16-2-type-flowchart-per-task-type">RF-16.2: Type Flowchart (per Task Type)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-16-3-milestone-flowchart-per-milestone">RF-16.3: Milestone Flowchart (per Milestone)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-16-4-full-gantt">RF-16.4: Full Gantt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-16-5-type-gantt">RF-16.5: Type Gantt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-16-6-milestone-type-summary-gantt">RF-16.6: milestone_type_summary Gantt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-16-7-mermaid-duration-formatting">RF-16.7: Mermaid Duration Formatting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-17-self-contained-interactive-html-gantt">RF-17: Self-Contained Interactive HTML Gantt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-17-1-json-embedded-data-in-html">RF-17.1: JSON Embedded Data in HTML</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-17-2-swim-lanes-by-task-name">RF-17.2: Swim-lanes by Task Name</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-17-3-colors-by-milestone">RF-17.3: Colors by Milestone</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-17-4-configurable-title-and-start-date">RF-17.4: Configurable Title and Start Date</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-22-in-browser-data-export">RF-22: In-Browser Data Export</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-22-1-json-export">RF-22.1: JSON Export</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-22-2-csv-export">RF-22.2: CSV Export</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-22-3-embedded-metadata-per-item">RF-22.3: Embedded Metadata per Item</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#analysis">Analysis</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rf-15-resource-sensitivity-analysis">RF-15: Resource Sensitivity Analysis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-15-1-configurable-resource-range">RF-15.1: Configurable Resource Range</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-15-2-projectschedule-base-reuse">RF-15.2: ProjectSchedule Base Reuse</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-15-3-internal-output-suppression">RF-15.3: Internal Output Suppression</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-15-4-total-duration-in-minutes">RF-15.4: Total Duration in Minutes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-15-5-exported-matplotlib-graph">RF-15.5: Exported Matplotlib Graph</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-15-6-graceful-degradation-without-matplotlib">RF-15.6: Graceful Degradation without Matplotlib</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#visualization">Visualization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rf-18-interactive-gantt-filters">RF-18: Interactive Gantt Filters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-18-1-milestone-filter">RF-18.1: Milestone Filter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-18-2-task-type-filter">RF-18.2: Task Type Filter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-18-3-combined-filters-and-logic">RF-18.3: Combined Filters (AND Logic)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-18-4-visible-item-count-in-header">RF-18.4: Visible Item Count in Header</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-19-svg-dependency-arrows">RF-19: SVG Dependency Arrows</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-19-1-red-critical-arrows">RF-19.1: Red Critical Arrows</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-19-2-gray-non-critical-arrows">RF-19.2: Gray Non-Critical Arrows</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-19-3-non-critical-arrow-toggle">RF-19.3: Non-Critical Arrow Toggle</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-19-4-auto-redraw-on-move-zoom">RF-19.4: Auto-Redraw on Move/Zoom</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-19-5-bezier-arrow-geometry">RF-19.5: Bezier Arrow Geometry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-20-non-working-day-highlighting">RF-20: Non-Working Day Highlighting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-20-1-non-working-day-background">RF-20.1: Non-Working Day Background</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-20-2-css-styling-holiday-bg">RF-20.2: CSS Styling (holiday-bg)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-21-resource-histogram">RF-21: Resource Histogram</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-21-1-1-1-events-per-task">RF-21.1: +1/-1 events per Task</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-21-2-sequential-event-processing">RF-21.2: Sequential Event Processing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-21-3-double-points-for-step-chart">RF-21.3: Double Points for Step Chart</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-21-4-y-axis-label-with-resource-limit">RF-21.4: Y-axis Label with Resource Limit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-21-5-resource-limit-reference-line">RF-21.5: Resource Limit Reference Line</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-23-sidebar-summary-and-requirements-panel">RF-23: Sidebar Summary and Requirements Panel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-23-1-project-summary">RF-23.1: Project Summary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-23-2-raw-requirements-content">RF-23.2: Raw Requirements Content</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#audit">Audit</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rf-26-transformation-trace-log">RF-26: Transformation Trace Log</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#non-functional-requirements">Non-Functional Requirements</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#architecture">Architecture</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-01-modular-structure-in-python-package">RNF-01: Modular Structure in Python Package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-01-1-core-module">RNF-01.1: core/ Module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-01-2-schedule-module">RNF-01.2: schedule/ Module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-01-3-export-module">RNF-01.3: export/ Module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Configuration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-02-centralized-config-via-config-py">RNF-02: Centralized Config via config.py</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-02-1-file-derived-base-dir">RNF-02.1: __file__ Derived BASE_DIR</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-02-2-automatic-output-dir-creation">RNF-02.2: Automatic OUTPUT_DIR Creation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-02-3-global-debug-flag">RNF-02.3: Global DEBUG Flag</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#compatibility">Compatibility</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-03-legacy-format-backward-compatibility">RNF-03: Legacy Format Backward Compatibility</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#performance">Performance</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-04-o-log-n-scheduler-with-heapq">RNF-04: O(log n) Scheduler with heapq</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-10-output-suppression-in-analysis-loop">RNF-10: Output Suppression in Analysis Loop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-16-customization-csv-cache">RNF-16: Customization CSV Cache</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-21-customization-lookup-cache">RNF-21: Customization Lookup Cache</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#distribution">Distribution</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-05-self-contained-html-without-server">RNF-05: Self-Contained HTML without Server</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#frontend">Frontend</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-06-framework-less-frontend">RNF-06: Framework-less Frontend</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#quality">Quality</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-07-idempotent-execution">RNF-07: Idempotent Execution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-07-1-no-state-between-runs">RNF-07.1: No State Between Runs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-07-2-config-based-start-date">RNF-07.2: Config-Based Start Date</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-22-business-time-validation">RNF-22: Business Time Validation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#resilience">Resilience</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-08-matplotlib-graceful-degradation">RNF-08: Matplotlib Graceful Degradation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#observability">Observability</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-09-conditional-debug-output">RNF-09: Conditional Debug Output</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#robustness">Robustness</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-11-robust-numeric-parsing">RNF-11: Robust Numeric Parsing</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#extensibility">Extensibility</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-12-extensible-customization-via-file">RNF-12: Extensible Customization via File</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#integrity">Integrity</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-13-global-task-id-uniqueness">RNF-13: Global Task ID Uniqueness</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-14-graph-reconstruction-after-mutation">RNF-14: Graph Reconstruction after Mutation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-20-transformation-audit-log">RNF-20: Transformation Audit Log</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#ux-ui">UX/UI</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-15-html-dark-mode-visual-design">RNF-15: HTML Dark Mode Visual Design</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#documentation">Documentation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-17-technical-documentation-via-docstrings">RNF-17: Technical Documentation via Docstrings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-18-automated-pdf-generation-sphinx">RNF-18: Automated PDF Generation (Sphinx)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-19-requirements-list-integration">RNF-19: Requirements List Integration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-23-user-manual-readme-markdown">RNF-23: User Manual (README/Markdown)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Chrono Tailoring</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">System Specifications</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/requirements.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="system-specifications">
+<h1>System Specifications<a class="headerlink" href="#system-specifications" title="Link to this heading"></a></h1>
+<p>This page presents the comprehensive list of functional (RF) and non-functional (RNF) requirements that dictate the behavior and constraints of the Chrono Tailoring software.</p>
+<section id="functional-requirements">
+<h2>Functional Requirements<a class="headerlink" href="#functional-requirements" title="Link to this heading"></a></h2>
+<section id="configuration">
+<h3>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h3>
+<section id="rf-01-project-requirements-loading">
+<h4>RF-01: Project Requirements Loading<a class="headerlink" href="#rf-01-project-requirements-loading" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>The system must read project_config.json in JSON format.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Centralize all project configuration in a single human-readable file, facilitating changes without touching the code.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L10-37</p>
+</dd>
+</dl>
+</section>
+<section id="rf-01-1-new-requirements-format">
+<h4>RF-01.1: New Requirements Format<a class="headerlink" href="#rf-01-1-new-requirements-format" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Support for the format {“settings”:{…},”milestones”:[…]}</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Allow the configuration file to evolve with extra fields without breaking the structure.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L28-30</p>
+</dd>
+</dl>
+</section>
+<section id="rf-01-2-legacy-requirements-format">
+<h4>RF-01.2: Legacy Requirements Format<a class="headerlink" href="#rf-01-2-legacy-requirements-format" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Support for a flat array of milestones without the settings block, returning settings={}</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Ensure that projects configured before the introduction of the settings block continue to work without forced migration.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L24-26</p>
+</dd>
+</dl>
+</section>
+<section id="rf-01-3-settings-block-fields">
+<h4>RF-01.3: Settings Block Fields<a class="headerlink" href="#rf-01-3-settings-block-fields" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Support for: project_start_date, working_start_hour, working_end_hour, hours_per_day, num_resources.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Allow all operational parameters of the project to be adjusted via configuration without code changes.</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">project_start_date:</span> <span class="pre">2026-02-08,</span> <span class="pre">num_resources:</span> <span class="pre">2</span></code></p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L31-32 + src/schedule/project.py:L74-80</p>
+</dd>
+</dl>
+</section>
+<section id="rf-01-4-error-handling-in-loading">
+<h4>RF-01.4: Error Handling in Loading<a class="headerlink" href="#rf-01-4-error-handling-in-loading" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Missing or invalid JSON returns ({}, []) with an error message without an unhandled exception.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Avoid silent crashes or exposing stack traces to the end user in case of misconfiguration.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L32-37</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="data">
+<h3>Data<a class="headerlink" href="#data" title="Link to this heading"></a></h3>
+<section id="rf-02-deliverable-structure-loading">
+<h4>RF-02: Deliverable Structure Loading<a class="headerlink" href="#rf-02-deliverable-structure-loading" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Read the task template from deliverable_structure.csv delimited by semicolon.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Decouple the task structure definition from the code, allowing tasks to be added/removed by editing only the CSV.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L69-136</p>
+</dd>
+</dl>
+</section>
+<section id="rf-02-1-mandatory-task-csv-fields">
+<h4>RF-02.1: Mandatory Task CSV Fields<a class="headerlink" href="#rf-02-1-mandatory-task-csv-fields" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>document_id, document_part_number, document_name, document_type, strategy, std_duration, successors.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Ensure the loader knows exactly which columns to look for, making the read deterministic.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/core/models.py:L14-35</p>
+</dd>
+</dl>
+</section>
+<section id="rf-02-2-native-duration-reading-in-minutes">
+<h4>RF-02.2: Native Duration Reading in Minutes<a class="headerlink" href="#rf-02-2-native-duration-reading-in-minutes" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>std_duration is read directly in minutes, NaN results in 0.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>The engine works internally with minutes to maintain precision in customization integrations.</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">std_duration=150</span> <span class="pre">-&gt;</span> <span class="pre">150</span> <span class="pre">minutes</span></code></p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L101-105</p>
+</dd>
+</dl>
+</section>
+<section id="rf-02-3-robust-successor-parsing">
+<h4>RF-02.3: Robust Successor Parsing<a class="headerlink" href="#rf-02-3-robust-successor-parsing" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>successors is a CSV string of integers</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>NaN, floats, and non-numeric values are ignored.</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">The</span> <span class="pre">CSV</span> <span class="pre">may</span> <span class="pre">have</span> <span class="pre">empty</span> <span class="pre">or</span> <span class="pre">poorly</span> <span class="pre">formatted</span> <span class="pre">cells</span> <span class="pre">without</span> <span class="pre">crashing</span> <span class="pre">the</span> <span class="pre">entire</span> <span class="pre">file</span> <span class="pre">load.</span></code></p>
+</dd>
+</dl>
+</section>
+<section id="rf-02-4-graph-resolution-on-loading">
+<h4>RF-02.4: Graph Resolution on Loading<a class="headerlink" href="#rf-02-4-graph-resolution-on-loading" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>After reading, successors_tasks and predecessors are populated by cross-referencing CSV IDs.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Materializing object references facilitates graph traversal without repetitive lookups in the ID map.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L117-128</p>
+</dd>
+</dl>
+</section>
+<section id="rf-02-5-tasktype-cache">
+<h4>RF-02.5: TaskType Cache<a class="headerlink" href="#rf-02-5-tasktype-cache" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>The (document_type, strategy) pair is cached to avoid duplicate objects.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Reduce memory allocations and ensure object identity among tasks of the same type.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/core/models.py:L4-7 + src/schedule/loader.py:L83-93</p>
+</dd>
+</dl>
+</section>
+<section id="rf-24-customization-status-verification">
+<h4>RF-24: Customization Status Verification<a class="headerlink" href="#rf-24-customization-status-verification" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>customization_overview.csv updated with path and status columns before simulation.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Detecting missing customization files before running avoids silent duration=None errors.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:6-31</p>
+</dd>
+</dl>
+</section>
+<section id="rf-24-1-path-and-status-calculation">
+<h4>RF-24.1: Path and Status Calculation<a class="headerlink" href="#rf-24-1-path-and-status-calculation" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Verifies if input/customization_&lt;name&gt;.csv exists - status=’ok’ or ‘nok’.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Clear separation between what is available and what is missing, traceable in the CSV itself.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:L18-21</p>
+</dd>
+</dl>
+</section>
+<section id="rf-24-2-csv-rewrite-with-updated-columns">
+<h4>RF-24.2: CSV Rewrite with Updated Columns<a class="headerlink" href="#rf-24-2-csv-rewrite-with-updated-columns" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>File rewritten every execution with updated path and status values.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Keeps the overview always synced with the real file system state.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:L21-26</p>
+</dd>
+</dl>
+</section>
+<section id="rf-24-3-unnamed-column-discard">
+<h4>RF-24.3: Unnamed Column Discard<a class="headerlink" href="#rf-24-3-unnamed-column-discard" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Unnamed:* columns generated by pandas are removed before writing.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Pandas generates ghost columns if the CSV has extra delimiters - removing them avoids corruption.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:L14-15</p>
+</dd>
+</dl>
+</section>
+<section id="rf-25-external-holiday-loading">
+<h4>RF-25: External Holiday Loading<a class="headerlink" href="#rf-25-external-holiday-loading" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>holidays.csv with one date YYYY-MM-DD per line loaded into Set[date].</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Externalizing holidays allows annual updates without code modification, and Set ensures O(1) lookup.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L39-53</p>
+</dd>
+</dl>
+</section>
+<section id="rf-25-1-yyyy-mm-dd-format-per-line">
+<h4>RF-25.1: YYYY-MM-DD Format per Line<a class="headerlink" href="#rf-25-1-yyyy-mm-dd-format-per-line" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>One date per line without a header.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Minimalist format readable by humans and without complex parsing library dependency.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L43-49</p>
+</dd>
+</dl>
+</section>
+<section id="rf-25-2-invalid-line-tolerance">
+<h4>RF-25.2: Invalid Line Tolerance<a class="headerlink" href="#rf-25-2-invalid-line-tolerance" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Unparseable lines emit a warning and are ignored.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>A poorly formatted holiday should not invalidate all others.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L49</p>
+</dd>
+</dl>
+</section>
+<section id="rf-25-3-result-as-set-date">
+<h4>RF-25.3: Result as Set[date]<a class="headerlink" href="#rf-25-3-result-as-set-date" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Set ensures O(1) lookup in is_working_day - duplicates are discarded.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>The scheduler calls is_working_day for every processed day</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p>`` O(1) vs O(n) is critical for long projects.``</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="schedule">
+<h3>Schedule<a class="headerlink" href="#schedule" title="Link to this heading"></a></h3>
+<section id="rf-03-task-generation-per-milestone">
+<h4>RF-03: Task Generation per Milestone<a class="headerlink" href="#rf-03-task-generation-per-milestone" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>For each milestone, the system instantiates independent copies of the task template.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Each milestone represents a distinct product/deliverable that needs its own execution plan without interfering with others.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L16-98</p>
+</dd>
+</dl>
+</section>
+<section id="rf-03-1-selection-by-deliverable-structure">
+<h4>RF-03.1: Selection by deliverable_structure<a class="headerlink" href="#rf-03-1-selection-by-deliverable-structure" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>If the milestone defines deliverable_structure, only listed part_numbers (+ 70000) are included.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Allow each milestone to use only the relevant subset of tasks for its product scope.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L109-124</p>
+</dd>
+</dl>
+</section>
+<section id="rf-03-2-default-selection-without-deliverable-structure">
+<h4>RF-03.2: Default Selection without deliverable_structure<a class="headerlink" href="#rf-03-2-default-selection-without-deliverable-structure" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Without deliverable_structure, all non-milestone tasks from the template are included.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Provide a complete default behavior for milestones without scope restriction.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L122-124</p>
+</dd>
+</dl>
+</section>
+<section id="rf-03-3-forced-inclusion-of-milestone-task">
+<h4>RF-03.3: Forced Inclusion of Milestone Task<a class="headerlink" href="#rf-03-3-forced-inclusion-of-milestone-task" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>The ‘milestone’ type task is always included regardless of selection.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>The milestone task is the completion marker for the deliverable</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p>`` omitting it would break the Gantt semantics.``</p>
+</dd>
+</dl>
+</section>
+<section id="rf-03-4-global-unique-ids-via-counter">
+<h4>RF-03.4: Global Unique IDs via Counter<a class="headerlink" href="#rf-03-4-global-unique-ids-via-counter" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Each task receives a unique ID via an incremental _next_task_id.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Duplicate IDs would cause collisions in the task map and incorrect display on the Gantt</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p>`` the counter ensures uniqueness.``</p>
+</dd>
+</dl>
+</section>
+<section id="rf-03-5-milestone-id-assignment-to-tasks">
+<h4>RF-03.5: milestone_id Assignment to Tasks<a class="headerlink" href="#rf-03-5-milestone-id-assignment-to-tasks" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Each task inherits the milestone_id from its parent milestone.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Allows filtering and grouping tasks by milestone in visualization and export.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L135-137 + src/core/models.py:L96-104</p>
+</dd>
+</dl>
+</section>
+<section id="rf-03-6-post-copy-dependency-re-wiring">
+<h4>RF-03.6: Post-Copy Dependency Re-wiring<a class="headerlink" href="#rf-03-6-post-copy-dependency-re-wiring" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>successors_ids are remapped from original IDs to new IDs after copying.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Without re-wiring, clones would point to tasks from another milestone, creating incorrect cross-milestone dependencies.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L160-179 + src/core/models.py:L83-93</p>
+</dd>
+</dl>
+</section>
+<section id="rf-04-recursive-task-duplication-with-variants">
+<h4>RF-04: Recursive Task Duplication with Variants<a class="headerlink" href="#rf-04-recursive-task-duplication-with-variants" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>extra_args defines variants of a part_number</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>the entire chain of predecessors is duplicated for each variant.</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">Products</span> <span class="pre">with</span> <span class="pre">multiple</span> <span class="pre">variants</span> <span class="pre">need</span> <span class="pre">independent</span> <span class="pre">production</span> <span class="pre">trajectories</span> <span class="pre">for</span> <span class="pre">correct</span> <span class="pre">scheduling.</span></code></p>
+</dd>
+</dl>
+</section>
+<section id="rf-04-1-two-extra-args-formats">
+<h4>RF-04.1: Two extra_args Formats<a class="headerlink" href="#rf-04-1-two-extra-args-formats" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Input as string (part_number only) or dict (part_number + customizations).</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Allow simple variants with short syntax and complex variants with full override.</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">60010.3&quot;</span> <span class="pre">vs</span> <span class="pre">{&quot;part_number&quot;:&quot;60010.1&quot;,&quot;customizations&quot;:{...}}</span></code></p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L139-144</p>
+</dd>
+</dl>
+</section>
+<section id="rf-04-2-recursive-predecessor-duplication">
+<h4>RF-04.2: Recursive Predecessor Duplication<a class="headerlink" href="#rf-04-2-recursive-predecessor-duplication" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>When duplicating a task, all its direct and indirect predecessors are also duplicated per variant.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>A variant that shared predecessors with another would have its dates contaminated by the other variant.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L100-181</p>
+</dd>
+</dl>
+</section>
+<section id="rf-04-3-part-number-with-variant-suffix">
+<h4>RF-04.3: Part_number with Variant Suffix<a class="headerlink" href="#rf-04-3-part-number-with-variant-suffix" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>60010 -&gt; 60010.1, 60010.2, 60010.3 in clones.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>The suffix allows tracking which physical variant each task represents in the export CSV and Gantt.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L152 (input/project_config.json - suffix defined in extra_args)</p>
+</dd>
+</dl>
+</section>
+<section id="rf-04-4-original-id-to-new-ids-map">
+<h4>RF-04.4: Original_id to New IDs Map<a class="headerlink" href="#rf-04-4-original-id-to-new-ids-map" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Ensures that dependencies between duplicated tasks are correctly re-wired within each variant.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Without the map, clones would keep references to original IDs, and dependencies between variants would be incoherent.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L160-172</p>
+</dd>
+</dl>
+</section>
+<section id="rf-04-5-non-variant-tasks-remain-unique">
+<h4>RF-04.5: Non-Variant Tasks Remain Unique<a class="headerlink" href="#rf-04-5-non-variant-tasks-remain-unique" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Tasks whose part_number is not in the variants list are not duplicated.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Shared tasks should not be multiplied, or the schedule would be unrealistically long.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L150-156</p>
+</dd>
+</dl>
+</section>
+<section id="rf-04-6-consumed-task-deduplication">
+<h4>RF-04.6: Consumed Task Deduplication<a class="headerlink" href="#rf-04-6-consumed-task-deduplication" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>consumed_original_task_ids prevents multiple duplication of the same task.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Avoid combinatorial explosion of tasks if a predecessor is reachable by multiple paths.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L148</p>
+</dd>
+</dl>
+</section>
+<section id="rf-08-exclusion-of-zero-duration-tasks">
+<h4>RF-08: Exclusion of Zero-Duration Tasks<a class="headerlink" href="#rf-08-exclusion-of-zero-duration-tasks" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Tasks with duration 0 after customization are removed and their dependencies bridged.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>A task with duration 0 is semantically non-existent for that product</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p>`` removing it simplifies the graph.``</p>
+</dd>
+</dl>
+</section>
+<section id="rf-08-1-removal-from-task-list">
+<h4>RF-08.1: Removal from Task List<a class="headerlink" href="#rf-08-1-removal-from-task-list" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Task with duration 0 is excluded from self.tasks.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Prevents the scheduler from allocating a resource slot for a task with no real work.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L280-284</p>
+</dd>
+</dl>
+</section>
+<section id="rf-08-2-dependency-bridging">
+<h4>RF-08.2: Dependency Bridging<a class="headerlink" href="#rf-08-2-dependency-bridging" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Predecessors of the removed task now point directly to its successors.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Preserves the logical dependency chain even with the eliminated task, avoiding graph gaps.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L294-304</p>
+</dd>
+</dl>
+</section>
+<section id="rf-08-3-post-removal-graph-reconstruction">
+<h4>RF-08.3: Post-Removal Graph Reconstruction<a class="headerlink" href="#rf-08-3-post-removal-graph-reconstruction" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>All predecessors and successors_tasks lists are cleared and repopulated after removals.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Ensures object reference consistency</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p>`` old pointers would cause utility engine bugs.``</p>
+</dd>
+</dl>
+</section>
+<section id="rf-09-date-calculation-with-working-hours">
+<h4>RF-09: Date Calculation with Working Hours<a class="headerlink" href="#rf-09-date-calculation-with-working-hours" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>init_date and end_date calculated respecting working hours, weekends, and holidays.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Manufacturing project planning needs real work dates, not simple calendar time.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/core/time_calc.py:L19-95</p>
+</dd>
+</dl>
+</section>
+<section id="rf-09-1-configurable-working-hours">
+<h4>RF-09.1: Configurable Working Hours<a class="headerlink" href="#rf-09-1-configurable-working-hours" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>working_start_hour / working_end_hour defaults 8-16 (480 min/day).</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Companies with shifts different from the 8-16 standard can adjust without modifying code.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/core/time_calc.py:L4-7 + src/schedule/project.py:L31-32</p>
+</dd>
+</dl>
+</section>
+<section id="rf-09-2-pre-work-time-advance">
+<h4>RF-09.2: Pre-Work Time Advance<a class="headerlink" href="#rf-09-2-pre-work-time-advance" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Time before the start of work is advanced to working_start_hour:00.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Tasks cannot start before working hours</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p>`` normalizing the time avoids incorrect end calculations.``</p>
+</dd>
+</dl>
+</section>
+<section id="rf-09-3-next-day-advance-if-post-work">
+<h4>RF-09.3: Next Day Advance if Post-Work<a class="headerlink" href="#rf-09-3-next-day-advance-if-post-work" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Time after the end of work advances to the start of the next working day.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Avoids tasks being scheduled outside hours, which would produce impossible end_dates.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/core/time_calc.py:L46-51</p>
+</dd>
+</dl>
+</section>
+<section id="rf-09-4-weekend-skipping">
+<h4>RF-09.4: Weekend Skipping<a class="headerlink" href="#rf-09-4-weekend-skipping" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Days with weekday &gt;= 5 are ignored in time advance.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Weekends are not working days in standard manufacturing</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p>`` including them would underestimate real duration.``</p>
+</dd>
+</dl>
+</section>
+<section id="rf-09-5-holiday-skipping">
+<h4>RF-09.5: Holiday Skipping<a class="headerlink" href="#rf-09-5-holiday-skipping" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Dates in holidays.csv are treated as non-working days.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>National/local holidays imply a shutdown</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p>`` the schedule must reflect this to be realistic.``</p>
+</dd>
+</dl>
+</section>
+<section id="rf-09-6-progressive-daily-duration-distribution">
+<h4>RF-09.6: Progressive Daily Duration Distribution<a class="headerlink" href="#rf-09-6-progressive-daily-duration-distribution" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Current day minutes are consumed first, then full days, then remaining minutes.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Exact algorithm maintaining minute precision without rounding to full days.</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">Task</span> <span class="pre">starts</span> <span class="pre">3PM</span> <span class="pre">with</span> <span class="pre">120min</span> <span class="pre">-&gt;</span> <span class="pre">ends</span> <span class="pre">9AM</span> <span class="pre">next</span> <span class="pre">working</span> <span class="pre">day</span></code></p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/core/time_calc.py:L60-93</p>
+</dd>
+</dl>
+</section>
+<section id="rf-09-7-zero-duration-special-case">
+<h4>RF-09.7: Zero Duration Special Case<a class="headerlink" href="#rf-09-7-zero-duration-special-case" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>duration_minutes=0 returns current_time without advance.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Zero-duration tasks (milestones) should not modify the scheduler’s time pointer.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/core/time_calc.py:L37-38</p>
+</dd>
+</dl>
+</section>
+<section id="rf-10-scheduling-with-resource-constraints">
+<h4>RF-10: Scheduling with Resource Constraints<a class="headerlink" href="#rf-10-scheduling-with-resource-constraints" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Maximum of num_resources tasks executing in parallel, priority queue by earliest_start.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Real products have limited teams</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p>`` ignoring resource constraints would produce unachievable schedules.``</p>
+</dd>
+</dl>
+</section>
+<section id="rf-10-1-ready-tasks-priority-queue">
+<h4>RF-10.1: Ready Tasks Priority Queue<a class="headerlink" href="#rf-10-1-ready-tasks-priority-queue" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>heapq keeps ready tasks ordered by earliest_start_time.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Dispatch always chooses the task that can start earliest, maximizing resource utilization.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L60-70</p>
+</dd>
+</dl>
+</section>
+<section id="rf-10-2-active-tasks-heap">
+<h4>RF-10.2: Active Tasks Heap<a class="headerlink" href="#rf-10-2-active-tasks-heap" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>active_tasks_finish_times tracks the finish_time of each running task.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Allows efficiently detecting when a resource slot becomes free without scanning the entire list.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L73-74</p>
+</dd>
+</dl>
+</section>
+<section id="rf-10-3-event-driven-time-advance">
+<h4>RF-10.3: Event-Driven Time Advance<a class="headerlink" href="#rf-10-3-event-driven-time-advance" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>The loop advances to min(next start, next end of active task).</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Event-driven: the scheduler only processes when something changes, avoiding unnecessary polling.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L77-90</p>
+</dd>
+</dl>
+</section>
+<section id="rf-10-4-block-when-resources-exhausted">
+<h4>RF-10.4: Block when Resources Exhausted<a class="headerlink" href="#rf-10-4-block-when-resources-exhausted" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>If num_active == num_resources, waits for the next end before dispatching new tasks.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Without this block, the scheduler would ignore the resource constraint.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L81-83</p>
+</dd>
+</dl>
+</section>
+<section id="rf-10-5-init-date-as-max-of-predecessors-and-event">
+<h4>RF-10.5: init_date as Max of Predecessors and Event<a class="headerlink" href="#rf-10-5-init-date-as-max-of-predecessors-and-event" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>actual_start = max(earliest_start_from_predecessors, current_event_time).</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Ensures the task only starts after all predecessors are finished AND after there is a resource slot.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L121-127</p>
+</dd>
+</dl>
+</section>
+<section id="rf-10-6-earliest-start-propagation-to-successors">
+<h4>RF-10.6: earliest_start Propagation to Successors<a class="headerlink" href="#rf-10-6-earliest-start-propagation-to-successors" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>At the end of each task, earliest_start for successors is updated</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>in_degree 0 releases the successor to the queue.</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">Correct</span> <span class="pre">implementation</span> <span class="pre">of</span> <span class="pre">CPM</span> <span class="pre">(Critical</span> <span class="pre">Path</span> <span class="pre">Method)</span> <span class="pre">logic</span> <span class="pre">with</span> <span class="pre">resource</span> <span class="pre">constraints.</span></code></p>
+</dd>
+</dl>
+</section>
+<section id="rf-10-7-safety-final-step">
+<h4>RF-10.7: Safety Final Step<a class="headerlink" href="#rf-10-7-safety-final-step" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Tasks without dates at the end of the loop receive dates based on project_start.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Defense-in-depth against graph edge cases that might leave tasks unscheduled.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L133-136</p>
+</dd>
+</dl>
+</section>
+<section id="rf-11-circular-dependency-detection">
+<h4>RF-11: Circular Dependency Detection<a class="headerlink" href="#rf-11-circular-dependency-detection" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Kahn’s algorithm detects cycles before scheduling</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>RuntimeError if a cycle is found.</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">cycle</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">graph</span> <span class="pre">makes</span> <span class="pre">scheduling</span> <span class="pre">impossible</span></code></p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>detecting early avoids infinite loops in the engine.</p>
+</dd>
+</dl>
+</section>
+<section id="rf-11-1-kahn-s-algorithm-in-degree">
+<h4>RF-11.1: Kahn’s Algorithm (in-degree)<a class="headerlink" href="#rf-11-1-kahn-s-algorithm-in-degree" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Traverses the graph removing nodes with in-degree 0 - if not all are visited, there is a cycle.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Classic O(V+E) algorithm for cycle detection in DAGs.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L24-43</p>
+</dd>
+</dl>
+</section>
+<section id="rf-11-2-runtimeerror-with-task-count">
+<h4>RF-11.2: RuntimeError with Task Count<a class="headerlink" href="#rf-11-2-runtimeerror-with-task-count" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>The exception informs how many tasks were resolved vs. the total.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Facilitates diagnosis: the developer knows the extent of the cycle without manual graph inspection.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L44-46</p>
+</dd>
+</dl>
+</section>
+<section id="rf-12-critical-path-calculation">
+<h4>RF-12: Critical Path Calculation<a class="headerlink" href="#rf-12-critical-path-calculation" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Backward pass calculates the slack for each task - is_critical=True if slack==0.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>The critical path determines the minimum project duration, identifying it allows focusing optimization efforts.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L138-181</p>
+</dd>
+</dl>
+</section>
+<section id="rf-12-1-project-end-as-max-end-date">
+<h4>RF-12.1: project_end as max(end_date)<a class="headerlink" href="#rf-12-1-project-end-as-max-end-date" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Project completion is the latest end_date among all tasks.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Reference for the backward pass - without it, there’s no way to calculate relative slacks.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L141</p>
+</dd>
+</dl>
+</section>
+<section id="rf-12-2-terminal-task-latest-end-project-end">
+<h4>RF-12.2: Terminal Task latest_end = project_end<a class="headerlink" href="#rf-12-2-terminal-task-latest-end-project-end" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Tasks without successors receive latest_end = project_end.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Terminal tasks are anchor points from which slacks are propagated.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L143-147</p>
+</dd>
+</dl>
+</section>
+<section id="rf-12-3-backward-pass-via-out-degree">
+<h4>RF-12.3: Backward Pass via out_degree<a class="headerlink" href="#rf-12-3-backward-pass-via-out-degree" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Graph traversed in reverse - latest_end propagated as min(latest_start of children).</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>The minimum ensures the predecessor cannot end later than what the children’s earliest start requires.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L162-175</p>
+</dd>
+</dl>
+</section>
+<section id="rf-12-4-slack-calculation-in-minutes">
+<h4>RF-12.4: Slack Calculation in Minutes<a class="headerlink" href="#rf-12-4-slack-calculation-in-minutes" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>slack = max(0, latest_end - early_finish) converted from timedelta to minutes.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Minutes unit is consistent with duration_minutes, facilitating comparisons.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L178-179</p>
+</dd>
+</dl>
+</section>
+<section id="rf-12-5-is-critical-flag">
+<h4>RF-12.5: is_critical Flag<a class="headerlink" href="#rf-12-5-is-critical-flag" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Tasks with slack==0 receive is_critical=True.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Boolean flag used by Gantt to render red arrows without reprocessing the graph.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L179-180</p>
+</dd>
+</dl>
+</section>
+<section id="rf-12-6-final-sort-by-init-date">
+<h4>RF-12.6: Final Sort by init_date<a class="headerlink" href="#rf-12-6-final-sort-by-init-date" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>self.tasks sorted ascending by init_date after the backward pass.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Chronological order facilitates export to CSV and sequential rendering on the Gantt.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L182</p>
+</dd>
+</dl>
+</section>
+<section id="rf-13-drawing-task-consolidation">
+<h4>RF-13: Drawing Task Consolidation<a class="headerlink" href="#rf-13-drawing-task-consolidation" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Drawing tasks with the same base part_number are merged into a single task.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>In practice, a part’s drawing is done once - duplicating per variant artificially inflates the schedule.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L183-244</p>
+</dd>
+</dl>
+</section>
+<section id="rf-13-1-selection-criterion-type-drawing">
+<h4>RF-13.1: Selection Criterion: type==drawing<a class="headerlink" href="#rf-13-1-selection-criterion-type-drawing" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Only tasks with type.description==’drawing’ are candidates.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Other task types are variant-specific and should not be consolidated.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L187-188</p>
+</dd>
+</dl>
+</section>
+<section id="rf-13-2-exclusion-of-7xxxx-part-numbers">
+<h4>RF-13.2: Exclusion of 7XXXX part_numbers<a class="headerlink" href="#rf-13-2-exclusion-of-7xxxx-part-numbers" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Drawings with base 7XXXX are not consolidated.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>7XXXX part_numbers are milestone markers, not physical parts - consolidating them would distort the hierarchy.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L188-190</p>
+</dd>
+</dl>
+</section>
+<section id="rf-13-3-single-task-groups-not-consolidated">
+<h4>RF-13.3: Single Task Groups Not Consolidated<a class="headerlink" href="#rf-13-3-single-task-groups-not-consolidated" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>If only one drawing variant exists, there is no consolidation.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Consolidating a task with itself would generate an unnecessary replacement task.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L198-199</p>
+</dd>
+</dl>
+</section>
+<section id="rf-13-4-consolidated-task-attributes">
+<h4>RF-13.4: Consolidated Task Attributes<a class="headerlink" href="#rf-13-4-consolidated-task-attributes" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Unique ID, base part_number, name ‘Consolidated Drawing for XXXXX’, duration=sum, init=min, end=max.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Accumulated duration and full time span are the truest representation of real drawing effort.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L204-213</p>
+</dd>
+</dl>
+</section>
+<section id="rf-13-5-phase-1-successors-ids-remapping">
+<h4>RF-13.5: Phase 1: successors_ids Remapping<a class="headerlink" href="#rf-13-5-phase-1-successors-ids-remapping" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>All successors_ids pointing to individual variants are updated to the consolidated ID.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Must occur before removal so that no pointers remain dangling.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L220-228</p>
+</dd>
+</dl>
+</section>
+<section id="rf-13-6-phase-2-task-array-swap">
+<h4>RF-13.6: Phase 2: Task Array Swap<a class="headerlink" href="#rf-13-6-phase-2-task-array-swap" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Individual variants removed, consolidated task added.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Array mutation done in a separate phase to not interfere with Phase 1 traversal.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L230-232</p>
+</dd>
+</dl>
+</section>
+<section id="rf-13-7-phase-3-full-graph-reconstruction">
+<h4>RF-13.7: Phase 3: Full Graph Reconstruction<a class="headerlink" href="#rf-13-7-phase-3-full-graph-reconstruction" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>predecessors and successors_tasks cleared and repopulated for all tasks.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Ensures all object references are consistent after Phase 1 and 2 substitutions.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L234-244</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="customization">
+<h3>Customization<a class="headerlink" href="#customization" title="Link to this heading"></a></h3>
+<section id="rf-05-customizations-per-milestone-and-variant">
+<h4>RF-05: Customizations per Milestone and Variant<a class="headerlink" href="#rf-05-customizations-per-milestone-and-variant" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Durations adjusted at two levels: milestone (default) and variant (exclusive override).</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Products of the same family can share most customizations but differ in specific details per variant.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L246-315</p>
+</dd>
+</dl>
+</section>
+<section id="rf-05-1-milestone-level-default">
+<h4>RF-05.1: Milestone Level (Default)<a class="headerlink" href="#rf-05-1-milestone-level-default" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>customizations in the milestone applies to all milestone tasks.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Defines the base profile of the milestone without needing to repeat settings for each variant.</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">color:</span> <span class="pre">red</span> <span class="pre">applies</span> <span class="pre">to</span> <span class="pre">entire</span> <span class="pre">70015</span></code></p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L260-263</p>
+</dd>
+</dl>
+</section>
+<section id="rf-05-2-variant-level-exclusive-override">
+<h4>RF-05.2: Variant Level (Exclusive Override)<a class="headerlink" href="#rf-05-2-variant-level-exclusive-override" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>customizations in an extra_arg completely replaces the milestone’s for that variant - no partial merge.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Total override ensures predictable and traceable behavior</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p>`` a partial merge would be ambiguous.``</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>60010.2 with {color:purple} ignores color:red from milestone</p>
+</dd>
+</dl>
+</section>
+<section id="rf-05-3-milestone-customization-inheritance">
+<h4>RF-05.3: Milestone Customization Inheritance<a class="headerlink" href="#rf-05-3-milestone-customization-inheritance" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Variants without explicit customizations inherit from the parent milestone.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Avoids unnecessary configuration repetition for variants that do not differ from the default.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L260-263</p>
+</dd>
+</dl>
+</section>
+<section id="rf-05-4-global-customization-name-collection">
+<h4>RF-05.4: Global Customization Name Collection<a class="headerlink" href="#rf-05-4-global-customization-name-collection" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>global_applied_customization_names traverses all milestones and variants before any calculation.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Ensure the list of customization types is complete before processing any duration.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L47-65</p>
+</dd>
+</dl>
+</section>
+<section id="rf-06-duration-lookup-by-customization-type">
+<h4>RF-06: Duration Lookup by Customization Type<a class="headerlink" href="#rf-06-duration-lookup-by-customization-type" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>For each active customization, look up the duration in the corresponding external CSV.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Separate customization data from source code allows managers to update durations without programming.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L138-172</p>
+</dd>
+</dl>
+</section>
+<section id="rf-06-1-customization-file-resolution">
+<h4>RF-06.1: Customization File Resolution<a class="headerlink" href="#rf-06-1-customization-file-resolution" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>File resolved as input/customization_&lt;name&gt;.csv.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Predictable naming convention eliminates the need to configure each file path.</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">customization_color.csv</span></code></p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L55-67 + src/core/models.py:L9-12</p>
+</dd>
+</dl>
+</section>
+<section id="rf-06-2-match-by-task-name-or-type">
+<h4>RF-06.2: Match by Task Name or Type<a class="headerlink" href="#rf-06-2-match-by-task-name-or-type" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>document_name is preferred, fallback to part_document_type.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Allows lookup either by specific name (granular) or generic type.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L154-158</p>
+</dd>
+</dl>
+</section>
+<section id="rf-06-3-duration-column-selection">
+<h4>RF-06.3: Duration Column Selection<a class="headerlink" href="#rf-06-3-duration-column-selection" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Looks for &lt;task_type_desc&gt;_st, fallback to duration_st or std_duration.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Each task type can have its own duration column with fallback to standard fields.</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">drawing_st,</span> <span class="pre">part_model_st</span></code></p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L148-151</p>
+</dd>
+</dl>
+</section>
+<section id="rf-06-4-customization-as-descriptive-tag">
+<h4>RF-06.4: Customization as Descriptive Tag<a class="headerlink" href="#rf-06-4-customization-as-descriptive-tag" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>The value (e.g., ‘red’) does not filter rows</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>duration is extracted from the row that matches by name/type.</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">Prevents</span> <span class="pre">the</span> <span class="pre">absence</span> <span class="pre">of</span> <span class="pre">a</span> <span class="pre">'red'</span> <span class="pre">row</span> <span class="pre">from</span> <span class="pre">silently</span> <span class="pre">causing</span> <span class="pre">zero</span> <span class="pre">duration.</span></code></p>
+</dd>
+</dl>
+</section>
+<section id="rf-06-5-missing-file-tolerance">
+<h4>RF-06.5: Missing File Tolerance<a class="headerlink" href="#rf-06-5-missing-file-tolerance" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Missing CSV returns None and emits a warning</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>does not interrupt execution.</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">customization</span> <span class="pre">type</span> <span class="pre">not</span> <span class="pre">yet</span> <span class="pre">implemented</span> <span class="pre">(status</span> <span class="pre">'nok')</span> <span class="pre">should</span> <span class="pre">not</span> <span class="pre">block</span> <span class="pre">the</span> <span class="pre">simulation.</span></code></p>
+</dd>
+</dl>
+</section>
+<section id="rf-07-maximum-duration-selection">
+<h4>RF-07: Maximum Duration Selection<a class="headerlink" href="#rf-07-maximum-duration-selection" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>When multiple customizations produce valid durations, the largest is applied.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>The manufacturer must plan for the worst case of each task</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p>`` underestimating duration results in real delays.``</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>color-&gt;120min and length-&gt;240min =&gt; final duration: 240min</p>
+</dd>
+</dl>
+</section>
+<section id="rf-07-1-collection-of-all-valid-durations">
+<h4>RF-07.1: Collection of All Valid Durations<a class="headerlink" href="#rf-07-1-collection-of-all-valid-durations" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Non-None durations from all active customizations are gathered into a list.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Ensure no duration source is discarded before comparison.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L276-278</p>
+</dd>
+</dl>
+</section>
+<section id="rf-07-2-applying-max">
+<h4>RF-07.2: Applying max()<a class="headerlink" href="#rf-07-2-applying-max" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>The max() of the list is the final duration.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Simple, auditable rule without ambiguity.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L278-286</p>
+</dd>
+</dl>
+</section>
+<section id="rf-07-3-maintaining-default-duration-without-customization">
+<h4>RF-07.3: Maintaining Default Duration without Customization<a class="headerlink" href="#rf-07-3-maintaining-default-duration-without-customization" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Without customized durations, the std_duration from the template is kept.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Tasks not affected by customizations should not have their durations accidentally changed.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L276-288</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="export">
+<h3>Export<a class="headerlink" href="#export" title="Link to this heading"></a></h3>
+<section id="rf-14-task-export-to-csv">
+<h4>RF-14: Task Export to CSV<a class="headerlink" href="#rf-14-task-export-to-csv" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>All final tasks exported to exported_tasks.csv.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Provides an auditable artifact importable by external tools (Excel, BI) of the final schedule state.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:L34-81</p>
+</dd>
+</dl>
+</section>
+<section id="rf-14-1-fixed-csv-fields">
+<h4>RF-14.1: Fixed CSV Fields<a class="headerlink" href="#rf-14-1-fixed-csv-fields" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Task ID, Part Number, Task Name, Task Type Description, Strategy, Duration (min), Start Date, End Date, Predecessors, Successors, Variant Name, Milestone ID.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Minimum set to track each task and reconstruct the dependency graph.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:L47-58</p>
+</dd>
+</dl>
+</section>
+<section id="rf-14-2-dynamic-customization-columns">
+<h4>RF-14.2: Dynamic Customization Columns<a class="headerlink" href="#rf-14-2-dynamic-customization-columns" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>One Customization_&lt;key&gt; column per key found in variant_customizations of any task.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Allows auditing which customizations were applied per variant without reprocessing the requirements JSON.</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">Customization_color,</span> <span class="pre">Customization_length</span></code></p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:L40-43 + L69-72</p>
+</dd>
+</dl>
+</section>
+<section id="rf-14-3-blank-milestone-id-for-consolidated">
+<h4>RF-14.3: Blank Milestone ID for Consolidated<a class="headerlink" href="#rf-14-3-blank-milestone-id-for-consolidated" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Tasks with strategy==’consolidated’ have an empty Milestone ID in the CSV.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Consolidated tasks belong to multiple milestones - assigning a single one would be incorrect.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:L62-66</p>
+</dd>
+</dl>
+</section>
+<section id="rf-14-4-yyyy-mm-dd-hh-mm-date-format">
+<h4>RF-14.4: YYYY-MM-DD HH:MM Date Format<a class="headerlink" href="#rf-14-4-yyyy-mm-dd-hh-mm-date-format" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>init_date and end_date formatted as ‘YYYY-MM-DD HH:MM’.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Ambiguity-safe ISO format readable by humans and importable by pandas/Excel without extra config.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:L54-55</p>
+</dd>
+</dl>
+</section>
+<section id="rf-16-mermaid-diagram-export">
+<h4>RF-16: Mermaid Diagram Export<a class="headerlink" href="#rf-16-mermaid-diagram-export" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Flowcharts and Gantts in 3 levels of detail generated as .mmd files.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Mermaid diagrams are renderable in Markdown (GitHub, Notion, Obsidian) without extra tools.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/mermaid.py:L7-351</p>
+</dd>
+</dl>
+</section>
+<section id="rf-16-1-full-flowchart-per-task">
+<h4>RF-16.1: Full Flowchart (per Task)<a class="headerlink" href="#rf-16-1-full-flowchart-per-task" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>One node per task, subgraph per milestone, shape and color by type.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Granular view for detailed dependency analysis between individual tasks.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/mermaid.py:L19-64</p>
+</dd>
+</dl>
+</section>
+<section id="rf-16-2-type-flowchart-per-task-type">
+<h4>RF-16.2: Type Flowchart (per Task Type)<a class="headerlink" href="#rf-16-2-type-flowchart-per-task-type" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>One node per type within each milestone, edges between types.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Architectural view showing type flow without the noise of individual tasks.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/mermaid.py:L67-106</p>
+</dd>
+</dl>
+</section>
+<section id="rf-16-3-milestone-flowchart-per-milestone">
+<h4>RF-16.3: Milestone Flowchart (per Milestone)<a class="headerlink" href="#rf-16-3-milestone-flowchart-per-milestone" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>One node per milestone, edges represent inter-milestone dependencies.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>High-level executive view for non-technical stakeholders.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/mermaid.py:L109-126</p>
+</dd>
+</dl>
+</section>
+<section id="rf-16-4-full-gantt">
+<h4>RF-16.4: Full Gantt<a class="headerlink" href="#rf-16-4-full-gantt" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>One bar per task with real start and end dates.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Allows reviewing the complete schedule in any tool that renders Mermaid.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/mermaid.py:L157-191</p>
+</dd>
+</dl>
+</section>
+<section id="rf-16-5-type-gantt">
+<h4>RF-16.5: Type Gantt<a class="headerlink" href="#rf-16-5-type-gantt" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>One bar per type with total span and accumulated duration.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Quickly identifies which task type consumes the most time in the project.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/mermaid.py:L195-247</p>
+</dd>
+</dl>
+</section>
+<section id="rf-16-6-milestone-type-summary-gantt">
+<h4>RF-16.6: milestone_type_summary Gantt<a class="headerlink" href="#rf-16-6-milestone-type-summary-gantt" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>One section per milestone, types grouped, individual special tasks.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Balance between detail and synthesis: visible per milestone without each task’s noise.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/mermaid.py:L251-335</p>
+</dd>
+</dl>
+</section>
+<section id="rf-16-7-mermaid-duration-formatting">
+<h4>RF-16.7: Mermaid Duration Formatting<a class="headerlink" href="#rf-16-7-mermaid-duration-formatting" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Duration as Xd Yh Zm, milestones as 0d.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Format required by Mermaid syntax - incorrect formatting would cause a parsing error.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/mermaid.py:L166-182</p>
+</dd>
+</dl>
+</section>
+<section id="rf-17-self-contained-interactive-html-gantt">
+<h4>RF-17: Self-Contained Interactive HTML Gantt<a class="headerlink" href="#rf-17-self-contained-interactive-html-gantt" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>gantt_interactive.html generated with Vis.js via CDN - all data embedded as JSON.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>A single HTML file can be shared without needing a server, facilitating distribution.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L51-290</p>
+</dd>
+</dl>
+</section>
+<section id="rf-17-1-json-embedded-data-in-html">
+<h4>RF-17.1: JSON Embedded Data in HTML<a class="headerlink" href="#rf-17-1-json-embedded-data-in-html" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Items, groups, milestone/type metadata, resource data, and links embedded as JS constants.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Self-contained: works offline and in any browser without external API calls.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L110-192</p>
+</dd>
+</dl>
+</section>
+<section id="rf-17-2-swim-lanes-by-task-name">
+<h4>RF-17.2: Swim-lanes by Task Name<a class="headerlink" href="#rf-17-2-swim-lanes-by-task-name" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Rows = unique names formatted as ‘BasePart - TaskName’ sorted alphabetically.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Visually groups all instances of a task across different milestones into the same row.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L89-108</p>
+</dd>
+</dl>
+</section>
+<section id="rf-17-3-colors-by-milestone">
+<h4>RF-17.3: Colors by Milestone<a class="headerlink" href="#rf-17-3-colors-by-milestone" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>12-color palette with cycling, default #90A4AE color for tasks without a milestone.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Immediate visual distinction of bars belonging to each product/deliverable.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:76-87</p>
+</dd>
+</dl>
+</section>
+<section id="rf-17-4-configurable-title-and-start-date">
+<h4>RF-17.4: Configurable Title and Start Date<a class="headerlink" href="#rf-17-4-configurable-title-and-start-date" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>title and project_start_date parameters in export_interactive_gantt.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Generator function reusability for different projects without changing the source.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L51-60</p>
+</dd>
+</dl>
+</section>
+<section id="rf-22-in-browser-data-export">
+<h4>RF-22: In-Browser Data Export<a class="headerlink" href="#rf-22-in-browser-data-export" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>JSON and CSV buttons export visible data via automatic download.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Allows the user to save a filtered schedule snapshot without server file system access.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L636-643 (HTML buttons)</p>
+</dd>
+</dl>
+</section>
+<section id="rf-22-1-json-export">
+<h4>RF-22.1: JSON Export<a class="headerlink" href="#rf-22-1-json-export" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Visible items after filter exported as JSON array with .json download.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>JSON preserves all structured metadata and is readable by any programming language.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L716-726 (JS exportJSON)</p>
+</dd>
+</dl>
+</section>
+<section id="rf-22-2-csv-export">
+<h4>RF-22.2: CSV Export<a class="headerlink" href="#rf-22-2-csv-export" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>ID, name, milestone, type, part, duration, dates, predecessors, and successors exported as .csv.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>CSV is importable directly by Excel, facilitating analysis by non-technical users.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L728-743 (JS exportCSV)</p>
+</dd>
+</dl>
+</section>
+<section id="rf-22-3-embedded-metadata-per-item">
+<h4>RF-22.3: Embedded Metadata per Item<a class="headerlink" href="#rf-22-3-embedded-metadata-per-item" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>_* fields embedded in each JSON item during HTML generation.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Avoids re-export browser processing - all data for export is already in each item object.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L181-191</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="analysis">
+<h3>Analysis<a class="headerlink" href="#analysis" title="Link to this heading"></a></h3>
+<section id="rf-15-resource-sensitivity-analysis">
+<h4>RF-15: Resource Sensitivity Analysis<a class="headerlink" href="#rf-15-resource-sensitivity-analysis" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Simulates the project with 1 to N resources and generates a duration x resources graph.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Allows the manager to identify the point of diminishing returns in adding resources, optimizing cost vs. deadline.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/plot.py:L18-98</p>
+</dd>
+</dl>
+</section>
+<section id="rf-15-1-configurable-resource-range">
+<h4>RF-15.1: Configurable Resource Range<a class="headerlink" href="#rf-15-1-configurable-resource-range" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>min_resources and max_resources passed as parameters, default 1-10.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Different projects have different relevant resource ranges</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p>`` configurability avoids hardcoding.``</p>
+</dd>
+</dl>
+</section>
+<section id="rf-15-2-projectschedule-base-reuse">
+<h4>RF-15.2: ProjectSchedule Base Reuse<a class="headerlink" href="#rf-15-2-projectschedule-base-reuse" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>A single instance is created and dates reset (None) for each iteration.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Avoid recreating the schedule from scratch in each iteration significantly reduces I/O and CPU time.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/plot.py:L38-43 + L56-65</p>
+</dd>
+</dl>
+</section>
+<section id="rf-15-3-internal-output-suppression">
+<h4>RF-15.3: Internal Output Suppression<a class="headerlink" href="#rf-15-3-internal-output-suppression" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>redirect_stdout(os.devnull) suppresses prints from each loop iteration.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>The loop runs N times - without suppression, the terminal would be flooded with repetitive output.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/plot.py:L57-65</p>
+</dd>
+</dl>
+</section>
+<section id="rf-15-4-total-duration-in-minutes">
+<h4>RF-15.4: Total Duration in Minutes<a class="headerlink" href="#rf-15-4-total-duration-in-minutes" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>total_duration = max(end_date) - min(init_date) converted to minutes.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Minutes are more accurate than days for comparing small differences between resource scenarios.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/plot.py:L69-73</p>
+</dd>
+</dl>
+</section>
+<section id="rf-15-5-exported-matplotlib-graph">
+<h4>RF-15.5: Exported Matplotlib Graph<a class="headerlink" href="#rf-15-5-exported-matplotlib-graph" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>resource_vs_duration.png with X-axis=resources, Y-axis=minutes, markers, and grid.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Immediate visualization of the efficiency curve, faster to interpret than a table of numbers.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/plot.py:L79-93</p>
+</dd>
+</dl>
+</section>
+<section id="rf-15-6-graceful-degradation-without-matplotlib">
+<h4>RF-15.6: Graceful Degradation without Matplotlib<a class="headerlink" href="#rf-15-6-graceful-degradation-without-matplotlib" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>If matplotlib is unavailable, raw data is printed to the terminal.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Headless environments or minimal setups should not be blocked by an optional visualization dependency.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/plot.py:L95-98</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="visualization">
+<h3>Visualization<a class="headerlink" href="#visualization" title="Link to this heading"></a></h3>
+<section id="rf-18-interactive-gantt-filters">
+<h4>RF-18: Interactive Gantt Filters<a class="headerlink" href="#rf-18-interactive-gantt-filters" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Sidebar with checkboxes for milestone and task type.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>In projects with many milestones and types, the full view is dense - filters allow focusing on relevant subsets.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L745-755 (JS filterItems)</p>
+</dd>
+</dl>
+</section>
+<section id="rf-18-1-milestone-filter">
+<h4>RF-18.1: Milestone Filter<a class="headerlink" href="#rf-18-1-milestone-filter" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Checkbox with color per milestone, toggle all on/off buttons.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Allows comparing only selected milestones side-by-side on the same timeline.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L652-658 (HTML sidebar)</p>
+</dd>
+</dl>
+</section>
+<section id="rf-18-2-task-type-filter">
+<h4>RF-18.2: Task Type Filter<a class="headerlink" href="#rf-18-2-task-type-filter" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Checkbox per type, toggle all on/off buttons.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Allows focusing on only ‘release’ tasks to review delivery points, for example.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L661-668 (HTML sidebar)</p>
+</dd>
+</dl>
+</section>
+<section id="rf-18-3-combined-filters-and-logic">
+<h4>RF-18.3: Combined Filters (AND Logic)<a class="headerlink" href="#rf-18-3-combined-filters-and-logic" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Item visible only if both milestone AND type are active.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>AND logic avoids displaying partially filtered items and maintains visual consistency.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L746-748 (JS)</p>
+</dd>
+</dl>
+</section>
+<section id="rf-18-4-visible-item-count-in-header">
+<h4>RF-18.4: Visible Item Count in Header<a class="headerlink" href="#rf-18-4-visible-item-count-in-header" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>‘N tasks · M rows’ badge dynamically updated after filtering.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Immediate user feedback on how many items are visible after applying filters.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L754-755 (JS)</p>
+</dd>
+</dl>
+</section>
+<section id="rf-19-svg-dependency-arrows">
+<h4>RF-19: SVG Dependency Arrows<a class="headerlink" href="#rf-19-svg-dependency-arrows" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Arrows overlaid on the timeline via absolute SVG - red for critical, gray for others.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Invisible dependencies make it hard to identify the critical path and impact of delays.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L113-197</p>
+</dd>
+</dl>
+</section>
+<section id="rf-19-1-red-critical-arrows">
+<h4>RF-19.1: Red Critical Arrows<a class="headerlink" href="#rf-19-1-red-critical-arrows" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Links where both tasks have is_critical=True are rendered in red with a drop-shadow.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>The critical path is the most actionable project info - must be immediately visible.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L152-158</p>
+</dd>
+</dl>
+</section>
+<section id="rf-19-2-gray-non-critical-arrows">
+<h4>RF-19.2: Gray Non-Critical Arrows<a class="headerlink" href="#rf-19-2-gray-non-critical-arrows" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>All other dependencies are gray (#6b728e).</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Keeps the critical path highlighted while still providing full dependency context.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L160-165</p>
+</dd>
+</dl>
+</section>
+<section id="rf-19-3-non-critical-arrow-toggle">
+<h4>RF-19.3: Non-Critical Arrow Toggle<a class="headerlink" href="#rf-19-3-non-critical-arrow-toggle" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>‘Show Task Arrows’ checkbox in sidebar controls gray arrow visibility.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>In dense projects, many arrows clutter the view - the toggle allows clearing it without losing the critical path.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L700-703 (JS toggle handler)</p>
+</dd>
+</dl>
+</section>
+<section id="rf-19-4-auto-redraw-on-move-zoom">
+<h4>RF-19.4: Auto-Redraw on Move/Zoom<a class="headerlink" href="#rf-19-4-auto-redraw-on-move-zoom" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Arrows are redrawn on Vis.js rangechanged and changed events.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Without redrawing, arrows would stay in place while bars move with pan/zoom.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L875-885 (JS event listeners)</p>
+</dd>
+</dl>
+</section>
+<section id="rf-19-5-bezier-arrow-geometry">
+<h4>RF-19.5: Bezier Arrow Geometry<a class="headerlink" href="#rf-19-5-bezier-arrow-geometry" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Arrows start from the vertical center of the source bar and end at the target bar center with a smooth curve.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Bezier curve avoids bar overlap and is more readable than straight lines.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:820-850 (JS drawArrow)</p>
+</dd>
+</dl>
+</section>
+<section id="rf-20-non-working-day-highlighting">
+<h4>RF-20: Non-Working Day Highlighting<a class="headerlink" href="#rf-20-non-working-day-highlighting" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Weekends and holidays shaded on the timeline as background items.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Makes it immediate for the user why certain bars skip days, avoiding gap misinterpretation.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L199-219</p>
+</dd>
+</dl>
+</section>
+<section id="rf-20-1-non-working-day-background">
+<h4>RF-20.1: Non-Working Day Background<a class="headerlink" href="#rf-20-1-non-working-day-background" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>For each day in the project range, a type=’background’ item is added if it’s a weekend or holiday.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Vis.js supports background items natively - the approach is idiomatic and performant.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L209-218</p>
+</dd>
+</dl>
+</section>
+<section id="rf-20-2-css-styling-holiday-bg">
+<h4>RF-20.2: CSS Styling (holiday-bg)<a class="headerlink" href="#rf-20-2-css-styling-holiday-bg" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Non-working day background color defined by CSS class.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Separates data from presentation - color can be changed without modifying the Python generator.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L302-304 (CSS .holiday-bg)</p>
+</dd>
+</dl>
+</section>
+<section id="rf-21-resource-histogram">
+<h4>RF-21: Resource Histogram<a class="headerlink" href="#rf-21-resource-histogram" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Step chart below the timeline showing active tasks over time.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Allows visualizing allocation bottlenecks: peaks above the resource limit indicate potential conflict.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L247-266</p>
+</dd>
+</dl>
+</section>
+<section id="rf-21-1-1-1-events-per-task">
+<h4>RF-21.1: +1/-1 events per Task<a class="headerlink" href="#rf-21-1-1-1-events-per-task" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>init_date generates +1 and end_date generates -1 in the time series.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Efficient sweep-line model to calculate load without iterating over all timesteps.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L249-252</p>
+</dd>
+</dl>
+</section>
+<section id="rf-21-2-sequential-event-processing">
+<h4>RF-21.2: Sequential Event Processing<a class="headerlink" href="#rf-21-2-sequential-event-processing" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Events sorted and processed to accumulate current load.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Ordered processing ensures load never becomes negative or incorrect.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L253-257</p>
+</dd>
+</dl>
+</section>
+<section id="rf-21-3-double-points-for-step-chart">
+<h4>RF-21.3: Double Points for Step Chart<a class="headerlink" href="#rf-21-3-double-points-for-step-chart" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Two points (old and new value) emitted per event to force step visualization.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Vis.js interpolates by default - the double point makes the curve a perfect step faithful to discrete allocation.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L261-266</p>
+</dd>
+</dl>
+</section>
+<section id="rf-21-4-y-axis-label-with-resource-limit">
+<h4>RF-21.4: Y-axis Label with Resource Limit<a class="headerlink" href="#rf-21-4-y-axis-label-with-resource-limit" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Y-axis displays ‘Active Tasks (limit: N)’ where N is total_resources.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Without the explicit limit, the user would need external knowledge to interpret the graph.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L797-799 (JS Graph2d options)</p>
+</dd>
+</dl>
+</section>
+<section id="rf-21-5-resource-limit-reference-line">
+<h4>RF-21.5: Resource Limit Reference Line<a class="headerlink" href="#rf-21-5-resource-limit-reference-line" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Horizontal line at the total_resources value displayed in the graph.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Immediate visual reference of where parallelism ceiling is exceeded.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L809-814 (JS setCustomTime)</p>
+</dd>
+</dl>
+</section>
+<section id="rf-23-sidebar-summary-and-requirements-panel">
+<h4>RF-23: Sidebar Summary and Requirements Panel<a class="headerlink" href="#rf-23-sidebar-summary-and-requirements-panel" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Sidebar displays project summary and raw project_config.json content.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Contextualizes the Gantt without opening other files - the viewer is self-sufficient.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L277-290</p>
+</dd>
+</dl>
+</section>
+<section id="rf-23-1-project-summary">
+<h4>RF-23.1: Project Summary<a class="headerlink" href="#rf-23-1-project-summary" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Start, end, calendar duration, and resource count calculated during generation.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>High-level metrics a manager checks first upon opening the Gantt.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L277-285</p>
+</dd>
+</dl>
+</section>
+<section id="rf-23-2-raw-requirements-content">
+<h4>RF-23.2: Raw Requirements Content<a class="headerlink" href="#rf-23-2-raw-requirements-content" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>project_config.json read and embedded in a monospace box in the HTML.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Allows verifying what settings generated the displayed schedule without leaving the page.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L287-290</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="audit">
+<h3>Audit<a class="headerlink" href="#audit" title="Link to this heading"></a></h3>
+<section id="rf-26-transformation-trace-log">
+<h4>RF-26: Transformation Trace Log<a class="headerlink" href="#rf-26-transformation-trace-log" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>The system must generate a JSON log with all graph mutations (zero-duration bridging and drawing consolidation).</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Automatic graph mutations hinder auditing - the log provides full transparency on why dates changed.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L37-41 + L230-239 + L300-311</p>
+</dd>
+</dl>
+</section>
+</section>
+</section>
+<section id="non-functional-requirements">
+<h2>Non-Functional Requirements<a class="headerlink" href="#non-functional-requirements" title="Link to this heading"></a></h2>
+<section id="architecture">
+<h3>Architecture<a class="headerlink" href="#architecture" title="Link to this heading"></a></h3>
+<section id="rnf-01-modular-structure-in-python-package">
+<h4>RNF-01: Modular Structure in Python Package<a class="headerlink" href="#rnf-01-modular-structure-in-python-package" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>src/ divided into core/, schedule/, and export/ by responsibility.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Separation of concerns reduces coupling, facilitates unit tests, and allows swapping a module without affecting others.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/ (directory structure)</p>
+</dd>
+</dl>
+</section>
+<section id="rnf-01-1-core-module">
+<h4>RNF-01.1: core/ Module<a class="headerlink" href="#rnf-01-1-core-module" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Domain models (Task, ProjectMilestone, TaskType, CustomizationType) and time calculation.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Isolates pure domain without I/O dependencies or specific business logic.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/core/models.py + src/core/time_calc.py</p>
+</dd>
+</dl>
+</section>
+<section id="rnf-01-2-schedule-module">
+<h4>RNF-01.2: schedule/ Module<a class="headerlink" href="#rnf-01-2-schedule-module" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>loader.py (I/O), engine.py (algorithms), project.py (orchestration).</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Each file has a single responsibility - engine.py can be tested without I/O.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py + src/schedule/engine.py + src/schedule/project.py</p>
+</dd>
+</dl>
+</section>
+<section id="rnf-01-3-export-module">
+<h4>RNF-01.3: export/ Module<a class="headerlink" href="#rnf-01-3-export-module" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>csv_export, mermaid, plot, gantt_interactive — one exporter per format.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Adding a new export format does not require modifying existing ones.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="id1">
+<h3>Configuration<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<section id="rnf-02-centralized-config-via-config-py">
+<h4>RNF-02: Centralized Config via config.py<a class="headerlink" href="#rnf-02-centralized-config-via-config-py" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>All paths and global parameters in config.py using pathlib.Path.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>A single point of change for adapting the project to a new directory structure.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>config.py:L1-21</p>
+</dd>
+</dl>
+</section>
+<section id="rnf-02-1-file-derived-base-dir">
+<h4>RNF-02.1: __file__ Derived BASE_DIR<a class="headerlink" href="#rnf-02-1-file-derived-base-dir" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>BASE_DIR = Path(__file__).parent - all paths derive from it.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Ensures operation independent of the Python process’s working directory.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>config.py:L8</p>
+</dd>
+</dl>
+</section>
+<section id="rnf-02-2-automatic-output-dir-creation">
+<h4>RNF-02.2: Automatic OUTPUT_DIR Creation<a class="headerlink" href="#rnf-02-2-automatic-output-dir-creation" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>OUTPUT_DIR.mkdir(parents=True) on the first run if it doesn’t exist.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Zero-setup experience: the user does not need to create directories manually.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>simulate_project.py:L32-35</p>
+</dd>
+</dl>
+</section>
+<section id="rnf-02-3-global-debug-flag">
+<h4>RNF-02.3: Global DEBUG Flag<a class="headerlink" href="#rnf-02-3-global-debug-flag" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>config.DEBUG controls all diagnostic prints.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>A single flag disables all prints without manually commenting each occurrence in the code.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>config.py:L21</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="compatibility">
+<h3>Compatibility<a class="headerlink" href="#compatibility" title="Link to this heading"></a></h3>
+<section id="rnf-03-legacy-format-backward-compatibility">
+<h4>RNF-03: Legacy Format Backward Compatibility<a class="headerlink" href="#rnf-03-legacy-format-backward-compatibility" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Loader accepts flat array without modification - settings returns {}.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Existing projects do not need to migrate their project_config.json to continue working.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L24-26</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="performance">
+<h3>Performance<a class="headerlink" href="#performance" title="Link to this heading"></a></h3>
+<section id="rnf-04-o-log-n-scheduler-with-heapq">
+<h4>RNF-04: O(log n) Scheduler with heapq<a class="headerlink" href="#rnf-04-o-log-n-scheduler-with-heapq" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Binary priority queues for ready and active task selection.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Linear search alternative would be O(n) per event - for projects with hundreds of tasks, the difference is significant.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L60-70</p>
+</dd>
+</dl>
+</section>
+<section id="rnf-10-output-suppression-in-analysis-loop">
+<h4>RNF-10: Output Suppression in Analysis Loop<a class="headerlink" href="#rnf-10-output-suppression-in-analysis-loop" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>redirect_stdout(os.devnull) during plot_resource_vs_duration iterations.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Without suppression, N runs × K prints = proportional noise that degrades terminal UX.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/plot.py:L57-65</p>
+</dd>
+</dl>
+</section>
+<section id="rnf-16-customization-csv-cache">
+<h4>RNF-16: Customization CSV Cache<a class="headerlink" href="#rnf-16-customization-csv-cache" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Customization CSVs are loaded into memory DataFrames at the start instead of reading from disk per task.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>With dozens of milestones and hundreds of tasks, repeated disk reads would degrade performance (I/O burst).</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L55-64 + L142-156</p>
+</dd>
+</dl>
+</section>
+<section id="rnf-21-customization-lookup-cache">
+<h4>RNF-21: Customization Lookup Cache<a class="headerlink" href="#rnf-21-customization-lookup-cache" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Load all customization CSVs into dictionaries (hash maps) in memory during boot.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Optimize processing speed, especially for Sensitivity Analysis (RF-15)</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="distribution">
+<h3>Distribution<a class="headerlink" href="#distribution" title="Link to this heading"></a></h3>
+<section id="rnf-05-self-contained-html-without-server">
+<h4>RNF-05: Self-Contained HTML without Server<a class="headerlink" href="#rnf-05-self-contained-html-without-server" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>gantt_interactive.html works on <a class="reference external" href="file://">file://</a> without local HTTP server.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Facilitates distribution via email or storage in shared drives without infrastructure.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L291-300 (self-contained HTML)</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="frontend">
+<h3>Frontend<a class="headerlink" href="#frontend" title="Link to this heading"></a></h3>
+<section id="rnf-06-framework-less-frontend">
+<h4>RNF-06: Framework-less Frontend<a class="headerlink" href="#rnf-06-framework-less-frontend" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Vis.js Timeline via CDN + vanilla CSS and JS, no bundler or transpiler.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Zero build dependencies on frontend: the generated HTML is immediately functional.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L298-300 (CDN links)</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="quality">
+<h3>Quality<a class="headerlink" href="#quality" title="Link to this heading"></a></h3>
+<section id="rnf-07-idempotent-execution">
+<h4>RNF-07: Idempotent Execution<a class="headerlink" href="#rnf-07-idempotent-execution" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>The same inputs always produce the same outputs without state persisting between runs.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Predictability is essential for comparing results of different project configurations.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>simulate_project.py (top-level execution)</p>
+</dd>
+</dl>
+</section>
+<section id="rnf-07-1-no-state-between-runs">
+<h4>RNF-07.1: No State Between Runs<a class="headerlink" href="#rnf-07-1-no-state-between-runs" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>No mutable global variables persist from one run to the next.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Side effects between runs would make results non-reproducible.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L16 (always new instance)</p>
+</dd>
+</dl>
+</section>
+<section id="rnf-07-2-config-based-start-date">
+<h4>RNF-07.2: Config-Based Start Date<a class="headerlink" href="#rnf-07-2-config-based-start-date" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>project_start_date read from settings or config.py, never from datetime.now() in main flow.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>datetime.now() would produce different results per run, breaking idempotency.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L74-80</p>
+</dd>
+</dl>
+</section>
+<section id="rnf-22-business-time-validation">
+<h4>RNF-22: Business Time Validation<a class="headerlink" href="#rnf-22-business-time-validation" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Validate if working_start &lt; working_end and if durations are non-negative, emitting clear errors.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Prevent incoherent calendar settings from causing infinite loops or impossible dates</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/core/time_calc.py</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="resilience">
+<h3>Resilience<a class="headerlink" href="#resilience" title="Link to this heading"></a></h3>
+<section id="rnf-08-matplotlib-graceful-degradation">
+<h4>RNF-08: Matplotlib Graceful Degradation<a class="headerlink" href="#rnf-08-matplotlib-graceful-degradation" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Matplotlib ImportError captured - fallback to textual output.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>CI/CD environments or headless servers should not fail due to a visualization dependency.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/plot.py:L11-16</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="observability">
+<h3>Observability<a class="headerlink" href="#observability" title="Link to this heading"></a></h3>
+<section id="rnf-09-conditional-debug-output">
+<h4>RNF-09: Conditional Debug Output<a class="headerlink" href="#rnf-09-conditional-debug-output" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>All diagnostic prints conditioned on config.DEBUG.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Silent production, verbose development — without code modification between the two.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>config.py:L21 + (usage in all modules)</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="robustness">
+<h3>Robustness<a class="headerlink" href="#robustness" title="Link to this heading"></a></h3>
+<section id="rnf-11-robust-numeric-parsing">
+<h4>RNF-11: Robust Numeric Parsing<a class="headerlink" href="#rnf-11-robust-numeric-parsing" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>NaN, floats, empty strings, and non-numeric characters tolerated in successors, std_duration, document_id.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>CSVs generated by Numbers/Excel frequently have formatting artifacts - the parser should not fail because of them.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/core/models.py:L38-49 + src/schedule/loader.py:L78-81</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="extensibility">
+<h3>Extensibility<a class="headerlink" href="#extensibility" title="Link to this heading"></a></h3>
+<section id="rnf-12-extensible-customization-via-file">
+<h4>RNF-12: Extensible Customization via File<a class="headerlink" href="#rnf-12-extensible-customization-via-file" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>New types added via new .csv + new line in customization_overview.csv without code changes.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Open/Closed Principle: the system is open for extension (new types) and closed for modification.</p>
+</dd>
+<dt><strong>Example</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">electronic_equipment</span> <span class="pre">and</span> <span class="pre">door_position</span> <span class="pre">already</span> <span class="pre">listed</span> <span class="pre">with</span> <span class="pre">'nok'</span> <span class="pre">status</span></code></p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L55-67 + src/export/csv_export.py:L6-31</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="integrity">
+<h3>Integrity<a class="headerlink" href="#integrity" title="Link to this heading"></a></h3>
+<section id="rnf-13-global-task-id-uniqueness">
+<h4>RNF-13: Global Task ID Uniqueness<a class="headerlink" href="#rnf-13-global-task-id-uniqueness" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Incremental _next_task_id ensures unique IDs throughout the run.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Duplicate IDs would cause collisions in the task map and incorrect Gantt display.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L36 + L150-154</p>
+</dd>
+</dl>
+</section>
+<section id="rnf-14-graph-reconstruction-after-mutation">
+<h4>RNF-14: Graph Reconstruction after Mutation<a class="headerlink" href="#rnf-14-graph-reconstruction-after-mutation" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>predecessors and successors_tasks cleared and repopulated after any task set change.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Outdated object references are the most common cause of silent bugs in mutable graphs.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L234-244 + L306-315</p>
+</dd>
+</dl>
+</section>
+<section id="rnf-20-transformation-audit-log">
+<h4>RNF-20: Transformation Audit Log<a class="headerlink" href="#rnf-20-transformation-audit-log" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>The system must generate audit.log detailing zero-duration removals (RF-08) and consolidations (RF-13).</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Allow auditing and debugging of how the original graph was transformed into the final schedule</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/core/logger.py</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="ux-ui">
+<h3>UX/UI<a class="headerlink" href="#ux-ui" title="Link to this heading"></a></h3>
+<section id="rnf-15-html-dark-mode-visual-design">
+<h4>RNF-15: HTML Dark Mode Visual Design<a class="headerlink" href="#rnf-15-html-dark-mode-visual-design" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Dark system design with Inter typography, subtle borders, hover transitions, and styled tooltips without external CSS.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Professional interface increases tool adoption by project managers.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L303-400 (CSS block)</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="documentation">
+<h3>Documentation<a class="headerlink" href="#documentation" title="Link to this heading"></a></h3>
+<section id="rnf-17-technical-documentation-via-docstrings">
+<h4>RNF-17: Technical Documentation via Docstrings<a class="headerlink" href="#rnf-17-technical-documentation-via-docstrings" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>All code must be documented in the Google Python Style Guide standard inside .py files.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Facilitate maintenance and allow automatic technical manual generation</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/ (all modules)</p>
+</dd>
+</dl>
+</section>
+<section id="rnf-18-automated-pdf-generation-sphinx">
+<h4>RNF-18: Automated PDF Generation (Sphinx)<a class="headerlink" href="#rnf-18-automated-pdf-generation-sphinx" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>The system must have Sphinx configuration to convert docstrings into a professional PDF manual.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Professionalize the deliverable and ensure technical documentation is always in sync with code</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>docs/conf.py + Makefile</p>
+</dd>
+</dl>
+</section>
+<section id="rnf-19-requirements-list-integration">
+<h4>RNF-19: Requirements List Integration<a class="headerlink" href="#rnf-19-requirements-list-integration" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>The final PDF must import and format the system_specifications.csv file automatically.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Ensure total traceability between what was requested (Requirement) and what was coded (Function)</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>docs/index.rst</p>
+</dd>
+</dl>
+</section>
+<section id="rnf-23-user-manual-readme-markdown">
+<h4>RNF-23: User Manual (README/Markdown)<a class="headerlink" href="#rnf-23-user-manual-readme-markdown" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Explanatory file on how to prepare inputs (JSON/CSV) and interpret Mermaid and Gantt diagrams.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Reduce the learning curve for new Project Managers utilizing the tool</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>README.md / docs/user_guide.md</p>
+</dd>
+</dl>
+</section>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="user_guide.html" class="btn btn-neutral float-left" title="Chrono Tailoring User Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Chrono Tailoring Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

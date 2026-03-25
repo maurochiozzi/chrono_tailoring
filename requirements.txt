@@ -1,0 +1,8 @@
+bs4
+pandas
+matplotlib
+sphinx
+sphinx-rtd-theme
+myst-parser
+sphinxcontrib-mermaid
+pytest

@@ -1,0 +1,281 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chrono Tailoring User Guide &mdash; Chrono Tailoring 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="System Specifications" href="requirements.html" />
+    <link rel="prev" title="Welcome to Chrono Tailoring’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Chrono Tailoring
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Chrono Tailoring User Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#quick-start-running-from-zero">1. Quick Start: Running from Zero</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#input-file-formats-examples">2. Input File Formats &amp; Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#project-configuration-input-project-config-json">2.1. Project Configuration (<code class="docutils literal notranslate"><span class="pre">input/project_config.json</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deliverable-structure-input-deliverable-structure-csv">2.2. Deliverable Structure (<code class="docutils literal notranslate"><span class="pre">input/deliverable_structure.csv</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#customizations-input-customization-csv">2.3. Customizations (<code class="docutils literal notranslate"><span class="pre">input/customization_*.csv</span></code>)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-features">3. Advanced Features</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#recursive-duplication-variants">3.1. Recursive Duplication (Variants)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#drawing-consolidation">3.2. Drawing Consolidation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#understanding-outputs">4. Understanding Outputs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">System Specifications</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Chrono Tailoring</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Chrono Tailoring User Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/user_guide.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="chrono-tailoring-user-guide">
+<h1>Chrono Tailoring User Guide<a class="headerlink" href="#chrono-tailoring-user-guide" title="Link to this heading"></a></h1>
+<p>Welcome to the <strong>Chrono Tailoring</strong> system! This software is designed to parse structural templates and project configurations to automatically generate dynamic, resource-constrained project schedules and visualizations.</p>
+<p>This guide provides a step-by-step walkthrough for setting up a project from scratch, preparing input files, and interpreting the output artifacts.</p>
+<hr class="docutils" />
+<section id="quick-start-running-from-zero">
+<h2>1. Quick Start: Running from Zero<a class="headerlink" href="#quick-start-running-from-zero" title="Link to this heading"></a></h2>
+<p>If you are starting with a fresh directory, follow these steps to generate your first schedule:</p>
+<ol class="arabic">
+<li><p><strong>Environment Setup</strong>:</p>
+<ul>
+<li><p>Ensure you have Python 3.10+ installed.</p></li>
+<li><p>Create and activate a virtual environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>venv
+<span class="nb">source</span><span class="w"> </span>venv/bin/activate<span class="w">  </span><span class="c1"># On Windows: venv\Scripts\activate</span>
+</pre></div>
+</div>
+</li>
+<li><p>Install dependencies:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</pre></div>
+</div>
+</li>
+</ul>
+</li>
+<li><p><strong>Input Preparation</strong>:</p>
+<ul class="simple">
+<li><p>Create an <code class="docutils literal notranslate"><span class="pre">input/</span></code> folder.</p></li>
+<li><p>Place your <code class="docutils literal notranslate"><span class="pre">project_config.json</span></code> and <code class="docutils literal notranslate"><span class="pre">deliverable_structure.csv</span></code> inside it.</p></li>
+<li><p>(Optional) Define customization CSVs directly in <code class="docutils literal notranslate"><span class="pre">input/</span></code> (e.g., <code class="docutils literal notranslate"><span class="pre">customization_color.csv</span></code>).</p></li>
+</ul>
+</li>
+<li><p><strong>Execution</strong>:</p>
+<ul>
+<li><p>Run the simulation script:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>simulate_project.py
+</pre></div>
+</div>
+</li>
+<li><p>Check the <code class="docutils literal notranslate"><span class="pre">output/</span></code> folder for the generated Gantt charts, CSVs, and Mermaid diagrams.</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<hr class="docutils" />
+<section id="input-file-formats-examples">
+<h2>2. Input File Formats &amp; Examples<a class="headerlink" href="#input-file-formats-examples" title="Link to this heading"></a></h2>
+<p>The system relies on a set of core files to define the “What”, “How”, and “When” of your project.</p>
+<section id="project-configuration-input-project-config-json">
+<h3>2.1. Project Configuration (<code class="docutils literal notranslate"><span class="pre">input/project_config.json</span></code>)<a class="headerlink" href="#project-configuration-input-project-config-json" title="Link to this heading"></a></h3>
+<p>This file defines the global project settings and the high-level milestones (products).</p>
+<p><strong>Example:</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;settings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;project_start_date&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-02-08&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;working_start_hour&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;working_end_hour&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;hours_per_day&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;num_resources&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;milestones&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;milestone_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;M1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Standard Product&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;customizations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;color&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;red&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;milestone_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;M2&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Custom Variant&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;extra_args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">&quot;10000.ASM&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;part_number&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;10000.ASM&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;customizations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;color&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;blue&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">settings</span></code></strong>: Controls the calendar and resource pool.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">milestones</span></code></strong>: A list of deliverables.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">customizations</span></code>: Milestone-wide settings.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">extra_args</span></code>: Used for <strong>recursive duplication</strong> (creating variants of specific parts).</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="deliverable-structure-input-deliverable-structure-csv">
+<h3>2.2. Deliverable Structure (<code class="docutils literal notranslate"><span class="pre">input/deliverable_structure.csv</span></code>)<a class="headerlink" href="#deliverable-structure-input-deliverable-structure-csv" title="Link to this heading"></a></h3>
+<p>This is the “Blueprint”. It defines the sequence of tasks for any product. Use semicolon <code class="docutils literal notranslate"><span class="pre">;</span></code> as a delimiter.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>document_id;document_part_number;document_name;document_type;strategy;std_duration;successors
+1;70010;Final Release;milestone;release;0;
+2;10000.DRW;Frame Drawing;drawing;drafting;120;1
+3;10000.PL;Frame Parts List;part_list;review;60;2
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">std_duration</span></code></strong>: Duration in <strong>minutes</strong>.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">successors</span></code></strong>: Comma-separated list of <code class="docutils literal notranslate"><span class="pre">document_id</span></code> that depend on this task.</p></li>
+</ul>
+</section>
+<section id="customizations-input-customization-csv">
+<h3>2.3. Customizations (<code class="docutils literal notranslate"><span class="pre">input/customization_*.csv</span></code>)<a class="headerlink" href="#customizations-input-customization-csv" title="Link to this heading"></a></h3>
+<p>Customizations allow you to override the <code class="docutils literal notranslate"><span class="pre">std_duration</span></code> based on specific tags (e.g., <code class="docutils literal notranslate"><span class="pre">color</span></code>, <code class="docutils literal notranslate"><span class="pre">length</span></code>).</p>
+<p><strong>Registry (<code class="docutils literal notranslate"><span class="pre">input/customization_overview.csv</span></code>):</strong>
+This file tells the system which customization types are active. It should have a <code class="docutils literal notranslate"><span class="pre">customization_type</span></code> column matching the filenames.
+Example: If you have a row with <code class="docutils literal notranslate"><span class="pre">color</span></code>, the system will search for <code class="docutils literal notranslate"><span class="pre">input/customization_color.csv</span></code>.</p>
+<p><strong>Logic Flow:</strong></p>
+<ol class="arabic simple">
+<li><p>System reads types from <code class="docutils literal notranslate"><span class="pre">customization_overview.csv</span></code>.</p></li>
+<li><p>For each type, it loads <code class="docutils literal notranslate"><span class="pre">input/customization_&lt;type&gt;.csv</span></code>.</p></li>
+<li><p>Matches the task by <code class="docutils literal notranslate"><span class="pre">document_name</span></code> or <code class="docutils literal notranslate"><span class="pre">document_type</span></code>.</p></li>
+<li><p>Replaces the duration with the value from the matching column.</p></li>
+</ol>
+<p><strong>Example <code class="docutils literal notranslate"><span class="pre">input/customization_color.csv</span></code>:</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>document_part_number;red;blue
+10000.ASM;150;300
+</pre></div>
+</div>
+<p><em>If a variant has <code class="docutils literal notranslate"><span class="pre">{&quot;color&quot;:</span> <span class="pre">&quot;red&quot;}</span></code>, the task for <code class="docutils literal notranslate"><span class="pre">10000.ASM</span></code> will take 150 minutes instead of its default.</em></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="advanced-features">
+<h2>3. Advanced Features<a class="headerlink" href="#advanced-features" title="Link to this heading"></a></h2>
+<section id="recursive-duplication-variants">
+<h3>3.1. Recursive Duplication (Variants)<a class="headerlink" href="#recursive-duplication-variants" title="Link to this heading"></a></h3>
+<p>When you add a part to <code class="docutils literal notranslate"><span class="pre">extra_args</span></code> in your config, the system:</p>
+<ol class="arabic simple">
+<li><p>Locates that part in the structure.</p></li>
+<li><p>Clones it and <strong>all its predecessors recursively</strong>.</p></li>
+<li><p>Appends a suffix (e.g., <code class="docutils literal notranslate"><span class="pre">.1</span></code>) to the part number.</p></li>
+<li><p>Allows you to specify different customizations for each clone.</p></li>
+</ol>
+</section>
+<section id="drawing-consolidation">
+<h3>3.2. Drawing Consolidation<a class="headerlink" href="#drawing-consolidation" title="Link to this heading"></a></h3>
+<p>The system automatically identifies “drawing” tasks for the same base part across different variants and <strong>consolidates</strong> them into a single task. This prevents redundant work in the schedule.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="understanding-outputs">
+<h2>4. Understanding Outputs<a class="headerlink" href="#understanding-outputs" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">output/gantt_interactive.html</span></code></strong>: The primary dashboard. Use the sidebar to filter by Milestone or Task Type.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">output/exported_tasks.csv</span></code></strong>: Full spreadsheet of every task instance with calculated dates.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">output/resource_vs_duration.png</span></code></strong>: Sensitivity analysis showing how adding resources impacts the deadline.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">output/transformation_log.json</span></code></strong>: An audit trail showing exactly which tasks were merged or removed.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">output/*.mmd</span></code></strong>: Mermaid source files for inclusion in documentation or GitHub.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to Chrono Tailoring’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="requirements.html" class="btn btn-neutral float-right" title="System Specifications" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Chrono Tailoring Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
