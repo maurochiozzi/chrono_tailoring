@@ -1,0 +1,1590 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.export.gantt_interactive &mdash; Chrono Tailoring 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = `pre.mermaid {
+    /* Same as .mermaid-container > pre */
+    display: block;
+    width: 100%;
+}
+
+pre.mermaid > svg {
+    /* Same as .mermaid-container > pre > svg */
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}`;
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = `.mermaid-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.mermaid-container > pre {
+    display: block;
+    width: 100%;
+}
+
+.mermaid-container > pre > svg {
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}
+
+.mermaid-fullscreen-btn {
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    color: #333;
+}
+
+.mermaid-fullscreen-btn:hover {
+    opacity: 100% !important;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-btn.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-btn.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal {
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 95vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.98);
+    z-index: 9999;
+    padding: 20px;
+    overflow: auto;
+}
+
+.mermaid-fullscreen-modal.dark-theme {
+    background: rgba(0, 0, 0, 0.98);
+}
+
+.mermaid-fullscreen-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen {
+    position: relative;
+    width: 95vw;
+    height: 90vh;
+    max-width: 95vw;
+    max-height: 90vh;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen.dark-theme {
+    background: #1a1a1a;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+.mermaid-container-fullscreen pre.mermaid {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen .mermaid svg {
+    height: 100% !important;
+    width: 100% !important;
+    cursor: grab;
+}
+
+.mermaid-fullscreen-close {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
+    font-size: 24px;
+    line-height: 1;
+    color: #333;
+}
+
+.mermaid-fullscreen-close:hover {
+    background: white;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-close.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-close.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
+    display: none !important;
+}`;
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        all_mermaids.forEach((el) => {
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+        await mermaid.run();
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
+
+    if ("False" === "True") {
+        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll("");
+            if(all_mermaids.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else if(svgs.size() !== mermaids_to_add_zoom) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else {
+                svgs.each(function() {
+                    var svg = d3.select(this);
+                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+                    var inner = svg.select("g");
+                    var zoom = d3.zoom().on("zoom", function(event) {
+                        inner.attr("transform", event.transform);
+                    });
+                    svg.call(zoom);
+                });
+            }
+        }
+    } else if(all_mermaids.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if ("True" !== "True") return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    const closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = '⛶';
+        fullscreenBtn.style.opacity = '50%';
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scroll, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.sdisplay = 'block';
+
+                if ("False" === "True") {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+const load = async () => {
+    initStyles();
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...JSON.parse(
+                    `{"startOnLoad": false}`
+                ),
+                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...JSON.parse(
+        `{"startOnLoad": false}`
+    ),
+    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+    }
+);
+
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Chrono Tailoring
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">Chrono Tailoring User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../requirements.html">System Specifications</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Chrono Tailoring</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">src.export.gantt_interactive</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for src.export.gantt_interactive</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">src/export/gantt_interactive.py</span>
+
+<span class="sd">Generates a self-contained interactive HTML Gantt chart from a list of Tasks.</span>
+<span class="sd">Uses Vis.js Timeline (loaded from CDN) — no extra Python dependencies.</span>
+
+<span class="sd">Layout:</span>
+<span class="sd">  - Rows  = unique task names  (e.g. &quot;core_door&quot;, &quot;ply_adjustable_shelf&quot;, …)</span>
+<span class="sd">  - Bars  = individual tasks, colour-coded by milestone</span>
+<span class="sd">  - Sidebar panel 1: Milestone filter (toggle visibility per milestone colour)</span>
+<span class="sd">  - Sidebar panel 2: Task-type filter (part_model / part_list / release / drawing …)</span>
+
+<span class="sd">Features:</span>
+<span class="sd">  - Pan / zoom / fit-all / today</span>
+<span class="sd">  - Hover tooltip with full task detail</span>
+<span class="sd">  - Export to JSON and CSV from the browser</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">date</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Set</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.core.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Task</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEBUG</span>
+
+<span class="c1"># Distinct colours for up to 12 milestones; cycles beyond that</span>
+<span class="n">_MILESTONE_PALETTE</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;#4C8BF5&quot;</span><span class="p">,</span> <span class="s2">&quot;#E8453C&quot;</span><span class="p">,</span> <span class="s2">&quot;#F4B942&quot;</span><span class="p">,</span> <span class="s2">&quot;#3DA65A&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#9B59B6&quot;</span><span class="p">,</span> <span class="s2">&quot;#E67E22&quot;</span><span class="p">,</span> <span class="s2">&quot;#1ABC9C&quot;</span><span class="p">,</span> <span class="s2">&quot;#E91E8C&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#00BCD4&quot;</span><span class="p">,</span> <span class="s2">&quot;#8BC34A&quot;</span><span class="p">,</span> <span class="s2">&quot;#FF5722&quot;</span><span class="p">,</span> <span class="s2">&quot;#607D8B&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="c1"># Colours for task types</span>
+<span class="n">_TYPE_PALETTE</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;part_model&quot;</span><span class="p">:</span> <span class="s2">&quot;#4C8BF5&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;part_list&quot;</span><span class="p">:</span>  <span class="s2">&quot;#F4B942&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;release&quot;</span><span class="p">:</span>    <span class="s2">&quot;#3DA65A&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;drawing&quot;</span><span class="p">:</span>    <span class="s2">&quot;#90A4AE&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">_TYPE_FALLBACK</span> <span class="o">=</span> <span class="s2">&quot;#9B59B6&quot;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_hex_to_rgba</span><span class="p">(</span><span class="n">hex_color</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.85</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">hex_color</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">)</span>
+    <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="mi">16</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">],</span> <span class="mi">16</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;rgba(</span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">g</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">b</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">alpha</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+
+<span class="c1"># [Req: RF-17, RF-17.4] — Entry point: title and project_start_date are configurable per-project</span>
+<div class="viewcode-block" id="export_interactive_gantt">
+<a class="viewcode-back" href="../../../index.html#src.export.gantt_interactive.export_interactive_gantt">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">export_interactive_gantt</span><span class="p">(</span>
+    <span class="n">tasks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Task</span><span class="p">],</span>
+    <span class="n">output_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Chrono Tailoring — Interactive Gantt Chart&quot;</span><span class="p">,</span>
+    <span class="n">milestone_name_map</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">total_resources</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">project_requirements_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">holidays</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="n">date</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">show_task_arrows</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialises tasks to JSON and writes a self-contained Vis.js HTML Gantt.</span>
+
+<span class="sd">    Rows  = unique task names (swim-lanes).</span>
+<span class="sd">    Items = individual task instances, coloured by milestone.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        tasks (List[Task]): Flat list of Task objects with init_date / end_date set.</span>
+<span class="sd">        output_path (Path): Where to write the .html file.</span>
+<span class="sd">        title (str, optional): Browser title / header text. Defaults to &quot;Chrono Tailoring — Interactive Gantt Chart&quot;.</span>
+<span class="sd">        milestone_name_map (Optional[Dict[Any, str]], optional): Mapping of milestone IDs to names. Defaults to None.</span>
+<span class="sd">        total_resources (int, optional): The total number of parallel resources applied. Defaults to 1.</span>
+<span class="sd">        project_requirements_path (Optional[Path], optional): Path to requirements for the info sidebar. Defaults to None.</span>
+<span class="sd">        holidays (Optional[Set[date]], optional): Dates to format differently. Defaults to None.</span>
+<span class="sd">        show_task_arrows (bool, optional): Auto-enable standard dependency arrows on load. Defaults to False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">milestone_name_map</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">milestone_name_map</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># ── 1. Milestone colours ─────────────────────────────────────────────────────</span>
+    <span class="n">milestone_ids</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+        <span class="n">mid</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">&#39;milestone_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">mid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">milestone_ids</span><span class="p">:</span>
+            <span class="n">milestone_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mid</span><span class="p">)</span>
+    <span class="n">milestone_ids</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+
+    <span class="c1"># [Req: RF-17.3] — Milestone colour palette (12 colours, cyclic); no-milestone tasks get grey</span>
+    <span class="n">milestone_color</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">mid</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">milestone_ids</span><span class="p">):</span>
+        <span class="n">milestone_color</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span> <span class="o">=</span> <span class="n">_MILESTONE_PALETTE</span><span class="p">[</span><span class="n">i</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">_MILESTONE_PALETTE</span><span class="p">)]</span>
+    <span class="n">default_color</span> <span class="o">=</span> <span class="s2">&quot;#90A4AE&quot;</span>   <span class="c1"># for tasks with no milestone</span>
+
+    <span class="c1"># ── 2. Groups = unique task names ────────────────────────────────────────────</span>
+    <span class="c1"># Format names to `BasePart - Description`</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">format_task_name</span><span class="p">(</span><span class="n">t</span><span class="p">:</span> <span class="n">Task</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">base_part</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">part_number</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;Consolidated Drawing&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_part</span><span class="si">}</span><span class="s2"> - Consolidated drawing&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_part</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="c1"># [Req: RF-17.2] — Swim-lanes = unique task names formatted as &#39;BasePart - Name&#39;, sorted alphabetically</span>
+    <span class="n">seen_names</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">init_date</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">t</span><span class="o">.</span><span class="n">end_date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">format_task_name</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen_names</span><span class="p">:</span>
+            <span class="n">seen_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            
+    <span class="c1"># Keep insertion order (chronological by first appearance), then sort alpha</span>
+    <span class="n">seen_names</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+    <span class="n">groups</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">}</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">seen_names</span><span class="p">]</span>
+
+    <span class="c1"># ── 3. Items ─────────────────────────────────────────────────────────────────</span>
+    <span class="n">items</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="c1"># ── 3.1 Links for Critical Path and all other tasks───────────────────────────</span>
+    <span class="n">critical_links</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">task_links</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># all task links regardless of criticality</span>
+
+    <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">init_date</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">task</span><span class="o">.</span><span class="n">end_date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">mid</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">&#39;milestone_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="n">milestone_color</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mid</span><span class="p">,</span> <span class="n">default_color</span><span class="p">)</span>
+        <span class="n">bg</span> <span class="o">=</span> <span class="n">_hex_to_rgba</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="mf">0.85</span><span class="p">)</span>
+        <span class="n">border</span> <span class="o">=</span> <span class="n">color</span>
+
+        <span class="n">preds</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">task</span><span class="o">.</span><span class="n">predecessors</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;—&quot;</span>
+        <span class="n">succs</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">&#39;successors_tasks&#39;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;—&quot;</span>
+        <span class="n">duration_h</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">duration_minutes</span> <span class="o">/</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">milestone_label</span> <span class="o">=</span> <span class="n">milestone_name_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mid</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Milestone </span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">mid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;—&quot;</span>
+        <span class="n">task_type_desc</span>  <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">description</span>
+
+        <span class="n">tooltip</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&lt;div class=&#39;tt&#39;&gt;&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;&lt;b&gt;#</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> — </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&lt;/b&gt;&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;&lt;div class=&#39;tt-row&#39;&gt;Milestone: &lt;span&gt;</span><span class="si">{</span><span class="n">milestone_label</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;&lt;div class=&#39;tt-row&#39;&gt;Type: &lt;span&gt;</span><span class="si">{</span><span class="n">task_type_desc</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;&lt;div class=&#39;tt-row&#39;&gt;Part: &lt;span&gt;</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">part_number</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;&lt;div class=&#39;tt-row&#39;&gt;Duration: &lt;span&gt;</span><span class="si">{</span><span class="n">duration_h</span><span class="si">}</span><span class="s2"> h&lt;/span&gt;&lt;/div&gt;&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;&lt;div class=&#39;tt-row&#39;&gt;Start: &lt;span&gt;</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">init_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;&lt;div class=&#39;tt-row&#39;&gt;End: &lt;span&gt;</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;&lt;div class=&#39;tt-row&#39;&gt;Predecessors: &lt;span&gt;</span><span class="si">{</span><span class="n">preds</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;&lt;div class=&#39;tt-row&#39;&gt;Successors: &lt;span&gt;</span><span class="si">{</span><span class="n">succs</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;&lt;/div&gt;&quot;</span>
+        <span class="p">)</span>
+
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">format_task_name</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+        
+        <span class="c1"># [Req: RF-19.1] — Build critical path links (both endpoints is_critical=True)</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">&#39;is_critical&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">succ</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">&#39;successors_tasks&#39;</span><span class="p">,</span> <span class="p">[]):</span>
+                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">succ</span><span class="p">,</span> <span class="s1">&#39;is_critical&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                    <span class="n">critical_links</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                        <span class="s2">&quot;from&quot;</span><span class="p">:</span> <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                        <span class="s2">&quot;to&quot;</span><span class="p">:</span> <span class="n">succ</span><span class="o">.</span><span class="n">id</span>
+                    <span class="p">})</span>
+        
+        <span class="c1"># [Req: RF-19.2] — All task links; non-critical ones rendered grey and togglable</span>
+        <span class="k">for</span> <span class="n">succ</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">&#39;successors_tasks&#39;</span><span class="p">,</span> <span class="p">[]):</span>
+            <span class="n">task_links</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s2">&quot;from&quot;</span><span class="p">:</span> <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="s2">&quot;to&quot;</span><span class="p">:</span> <span class="n">succ</span><span class="o">.</span><span class="n">id</span>
+            <span class="p">})</span>
+
+        <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span>      <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="s2">&quot;group&quot;</span><span class="p">:</span>   <span class="n">fname</span><span class="p">,</span>          <span class="c1"># row = formatted task name</span>
+            <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>      <span class="c1"># compact bar label</span>
+            <span class="s2">&quot;start&quot;</span><span class="p">:</span>   <span class="n">task</span><span class="o">.</span><span class="n">init_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S&#39;</span><span class="p">),</span>
+            <span class="s2">&quot;end&quot;</span><span class="p">:</span>     <span class="n">task</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S&#39;</span><span class="p">),</span>
+            <span class="s2">&quot;title&quot;</span><span class="p">:</span>   <span class="n">tooltip</span><span class="p">,</span>
+            <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;background-color:</span><span class="si">{</span><span class="n">bg</span><span class="si">}</span><span class="s2">;&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;border-color:</span><span class="si">{</span><span class="n">border</span><span class="si">}</span><span class="s2">;&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;color:#fff;&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;border-radius:4px;&quot;</span>
+            <span class="p">),</span>
+            <span class="c1"># [Req: RF-22.3] — Metadata fields embedded per-item for browser-side export</span>
+            <span class="s2">&quot;_task_id&quot;</span><span class="p">:</span>    <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="s2">&quot;_name&quot;</span><span class="p">:</span>       <span class="n">fname</span><span class="p">,</span>
+            <span class="s2">&quot;_milestone&quot;</span><span class="p">:</span>  <span class="n">milestone_label</span><span class="p">,</span>
+            <span class="s2">&quot;_milestone_id&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">mid</span><span class="p">)</span> <span class="k">if</span> <span class="n">mid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;_type&quot;</span><span class="p">:</span>       <span class="n">task_type_desc</span><span class="p">,</span>
+            <span class="s2">&quot;_part&quot;</span><span class="p">:</span>       <span class="n">task</span><span class="o">.</span><span class="n">part_number</span><span class="p">,</span>
+            <span class="s2">&quot;_duration_h&quot;</span><span class="p">:</span> <span class="n">duration_h</span><span class="p">,</span>
+            <span class="s2">&quot;_start&quot;</span><span class="p">:</span>      <span class="n">task</span><span class="o">.</span><span class="n">init_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M&#39;</span><span class="p">),</span>
+            <span class="s2">&quot;_end&quot;</span><span class="p">:</span>        <span class="n">task</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M&#39;</span><span class="p">),</span>
+            <span class="s2">&quot;_preds&quot;</span><span class="p">:</span>      <span class="n">preds</span><span class="p">,</span>
+            <span class="s2">&quot;_succs&quot;</span><span class="p">:</span>      <span class="n">succs</span><span class="p">,</span>
+        <span class="p">})</span>
+        
+    <span class="c1"># Combine critical_links and task_links based on the flag</span>
+    <span class="c1"># Use list() to avoid mutating the original critical_links reference</span>
+    <span class="n">all_links</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">critical_links</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">show_task_arrows</span><span class="p">:</span>
+        <span class="n">all_links</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">link</span> <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">task_links</span> <span class="k">if</span> <span class="n">link</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">critical_links</span><span class="p">])</span>
+
+    <span class="c1"># [Req: RF-20, RF-20.1] — Add background items for weekends and holidays; styled via CSS .holiday-bg</span>
+    <span class="k">if</span> <span class="n">tasks</span><span class="p">:</span>
+        <span class="n">p_start</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">init_date</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">init_date</span><span class="p">)</span>
+        <span class="n">p_end</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">end_date</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">end_date</span><span class="p">)</span>
+        
+        <span class="n">current_date</span> <span class="o">=</span> <span class="n">p_start</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+        <span class="n">end_date</span> <span class="o">=</span> <span class="n">p_end</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+        <span class="n">h_set</span> <span class="o">=</span> <span class="n">holidays</span> <span class="ow">or</span> <span class="nb">set</span><span class="p">()</span>
+        
+        <span class="n">bg_idx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">current_date</span> <span class="o">&lt;=</span> <span class="n">end_date</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">current_date</span><span class="o">.</span><span class="n">weekday</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="mi">5</span> <span class="ow">or</span> <span class="n">current_date</span> <span class="ow">in</span> <span class="n">h_set</span><span class="p">:</span>
+                <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;bg_</span><span class="si">{</span><span class="n">bg_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">current_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T00:00:00&#39;</span><span class="p">),</span>
+                    <span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">current_date</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T00:00:00&#39;</span><span class="p">),</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;background&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;className&quot;</span><span class="p">:</span> <span class="s2">&quot;holiday-bg&quot;</span>
+                <span class="p">})</span>
+                <span class="n">bg_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">current_date</span> <span class="o">+=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Build milestone meta list for sidebar (id → {name, color})</span>
+    <span class="n">milestone_meta</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">mid</span> <span class="ow">in</span> <span class="n">milestone_ids</span><span class="p">:</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">milestone_name_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mid</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Milestone </span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">milestone_meta</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span>    <span class="nb">str</span><span class="p">(</span><span class="n">mid</span><span class="p">),</span>
+            <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="n">label</span><span class="p">,</span>
+            <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="n">milestone_color</span><span class="p">[</span><span class="n">mid</span><span class="p">],</span>
+        <span class="p">})</span>
+    <span class="c1"># Add &quot;no milestone&quot; entry if any task has no milestone</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">&#39;milestone_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span>
+           <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">init_date</span> <span class="ow">and</span> <span class="n">t</span><span class="o">.</span><span class="n">end_date</span><span class="p">):</span>
+        <span class="n">milestone_meta</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span>    <span class="s2">&quot;__none__&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;No Milestone&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="n">default_color</span><span class="p">,</span>
+        <span class="p">})</span>
+
+    <span class="c1"># Collect unique task types</span>
+    <span class="n">task_types</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+        <span class="n">td</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">description</span>
+        <span class="k">if</span> <span class="n">td</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">task_types</span><span class="p">:</span>
+            <span class="n">task_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">td</span><span class="p">)</span>
+    <span class="n">task_types</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+    <span class="c1"># [Req: RF-21.1, RF-21.2, RF-21.3] — Sweep-line resource histogram: +1 at init_date, -1 at end_date; double-point for step chart</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">init_date</span> <span class="ow">and</span> <span class="n">task</span><span class="o">.</span><span class="n">end_date</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">&#39;duration_minutes&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">task</span><span class="o">.</span><span class="n">init_date</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>   <span class="c1"># [Req: RF-21.1] — +1 event</span>
+            <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">task</span><span class="o">.</span><span class="n">end_date</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>   <span class="c1"># [Req: RF-21.1] — -1 event</span>
+    <span class="n">events</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">resource_data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">current_load</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">events</span><span class="p">:</span>
+        <span class="n">start_buffer</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">hour</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">resource_data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">start_buffer</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S&#39;</span><span class="p">),</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+
+    <span class="k">for</span> <span class="n">time_val</span><span class="p">,</span> <span class="n">delta</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+        <span class="n">time_str</span> <span class="o">=</span> <span class="n">time_val</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S&#39;</span><span class="p">)</span>
+        <span class="c1"># [Req: RF-21.3] — Emit previous Y then new Y at same X to force true step chart in Vis.js</span>
+        <span class="n">resource_data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">time_str</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">current_load</span><span class="p">})</span>
+        <span class="n">current_load</span> <span class="o">+=</span> <span class="n">delta</span>
+        <span class="n">resource_data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">time_str</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">current_load</span><span class="p">})</span>
+        
+    <span class="n">items_json</span>          <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">items</span><span class="p">,</span>          <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">groups_json</span>         <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">groups</span><span class="p">,</span>         <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">milestone_meta_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">milestone_meta</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">task_types_json</span>     <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">task_types</span><span class="p">,</span>     <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">type_palette_json</span>   <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">_TYPE_PALETTE</span><span class="p">,</span>  <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">resource_data_json</span>  <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">resource_data</span><span class="p">,</span>  <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">critical_links_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">critical_links</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">all_links_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">all_links</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># [Req: RF-23.1] — Project summary: dates and duration computed at generation time</span>
+    <span class="k">if</span> <span class="n">tasks</span><span class="p">:</span>
+        <span class="n">p_start</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">init_date</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">init_date</span><span class="p">)</span>
+        <span class="n">p_end</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">end_date</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">end_date</span><span class="p">)</span>
+        <span class="n">p_dur_days</span> <span class="o">=</span> <span class="p">(</span><span class="n">p_end</span> <span class="o">-</span> <span class="n">p_start</span><span class="p">)</span><span class="o">.</span><span class="n">days</span>
+        <span class="n">p_start_str</span> <span class="o">=</span> <span class="n">p_start</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1"> %b %Y&#39;</span><span class="p">)</span>
+        <span class="n">p_end_str</span> <span class="o">=</span> <span class="n">p_end</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1"> %b %Y&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">p_start_str</span><span class="p">,</span> <span class="n">p_end_str</span><span class="p">,</span> <span class="n">p_dur_days</span> <span class="o">=</span> <span class="s2">&quot;N/A&quot;</span><span class="p">,</span> <span class="s2">&quot;N/A&quot;</span><span class="p">,</span> <span class="mi">0</span>
+        
+    <span class="c1"># [Req: RF-23.2] — Raw project_config.json embedded verbatim for context</span>
+    <span class="n">req_text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">project_requirements_path</span> <span class="ow">and</span> <span class="n">project_requirements_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">req_text</span> <span class="o">=</span> <span class="n">project_requirements_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+
+    <span class="c1"># ── 4. Render HTML ────────────────────────────────────────────────────────────</span>
+    <span class="n">html</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;&lt;!DOCTYPE html&gt;</span>
+<span class="s2">&lt;html lang=&quot;en&quot;&gt;</span>
+<span class="s2">&lt;head&gt;</span>
+<span class="s2">  &lt;meta charset=&quot;UTF-8&quot; /&gt;</span>
+<span class="s2">  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot; /&gt;</span>
+<span class="s2">  &lt;title&gt;</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">&lt;/title&gt;</span>
+<span class="s2">  &lt;link href=&quot;https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap&quot; rel=&quot;stylesheet&quot;/&gt;</span>
+<span class="s2">  &lt;link href=&quot;https://unpkg.com/vis-timeline@7.7.3/dist/vis-timeline-graph2d.min.css&quot; rel=&quot;stylesheet&quot;/&gt;</span>
+<span class="s2">  &lt;script src=&quot;https://unpkg.com/vis-timeline@7.7.3/dist/vis-timeline-graph2d.min.js&quot;&gt;&lt;/script&gt;</span>
+
+<span class="s2">  &lt;style&gt;</span>
+<span class="s2">    *, *::before, *::after </span><span class="se">{{</span><span class="s2"> box-sizing: border-box; margin: 0; padding: 0; </span><span class="se">}}</span>
+
+<span class="s2">    :root </span><span class="se">{{</span>
+<span class="s2">      --bg:        #0b0d14;</span>
+<span class="s2">      --surface:   #11141f;</span>
+<span class="s2">      --surface2:  #181c2e;</span>
+<span class="s2">      --border:    #252a40;</span>
+<span class="s2">      --accent:    #4C8BF5;</span>
+<span class="s2">      --accent2:   #7c57ff;</span>
+<span class="s2">      --text:      #dde1f0;</span>
+<span class="s2">      --muted:     #6b728e;</span>
+<span class="s2">      --radius:    10px;</span>
+<span class="s2">    </span><span class="se">}}</span>
+
+<span class="s2">    body </span><span class="se">{{</span>
+<span class="s2">      font-family: &#39;Inter&#39;, &#39;Segoe UI&#39;, system-ui, sans-serif;</span>
+<span class="s2">      background: var(--bg);</span>
+<span class="s2">      color: var(--text);</span>
+<span class="s2">      display: flex;</span>
+<span class="s2">      flex-direction: column;</span>
+<span class="s2">      height: 100vh;</span>
+<span class="s2">      overflow: hidden;</span>
+<span class="s2">    </span><span class="se">}}</span>
+
+<span class="s2">    /* ── Header ─────────────────────────────────────────────────────────────── */</span>
+<span class="s2">    header </span><span class="se">{{</span>
+<span class="s2">      padding: 0 20px;</span>
+<span class="s2">      height: 54px;</span>
+<span class="s2">      background: linear-gradient(90deg, #0f1626 0%, #0b0d14 60%);</span>
+<span class="s2">      border-bottom: 1px solid var(--border);</span>
+<span class="s2">      display: flex;</span>
+<span class="s2">      align-items: center;</span>
+<span class="s2">      gap: 14px;</span>
+<span class="s2">      flex-shrink: 0;</span>
+<span class="s2">      box-shadow: 0 2px 20px rgba(0,0,0,0.4);</span>
+<span class="s2">      z-index: 10;</span>
+<span class="s2">    </span><span class="se">}}</span>
+
+<span class="s2">    .logo-mark </span><span class="se">{{</span>
+<span class="s2">      width: 30px; height: 30px;</span>
+<span class="s2">      background: linear-gradient(135deg, var(--accent), var(--accent2));</span>
+<span class="s2">      border-radius: 8px;</span>
+<span class="s2">      display: flex; align-items: center; justify-content: center;</span>
+<span class="s2">      font-size: 0.9rem; flex-shrink: 0;</span>
+<span class="s2">    </span><span class="se">}}</span>
+
+<span class="s2">    header h1 </span><span class="se">{{</span>
+<span class="s2">      font-size: 0.9rem;</span>
+<span class="s2">      font-weight: 600;</span>
+<span class="s2">      color: #fff;</span>
+<span class="s2">      letter-spacing: -0.01em;</span>
+<span class="s2">      white-space: nowrap;</span>
+<span class="s2">    </span><span class="se">}}</span>
+
+<span class="s2">    .header-right </span><span class="se">{{</span>
+<span class="s2">      display: flex;</span>
+<span class="s2">      align-items: center;</span>
+<span class="s2">      gap: 10px;</span>
+<span class="s2">      margin-left: auto;</span>
+<span class="s2">    </span><span class="se">}}</span>
+
+<span class="s2">    .badge </span><span class="se">{{</span>
+<span class="s2">      font-size: 0.7rem;</span>
+<span class="s2">      font-weight: 500;</span>
+<span class="s2">      color: var(--muted);</span>
+<span class="s2">      background: var(--surface2);</span>
+<span class="s2">      border: 1px solid var(--border);</span>
+<span class="s2">      border-radius: 20px;</span>
+<span class="s2">      padding: 3px 10px;</span>
+<span class="s2">      white-space: nowrap;</span>
+<span class="s2">    </span><span class="se">}}</span>
+
+<span class="s2">    /* ── Buttons ─────────────────────────────────────────────────────────────── */</span>
+<span class="s2">    .toolbar </span><span class="se">{{</span><span class="s2"> display: flex; gap: 5px; align-items: center; </span><span class="se">}}</span>
+
+<span class="s2">    .btn </span><span class="se">{{</span>
+<span class="s2">      background: var(--surface2);</span>
+<span class="s2">      color: var(--text);</span>
+<span class="s2">      border: 1px solid var(--border);</span>
+<span class="s2">      border-radius: var(--radius);</span>
+<span class="s2">      padding: 5px 12px;</span>
+<span class="s2">      cursor: pointer;</span>
+<span class="s2">      font-size: 0.75rem;</span>
+<span class="s2">      font-family: inherit;</span>
+<span class="s2">      font-weight: 500;</span>
+<span class="s2">      display: flex; align-items: center; gap: 5px;</span>
+<span class="s2">      transition: background 0.15s, border-color 0.15s, transform 0.1s;</span>
+<span class="s2">      white-space: nowrap;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .btn:hover </span><span class="se">{{</span><span class="s2"> background: #232745; border-color: #3a4070; transform: translateY(-1px); </span><span class="se">}}</span>
+<span class="s2">    .btn:active </span><span class="se">{{</span><span class="s2"> transform: translateY(0); </span><span class="se">}}</span>
+
+<span class="s2">    .btn-accent </span><span class="se">{{</span>
+<span class="s2">      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);</span>
+<span class="s2">      border-color: transparent; color: #fff;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .btn-accent:hover </span><span class="se">{{</span>
+<span class="s2">      background: linear-gradient(135deg, #5f9cf6 0%, #9271ff 100%);</span>
+<span class="s2">      border-color: transparent;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .btn-export </span><span class="se">{{</span>
+<span class="s2">      background: linear-gradient(135deg, #1a6b42 0%, #1a4b6b 100%);</span>
+<span class="s2">      border-color: transparent; color: #a0ffcb;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .btn-export:hover </span><span class="se">{{</span>
+<span class="s2">      background: linear-gradient(135deg, #22855a 0%, #205d82 100%);</span>
+<span class="s2">      border-color: transparent;</span>
+<span class="s2">    </span><span class="se">}}</span>
+
+<span class="s2">    .divider </span><span class="se">{{</span><span class="s2"> width: 1px; height: 20px; background: var(--border); margin: 0 3px; </span><span class="se">}}</span>
+
+<span class="s2">    /* ── Layout ──────────────────────────────────────────────────────────────── */</span>
+<span class="s2">    .main </span><span class="se">{{</span><span class="s2"> display: flex; flex: 1; overflow: hidden; </span><span class="se">}}</span>
+
+<span class="s2">    /* ── Sidebar ─────────────────────────────────────────────────────────────── */</span>
+<span class="s2">    .sidebar </span><span class="se">{{</span>
+<span class="s2">      width: 220px;</span>
+<span class="s2">      flex-shrink: 0;</span>
+<span class="s2">      background: var(--surface);</span>
+<span class="s2">      border-right: 1px solid var(--border);</span>
+<span class="s2">      display: flex;</span>
+<span class="s2">      flex-direction: column;</span>
+<span class="s2">      overflow: hidden;</span>
+<span class="s2">    </span><span class="se">}}</span>
+
+<span class="s2">    .panel-header </span><span class="se">{{</span>
+<span class="s2">      padding: 10px 12px 8px;</span>
+<span class="s2">      border-bottom: 1px solid var(--border);</span>
+<span class="s2">      display: flex;</span>
+<span class="s2">      align-items: center;</span>
+<span class="s2">      justify-content: space-between;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .panel-header h2 </span><span class="se">{{</span>
+<span class="s2">      font-size: 0.63rem;</span>
+<span class="s2">      font-weight: 600;</span>
+<span class="s2">      text-transform: uppercase;</span>
+<span class="s2">      letter-spacing: 0.1em;</span>
+<span class="s2">      color: var(--muted);</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .panel-toggle-row </span><span class="se">{{</span>
+<span class="s2">      display: flex;</span>
+<span class="s2">      gap: 5px;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .panel-toggle-row .btn </span><span class="se">{{</span>
+<span class="s2">      font-size: 0.65rem;</span>
+<span class="s2">      padding: 3px 8px;</span>
+<span class="s2">    </span><span class="se">}}</span>
+
+<span class="s2">    .sidebar-scroll </span><span class="se">{{</span>
+<span class="s2">      flex: 1;</span>
+<span class="s2">      overflow-y: auto;</span>
+<span class="s2">      padding: 12px;</span>
+<span class="s2">      display: flex;</span>
+<span class="s2">      flex-direction: column;</span>
+<span class="s2">      gap: 15px;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .section-label </span><span class="se">{{</span>
+<span class="s2">      font-size: 0.65rem;</span>
+<span class="s2">      font-weight: 700;</span>
+<span class="s2">      color: var(--muted);</span>
+<span class="s2">      text-transform: uppercase;</span>
+<span class="s2">      letter-spacing: 0.08em;</span>
+<span class="s2">      margin-bottom: 6px;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .section-sep </span><span class="se">{{</span>
+<span class="s2">      border: 0;</span>
+<span class="s2">      border-top: 1px solid var(--border);</span>
+<span class="s2">      margin: 0;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    </span>
+<span class="s2">    /* ── Summary &amp; Requirements ─────────────────────────────────────────────── */</span>
+<span class="s2">    .summary-box </span><span class="se">{{</span>
+<span class="s2">      background: #151828;</span>
+<span class="s2">      border: 1px solid var(--border);</span>
+<span class="s2">      border-radius: 6px;</span>
+<span class="s2">      padding: 10px;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .summary-row </span><span class="se">{{</span>
+<span class="s2">      display: flex;</span>
+<span class="s2">      justify-content: space-between;</span>
+<span class="s2">      margin-bottom: 4px;</span>
+<span class="s2">      font-size: 0.75rem;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .summary-row:last-child </span><span class="se">{{</span><span class="s2"> margin-bottom: 0; </span><span class="se">}}</span>
+<span class="s2">    .summary-key </span><span class="se">{{</span><span class="s2"> color: var(--muted); font-weight: 500; </span><span class="se">}}</span>
+<span class="s2">    .summary-val </span><span class="se">{{</span><span class="s2"> color: var(--text); font-weight: 600; text-align: right; </span><span class="se">}}</span>
+<span class="s2">    </span>
+<span class="s2">    .req-box </span><span class="se">{{</span>
+<span class="s2">      background: #0d0f1a;</span>
+<span class="s2">      border: 1px solid var(--border);</span>
+<span class="s2">      border-radius: 6px;</span>
+<span class="s2">      padding: 8px;</span>
+<span class="s2">      font-family: monospace;</span>
+<span class="s2">      font-size: 0.65rem;</span>
+<span class="s2">      color: #929ebd;</span>
+<span class="s2">      white-space: pre-wrap;</span>
+<span class="s2">      overflow-x: auto;</span>
+<span class="s2">      margin-top: 2px;</span>
+<span class="s2">    </span><span class="se">}}</span>
+
+<span class="s2">    .legend-item </span><span class="se">{{</span>
+<span class="s2">      font-size: 0.6rem;</span>
+<span class="s2">      font-weight: 600;</span>
+<span class="s2">      text-transform: uppercase;</span>
+<span class="s2">      letter-spacing: 0.1em;</span>
+<span class="s2">      color: var(--muted);</span>
+<span class="s2">      padding: 4px 4px 6px;</span>
+<span class="s2">    </span><span class="se">}}</span>
+
+<span class="s2">    .filter-item </span><span class="se">{{</span>
+<span class="s2">      display: flex;</span>
+<span class="s2">      align-items: center;</span>
+<span class="s2">      gap: 8px;</span>
+<span class="s2">      padding: 5px 6px;</span>
+<span class="s2">      border-radius: 7px;</span>
+<span class="s2">      cursor: pointer;</span>
+<span class="s2">      font-size: 0.76rem;</span>
+<span class="s2">      user-select: none;</span>
+<span class="s2">      transition: background 0.12s;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .filter-item:hover </span><span class="se">{{</span><span class="s2"> background: var(--surface2); </span><span class="se">}}</span>
+<span class="s2">    .filter-item input </span><span class="se">{{</span>
+<span class="s2">      cursor: pointer;</span>
+<span class="s2">      accent-color: var(--accent);</span>
+<span class="s2">      width: 13px; height: 13px;</span>
+<span class="s2">      flex-shrink: 0;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .filter-dot </span><span class="se">{{</span>
+<span class="s2">      width: 9px; height: 9px;</span>
+<span class="s2">      border-radius: 3px;</span>
+<span class="s2">      flex-shrink: 0;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .filter-label </span><span class="se">{{</span>
+<span class="s2">      overflow: hidden;</span>
+<span class="s2">      text-overflow: ellipsis;</span>
+<span class="s2">      white-space: nowrap;</span>
+<span class="s2">    </span><span class="se">}}</span>
+
+<span class="s2">    /* ── Timeline ────────────────────────────────────────────────────────────── */</span>
+<span class="s2">    .main-content </span><span class="se">{{</span>
+<span class="s2">      flex: 1;</span>
+<span class="s2">      display: flex;</span>
+<span class="s2">      flex-direction: column;</span>
+<span class="s2">      overflow: hidden;</span>
+<span class="s2">      background: #0d0f1a;</span>
+<span class="s2">      position: relative;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    #gantt </span><span class="se">{{</span><span class="s2"> flex: 1; overflow: hidden; </span><span class="se">}}</span>
+<span class="s2">    #resourceGraph </span><span class="se">{{</span><span class="s2"> height: 160px; border-top: 1px solid var(--border); background: var(--bg); flex-shrink: 0; </span><span class="se">}}</span>
+<span class="s2">    </span>
+<span class="s2">    #criticalSvg </span><span class="se">{{</span>
+<span class="s2">      position: absolute;</span>
+<span class="s2">      top: 0; left: 0;</span>
+<span class="s2">      width: 100%; height: 100%;</span>
+<span class="s2">      pointer-events: none;</span>
+<span class="s2">      z-index: 10;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .cp-path </span><span class="se">{{</span>
+<span class="s2">      stroke: #E8453C;</span>
+<span class="s2">      stroke-width: 2.5px;</span>
+<span class="s2">      fill: none;</span>
+<span class="s2">      filter: drop-shadow(0 0 3px rgba(232, 69, 60, 0.6));</span>
+<span class="s2">    </span><span class="se">}}</span>
+
+<span class="s2">    /* ── Vis.js overrides ────────────────────────────────────────────────────── */</span>
+<span class="s2">    .vis-timeline </span><span class="se">{{</span><span class="s2"> border: none; </span><span class="se">}}</span>
+<span class="s2">    .vis-panel.vis-center </span><span class="se">{{</span><span class="s2"> background: #0d0f1a; </span><span class="se">}}</span>
+<span class="s2">    .vis-panel.vis-left   </span><span class="se">{{</span><span class="s2"> background: var(--surface); </span><span class="se">}}</span>
+<span class="s2">    .vis-time-axis .vis-text </span><span class="se">{{</span><span class="s2"> color: var(--muted); font-size: 0.7rem; font-family: inherit; </span><span class="se">}}</span>
+<span class="s2">    .vis-time-axis .vis-grid.vis-minor </span><span class="se">{{</span><span class="s2"> border-color: #161826; </span><span class="se">}}</span>
+<span class="s2">    .vis-time-axis .vis-grid.vis-major </span><span class="se">{{</span><span class="s2"> border-color: var(--border); </span><span class="se">}}</span>
+<span class="s2">    .vis-label </span><span class="se">{{</span>
+<span class="s2">      color: var(--text) !important;</span>
+<span class="s2">      font-size: 0.72rem;</span>
+<span class="s2">      font-weight: 500;</span>
+<span class="s2">      font-family: inherit;</span>
+<span class="s2">      padding: 0 8px;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .vis-item </span><span class="se">{{</span><span class="s2"> font-size: 0.68rem; font-family: inherit; </span><span class="se">}}</span>
+<span class="s2">    .vis-item.vis-selected </span><span class="se">{{</span>
+<span class="s2">      border-color: #fff !important;</span>
+<span class="s2">      box-shadow: 0 0 0 2px rgba(255,255,255,0.2);</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .vis-current-time </span><span class="se">{{</span><span class="s2"> background-color: var(--accent) !important; width: 2px; opacity: 0.7; </span><span class="se">}}</span>
+
+<span class="s2">    /* ── Tooltip ─────────────────────────────────────────────────────────────── */</span>
+<span class="s2">    .vis-tooltip </span><span class="se">{{</span>
+<span class="s2">      background: #121626 !important;</span>
+<span class="s2">      border: 1px solid #2e3555 !important;</span>
+<span class="s2">      border-radius: 10px !important;</span>
+<span class="s2">      padding: 12px 16px !important;</span>
+<span class="s2">      font-size: 0.74rem !important;</span>
+<span class="s2">      line-height: 1.75 !important;</span>
+<span class="s2">      color: var(--text) !important;</span>
+<span class="s2">      min-width: 240px !important;</span>
+<span class="s2">      max-width: 320px !important;</span>
+<span class="s2">      box-shadow: 0 12px 40px rgba(0,0,0,0.7) !important;</span>
+<span class="s2">      font-family: inherit !important;</span>
+<span class="s2">      z-index: 99999 !important;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .tt b </span><span class="se">{{</span><span class="s2"> color: #fff; font-size: 0.8rem; display: block; margin-bottom: 6px; </span><span class="se">}}</span>
+<span class="s2">    .tt .tt-row </span><span class="se">{{</span><span class="s2"> color: var(--muted); font-size: 0.72rem; </span><span class="se">}}</span>
+<span class="s2">    .tt .tt-row span </span><span class="se">{{</span><span class="s2"> color: var(--text); </span><span class="se">}}</span>
+
+<span class="s2">    /* ── Scrollbar ───────────────────────────────────────────────────────────── */</span>
+<span class="s2">    ::-webkit-scrollbar </span><span class="se">{{</span><span class="s2"> width: 4px; height: 4px; </span><span class="se">}}</span>
+<span class="s2">    ::-webkit-scrollbar-track </span><span class="se">{{</span><span class="s2"> background: transparent; </span><span class="se">}}</span>
+<span class="s2">    ::-webkit-scrollbar-thumb </span><span class="se">{{</span><span class="s2"> background: #2a2f4a; border-radius: 3px; </span><span class="se">}}</span>
+
+<span class="s2">    /* ── Toast ───────────────────────────────────────────────────────────────── */</span>
+<span class="s2">    #toast </span><span class="se">{{</span>
+<span class="s2">      position: fixed; bottom: 20px; right: 20px;</span>
+<span class="s2">      background: rgba(20,24,40,0.95);</span>
+<span class="s2">      border: 1px solid var(--border);</span>
+<span class="s2">      border-radius: 10px;</span>
+<span class="s2">      padding: 9px 16px;</span>
+<span class="s2">      font-size: 0.78rem;</span>
+<span class="s2">      color: #a0ffcb;</span>
+<span class="s2">      box-shadow: 0 8px 24px rgba(0,0,0,0.5);</span>
+<span class="s2">      opacity: 0; transform: translateY(6px);</span>
+<span class="s2">      transition: opacity 0.2s, transform 0.2s;</span>
+<span class="s2">      pointer-events: none; z-index: 999;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    #toast.show </span><span class="se">{{</span><span class="s2"> opacity: 1; transform: translateY(0); </span><span class="se">}}</span>
+<span class="s2">  &lt;/style&gt;</span>
+<span class="s2">&lt;/head&gt;</span>
+<span class="s2">&lt;body&gt;</span>
+
+<span class="s2">&lt;header&gt;</span>
+<span class="s2">  &lt;div class=&quot;logo-mark&quot;&gt;📅&lt;/div&gt;</span>
+<span class="s2">  &lt;h1&gt;</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">&lt;/h1&gt;</span>
+<span class="s2">  &lt;div class=&quot;header-right&quot;&gt;</span>
+<span class="s2">    &lt;div class=&quot;toolbar&quot;&gt;</span>
+<span class="s2">      &lt;button class=&quot;btn btn-accent&quot; onclick=&quot;fitAll()&quot;&gt;⊞ Fit All&lt;/button&gt;</span>
+<span class="s2">      &lt;button class=&quot;btn&quot; onclick=&quot;zoomIn()&quot;&gt;＋ Zoom In&lt;/button&gt;</span>
+<span class="s2">      &lt;button class=&quot;btn&quot; onclick=&quot;zoomOut()&quot;&gt;－ Zoom Out&lt;/button&gt;</span>
+<span class="s2">      &lt;button class=&quot;btn&quot; onclick=&quot;goToday()&quot;&gt;◎ Today&lt;/button&gt;</span>
+<span class="s2">      &lt;button class=&quot;btn&quot; onclick=&quot;toggleSort()&quot;&gt;↕ Sort Rows&lt;/button&gt;</span>
+<span class="s2">      &lt;div class=&quot;divider&quot;&gt;&lt;/div&gt;</span>
+<span class="s2">      &lt;button class=&quot;btn btn-export&quot; onclick=&quot;exportJSON()&quot;&gt;⬇ JSON&lt;/button&gt;</span>
+<span class="s2">      &lt;button class=&quot;btn btn-export&quot; onclick=&quot;exportCSV()&quot;&gt;⬇ CSV&lt;/button&gt;</span>
+<span class="s2">    &lt;/div&gt;</span>
+<span class="s2">    &lt;div class=&quot;badge&quot; id=&quot;taskCount&quot;&gt;&lt;/div&gt;</span>
+<span class="s2">  &lt;/div&gt;</span>
+<span class="s2">&lt;/header&gt;</span>
+
+<span class="s2">&lt;div class=&quot;main&quot;&gt;</span>
+<span class="s2">  &lt;aside class=&quot;sidebar&quot;&gt;</span>
+
+<span class="s2">    &lt;!-- Milestone filter --&gt;</span>
+<span class="s2">    &lt;div class=&quot;panel-header&quot;&gt;</span>
+<span class="s2">      &lt;h2&gt;Milestones&lt;/h2&gt;</span>
+<span class="s2">      &lt;div class=&quot;panel-toggle-row&quot;&gt;</span>
+<span class="s2">        &lt;button class=&quot;btn&quot; onclick=&quot;toggleGroup(&#39;milestone&#39;, true)&quot;&gt;✓&lt;/button&gt;</span>
+<span class="s2">        &lt;button class=&quot;btn&quot; onclick=&quot;toggleGroup(&#39;milestone&#39;, false)&quot;&gt;✕&lt;/button&gt;</span>
+<span class="s2">      &lt;/div&gt;</span>
+<span class="s2">    &lt;/div&gt;</span>
+
+<span class="s2">    &lt;!-- Task-type filter --&gt;</span>
+<span class="s2">    &lt;div class=&quot;panel-header&quot; style=&quot;border-top: 1px solid var(--border);&quot;&gt;</span>
+<span class="s2">      &lt;h2&gt;Task Types&lt;/h2&gt;</span>
+<span class="s2">      &lt;div class=&quot;panel-toggle-row&quot;&gt;</span>
+<span class="s2">        &lt;button class=&quot;btn&quot; onclick=&quot;toggleGroup(&#39;type&#39;, true)&quot;&gt;✓&lt;/button&gt;</span>
+<span class="s2">        &lt;button class=&quot;btn&quot; onclick=&quot;toggleGroup(&#39;type&#39;, false)&quot;&gt;✕&lt;/button&gt;</span>
+<span class="s2">      &lt;/div&gt;</span>
+<span class="s2">    &lt;/div&gt;</span>
+
+<span class="s2">    &lt;div class=&quot;sidebar-scroll&quot;&gt;</span>
+<span class="s2">      &lt;div&gt;</span>
+<span class="s2">          &lt;div class=&quot;section-label&quot;&gt;Project Summary&lt;/div&gt;</span>
+<span class="s2">          &lt;div class=&quot;summary-box&quot;&gt;</span>
+<span class="s2">            &lt;div class=&quot;summary-row&quot;&gt;&lt;span class=&quot;summary-key&quot;&gt;Start&lt;/span&gt;&lt;span class=&quot;summary-val&quot;&gt;</span><span class="si">{</span><span class="n">p_start_str</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;</span>
+<span class="s2">            &lt;div class=&quot;summary-row&quot;&gt;&lt;span class=&quot;summary-key&quot;&gt;End&lt;/span&gt;&lt;span class=&quot;summary-val&quot;&gt;</span><span class="si">{</span><span class="n">p_end_str</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;</span>
+<span class="s2">            &lt;div class=&quot;summary-row&quot;&gt;&lt;span class=&quot;summary-key&quot;&gt;Duration&lt;/span&gt;&lt;span class=&quot;summary-val&quot;&gt;</span><span class="si">{</span><span class="n">p_dur_days</span><span class="si">}</span><span class="s2"> days&lt;/span&gt;&lt;/div&gt;</span>
+<span class="s2">            &lt;div class=&quot;summary-row&quot;&gt;&lt;span class=&quot;summary-key&quot;&gt;Resources&lt;/span&gt;&lt;span class=&quot;summary-val&quot;&gt;</span><span class="si">{</span><span class="n">total_resources</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;</span>
+<span class="s2">          &lt;/div&gt;</span>
+<span class="s2">      &lt;/div&gt;</span>
+<span class="s2">      </span>
+<span class="s2">      &lt;hr class=&quot;section-sep&quot;/&gt;</span>
+
+<span class="s2">      &lt;div&gt;</span>
+<span class="s2">          &lt;div class=&quot;section-label&quot;&gt;Milestones&lt;/div&gt;</span>
+<span class="s2">          &lt;div id=&quot;legendMilestone&quot;&gt;&lt;/div&gt;</span>
+<span class="s2">      &lt;/div&gt;</span>
+
+<span class="s2">      &lt;hr class=&quot;section-sep&quot;/&gt;</span>
+
+<span class="s2">      &lt;div&gt;</span>
+<span class="s2">          &lt;div class=&quot;section-label&quot;&gt;Task Types&lt;/div&gt;</span>
+<span class="s2">          &lt;div id=&quot;legendType&quot;&gt;&lt;/div&gt;</span>
+<span class="s2">      &lt;/div&gt;</span>
+<span class="s2">      </span>
+<span class="s2">      &lt;hr class=&quot;section-sep&quot;/&gt;</span>
+
+<span class="s2">      &lt;div&gt;</span>
+<span class="s2">          &lt;div class=&quot;section-label&quot;&gt;Dependencies&lt;/div&gt;</span>
+<span class="s2">          &lt;div class=&quot;filter-item&quot;&gt;</span>
+<span class="s2">            &lt;input type=&quot;checkbox&quot; id=&quot;toggleTaskArrows&quot; checked onchange=&quot;onToggleTaskArrows(this)&quot;/&gt;</span>
+<span class="s2">            &lt;span class=&quot;filter-label&quot;&gt;Show Task Arrows&lt;/span&gt;</span>
+<span class="s2">          &lt;/div&gt;</span>
+<span class="s2">      &lt;/div&gt;</span>
+<span class="s2">      </span>
+<span class="s2">      &lt;hr class=&quot;section-sep&quot;/&gt;</span>
+<span class="s2">      </span>
+<span class="s2">      &lt;div&gt;</span>
+<span class="s2">          &lt;div class=&quot;section-label&quot;&gt;Requirements&lt;/div&gt;</span>
+<span class="s2">          &lt;div class=&quot;req-box&quot;&gt;</span><span class="si">{</span><span class="n">req_text</span><span class="si">}</span><span class="s2">&lt;/div&gt;</span>
+<span class="s2">      &lt;/div&gt;</span>
+<span class="s2">    &lt;/div&gt;</span>
+<span class="s2">  &lt;/aside&gt;</span>
+
+<span class="s2">  &lt;div class=&quot;main-content&quot;&gt;</span>
+<span class="s2">    &lt;div id=&quot;gantt&quot;&gt;&lt;/div&gt;</span>
+<span class="s2">    &lt;div id=&quot;resourceGraph&quot;&gt;&lt;/div&gt;</span>
+<span class="s2">    &lt;svg id=&quot;criticalSvg&quot;&gt;</span>
+<span class="s2">      &lt;defs&gt;</span>
+<span class="s2">        &lt;marker id=&quot;arrowhead&quot; markerWidth=&quot;6&quot; markerHeight=&quot;6&quot; refX=&quot;5&quot; refY=&quot;3&quot; orient=&quot;auto&quot;&gt;</span>
+<span class="s2">          &lt;polygon points=&quot;0 0, 6 3, 0 6&quot; fill=&quot;#E8453C&quot; /&gt;</span>
+<span class="s2">        &lt;/marker&gt;</span>
+<span class="s2">        &lt;marker id=&quot;arrowhead-task&quot; markerWidth=&quot;6&quot; markerHeight=&quot;6&quot; refX=&quot;5&quot; refY=&quot;3&quot; orient=&quot;auto&quot;&gt;</span>
+<span class="s2">          &lt;polygon points=&quot;0 0, 6 3, 0 6&quot; fill=&quot;#6b728e&quot; /&gt;</span>
+<span class="s2">        &lt;/marker&gt;</span>
+<span class="s2">      &lt;/defs&gt;</span>
+<span class="s2">    &lt;/svg&gt;</span>
+<span class="s2">  &lt;/div&gt;</span>
+<span class="s2">&lt;/div&gt;</span>
+
+<span class="s2">&lt;div id=&quot;toast&quot;&gt;&lt;/div&gt;</span>
+
+<span class="s2">&lt;script&gt;</span>
+<span class="s2">  // ── Injected data ────────────────────────────────────────────────────────────</span>
+<span class="s2">  const ALL_ITEMS      = </span><span class="si">{</span><span class="n">items_json</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">  const ALL_GROUPS     = </span><span class="si">{</span><span class="n">groups_json</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">  const MILESTONE_META = </span><span class="si">{</span><span class="n">milestone_meta_json</span><span class="si">}</span><span class="s2">;   // [</span><span class="se">{{</span><span class="s2">id, label, color</span><span class="se">}}</span><span class="s2">, …]</span>
+<span class="s2">  const TASK_TYPES     = </span><span class="si">{</span><span class="n">task_types_json</span><span class="si">}</span><span class="s2">;        // [&#39;part_model&#39;, &#39;part_list&#39;, …]</span>
+<span class="s2">  const TYPE_PALETTE   = </span><span class="si">{</span><span class="n">type_palette_json</span><span class="si">}</span><span class="s2">;</span>
+
+<span class="s2">  const RESOURCE_DATA  = </span><span class="si">{</span><span class="n">resource_data_json</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">  const TOTAL_RESOURCES = </span><span class="si">{</span><span class="n">total_resources</span><span class="si">}</span><span class="s2">;</span>
+<span class="s2">  const CRITICAL_LINKS = </span><span class="si">{</span><span class="n">critical_links_json</span><span class="si">}</span><span class="s2">; // Original critical path links</span>
+<span class="s2">  const ALL_TASK_LINKS = </span><span class="si">{</span><span class="n">all_links_json</span><span class="si">}</span><span class="s2">;</span>
+
+<span class="s2">  // ── Active filter state ───────────────────────────────────────────────────────</span>
+<span class="s2">  const hiddenMilestones = new Set();   // milestone_id strings that are OFF</span>
+<span class="s2">  const hiddenTypes      = new Set();   // type strings that are OFF</span>
+<span class="s2">  let showAllTaskArrows = true; // State for toggling all task arrows</span>
+
+<span class="s2">  // ── Vis.js setup ─────────────────────────────────────────────────────────────</span>
+<span class="s2">  const dataset = new vis.DataSet(ALL_ITEMS);</span>
+<span class="s2">  const groups  = new vis.DataSet(ALL_GROUPS);</span>
+
+<span class="s2">  document.getElementById(&#39;taskCount&#39;).textContent =</span>
+<span class="s2">    `$</span><span class="se">{{</span><span class="s2">ALL_ITEMS.length</span><span class="se">}}</span><span class="s2"> tasks · $</span><span class="se">{{</span><span class="s2">ALL_GROUPS.length</span><span class="se">}}</span><span class="s2"> rows`;</span>
+
+<span class="s2">  const timelineOptions = </span><span class="se">{{</span>
+<span class="s2">      height:       &#39;100%&#39;,</span>
+<span class="s2">      orientation:  </span><span class="se">{{</span><span class="s2"> axis: &#39;top&#39; </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">      stack:        true,</span>
+<span class="s2">      stackSubgroups: true,</span>
+<span class="s2">      moveable:     true,</span>
+<span class="s2">      zoomable:     true,</span>
+<span class="s2">      selectable:   true,</span>
+<span class="s2">      multiselect:  false,</span>
+<span class="s2">      tooltip:      </span><span class="se">{{</span><span class="s2"> followMouse: true, overflowMethod: &#39;flip&#39; </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">      zoomMin: 1000 * 60 * 60,</span>
+<span class="s2">      zoomMax: 1000 * 60 * 60 * 24 * 365 * 2,</span>
+<span class="s2">      margin: </span><span class="se">{{</span><span class="s2"> item: </span><span class="se">{{</span><span class="s2"> horizontal: 2, vertical: 4 </span><span class="se">}}</span><span class="s2">, axis: 6 </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">      format: </span><span class="se">{{</span>
+<span class="s2">        minorLabels: </span><span class="se">{{</span>
+<span class="s2">          minute: &#39;HH:mm&#39;, hour: &#39;HH:mm&#39;,</span>
+<span class="s2">          day: &#39;D MMM&#39;, week: &#39;D MMM&#39;, month: &#39;MMM YYYY&#39;</span>
+<span class="s2">        </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">        majorLabels: </span><span class="se">{{</span>
+<span class="s2">          hour: &#39;ddd D MMM&#39;, day: &#39;MMMM YYYY&#39;,</span>
+<span class="s2">          week: &#39;MMMM YYYY&#39;, month: &#39;YYYY&#39;</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">      </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">  </span><span class="se">}}</span><span class="s2">;</span>
+
+<span class="s2">  const timeline = new vis.Timeline(</span>
+<span class="s2">    document.getElementById(&#39;gantt&#39;),</span>
+<span class="s2">    dataset,</span>
+<span class="s2">    groups,</span>
+<span class="s2">    timelineOptions</span>
+<span class="s2">  );</span>
+
+<span class="s2">  const resDataset = new vis.DataSet(RESOURCE_DATA);</span>
+<span class="s2">  const resOptions = </span><span class="se">{{</span>
+<span class="s2">      height: &#39;100%&#39;,</span>
+<span class="s2">      drawPoints: false,</span>
+<span class="s2">      interpolation: </span><span class="se">{{</span><span class="s2"> parametrization: &#39;step&#39; </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">      shaded: </span><span class="se">{{</span><span class="s2"> orientation: &#39;bottom&#39; </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">      dataAxis: </span><span class="se">{{</span>
+<span class="s2">        visible: true,</span>
+<span class="s2">        left: </span><span class="se">{{</span>
+<span class="s2">            title: </span><span class="se">{{</span><span class="s2"> text: `Active Tasks (limit: $</span><span class="se">{{</span><span class="s2">TOTAL_RESOURCES</span><span class="se">}}</span><span class="s2">)` </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">            format: function (value) </span><span class="se">{{</span><span class="s2"> return Math.round(value); </span><span class="se">}}</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">      </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">      zoomMin: timelineOptions.zoomMin,</span>
+<span class="s2">      zoomMax: timelineOptions.zoomMax,</span>
+<span class="s2">  </span><span class="se">}}</span><span class="s2">;</span>
+<span class="s2">  </span>
+<span class="s2">  const resourceGraph = new vis.Graph2d(</span>
+<span class="s2">      document.getElementById(&#39;resourceGraph&#39;),</span>
+<span class="s2">      resDataset,</span>
+<span class="s2">      resOptions</span>
+<span class="s2">  );</span>
+
+<span class="s2">  // Sync range changes between timeline and graph</span>
+<span class="s2">  timeline.on(&#39;rangechange&#39;, function (properties) </span><span class="se">{{</span>
+<span class="s2">      if (properties.byUser) </span><span class="se">{{</span>
+<span class="s2">          resourceGraph.setOptions(</span><span class="se">{{</span><span class="s2"> start: properties.start, end: properties.end </span><span class="se">}}</span><span class="s2">);</span>
+<span class="s2">      </span><span class="se">}}</span>
+<span class="s2">  </span><span class="se">}}</span><span class="s2">);</span>
+<span class="s2">  resourceGraph.on(&#39;rangechange&#39;, function (properties) </span><span class="se">{{</span>
+<span class="s2">      if (properties.byUser) </span><span class="se">{{</span>
+<span class="s2">          timeline.setOptions(</span><span class="se">{{</span><span class="s2"> start: properties.start, end: properties.end </span><span class="se">}}</span><span class="s2">);</span>
+<span class="s2">      </span><span class="se">}}</span>
+<span class="s2">  </span><span class="se">}}</span><span class="s2">);</span>
+
+<span class="s2">  // ── Toolbar ───────────────────────────────────────────────────────────────────</span>
+<span class="s2">  function fitAll()  </span><span class="se">{{</span><span class="s2"> timeline.fit(); </span><span class="se">}}</span>
+<span class="s2">  function zoomIn()  </span><span class="se">{{</span><span class="s2"> timeline.zoomIn(0.5); </span><span class="se">}}</span>
+<span class="s2">  function zoomOut() </span><span class="se">{{</span><span class="s2"> timeline.zoomOut(0.5); </span><span class="se">}}</span>
+<span class="s2">  function goToday() </span><span class="se">{{</span><span class="s2"> timeline.moveTo(new Date()); </span><span class="se">}}</span>
+<span class="s2">  </span>
+<span class="s2">  let sortAlpha = false;</span>
+<span class="s2">  function toggleSort() </span><span class="se">{{</span>
+<span class="s2">    sortAlpha = !sortAlpha;</span>
+<span class="s2">    let gArray = Object.values(groups.get());</span>
+<span class="s2">    if (sortAlpha) </span><span class="se">{{</span>
+<span class="s2">        gArray.sort((a,b) =&gt; a.content.localeCompare(b.content));</span>
+<span class="s2">    </span><span class="se">}}</span><span class="s2"> else </span><span class="se">{{</span>
+<span class="s2">        // Recover original chronological order from ALL_GROUPS</span>
+<span class="s2">        let orderMap = new Map();</span>
+<span class="s2">        ALL_GROUPS.forEach((g, idx) =&gt; orderMap.set(g.id, idx));</span>
+<span class="s2">        gArray.sort((a,b) =&gt; (orderMap.get(a.id) || 0) - (orderMap.get(b.id) || 0));</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    // Apply order</span>
+<span class="s2">    groups.clear();</span>
+<span class="s2">    groups.add(gArray);</span>
+<span class="s2">    drawDependencyArrows();</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  // ── Re-apply all active filters and refresh dataset ───────────────────────────</span>
+<span class="s2">  function applyFilters() </span><span class="se">{{</span>
+<span class="s2">    const visible = ALL_ITEMS.filter(item =&gt; </span><span class="se">{{</span>
+<span class="s2">      const milestoneOk = !hiddenMilestones.has(item._milestone_id || &#39;__none__&#39;);</span>
+<span class="s2">      const typeOk      = !hiddenTypes.has(item._type);</span>
+<span class="s2">      return milestoneOk &amp;&amp; typeOk;</span>
+<span class="s2">    </span><span class="se">}}</span><span class="s2">);</span>
+<span class="s2">    dataset.clear();</span>
+<span class="s2">    dataset.add(visible);</span>
+
+<span class="s2">    // Hide/show row labels for rows that have no visible items</span>
+<span class="s2">    const visibleNames = new Set(visible.map(i =&gt; i.group));</span>
+<span class="s2">    ALL_GROUPS.forEach(g =&gt; </span><span class="se">{{</span>
+<span class="s2">      groups.update(</span><span class="se">{{</span><span class="s2"> id: g.id, visible: visibleNames.has(g.id) </span><span class="se">}}</span><span class="s2">);</span>
+<span class="s2">    </span><span class="se">}}</span><span class="s2">);</span>
+<span class="s2">    </span>
+<span class="s2">    setTimeout(drawDependencyArrows, 50);</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  // ── Sidebar: Milestones ───────────────────────────────────────────────────────</span>
+<span class="s2">  const legendMilestone = document.getElementById(&#39;legendMilestone&#39;);</span>
+<span class="s2">  MILESTONE_META.forEach(m =&gt; </span><span class="se">{{</span>
+<span class="s2">    const label = document.createElement(&#39;label&#39;);</span>
+<span class="s2">    label.className = &#39;filter-item&#39;;</span>
+<span class="s2">    label.title = m.label;</span>
+<span class="s2">    label.innerHTML = `</span>
+<span class="s2">      &lt;input type=&quot;checkbox&quot; checked data-milestone=&quot;$</span><span class="se">{{</span><span class="s2">m.id</span><span class="se">}}</span><span class="s2">&quot; onchange=&quot;onMilestoneFilter(this)&quot;/&gt;</span>
+<span class="s2">      &lt;span class=&quot;filter-dot&quot; style=&quot;background:$</span><span class="se">{{</span><span class="s2">m.color</span><span class="se">}}</span><span class="s2">&quot;&gt;&lt;/span&gt;</span>
+<span class="s2">      &lt;span class=&quot;filter-label&quot;&gt;$</span><span class="se">{{</span><span class="s2">m.label</span><span class="se">}}</span><span class="s2">&lt;/span&gt;</span>
+<span class="s2">    `;</span>
+<span class="s2">    legendMilestone.appendChild(label);</span>
+<span class="s2">  </span><span class="se">}}</span><span class="s2">);</span>
+
+<span class="s2">  function onMilestoneFilter(cb) </span><span class="se">{{</span>
+<span class="s2">    if (cb.checked) hiddenMilestones.delete(cb.dataset.milestone);</span>
+<span class="s2">    else            hiddenMilestones.add(cb.dataset.milestone);</span>
+<span class="s2">    applyFilters();</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  // ── Sidebar: Task Types ───────────────────────────────────────────────────────</span>
+<span class="s2">  const legendType = document.getElementById(&#39;legendType&#39;);</span>
+<span class="s2">  TASK_TYPES.forEach(tp =&gt; </span><span class="se">{{</span>
+<span class="s2">    const color = TYPE_PALETTE[tp] || &#39;#9B59B6&#39;;</span>
+<span class="s2">    const label = document.createElement(&#39;label&#39;);</span>
+<span class="s2">    label.className = &#39;filter-item&#39;;</span>
+<span class="s2">    label.innerHTML = `</span>
+<span class="s2">      &lt;input type=&quot;checkbox&quot; checked data-type=&quot;$</span><span class="se">{{</span><span class="s2">tp</span><span class="se">}}</span><span class="s2">&quot; onchange=&quot;onTypeFilter(this)&quot;/&gt;</span>
+<span class="s2">      &lt;span class=&quot;filter-dot&quot; style=&quot;background:$</span><span class="se">{{</span><span class="s2">color</span><span class="se">}}</span><span class="s2">;border-radius:50%&quot;&gt;&lt;/span&gt;</span>
+<span class="s2">      &lt;span class=&quot;filter-label&quot;&gt;$</span><span class="se">{{</span><span class="s2">tp</span><span class="se">}}</span><span class="s2">&lt;/span&gt;</span>
+<span class="s2">    `;</span>
+<span class="s2">    legendType.appendChild(label);</span>
+<span class="s2">  </span><span class="se">}}</span><span class="s2">);</span>
+
+<span class="s2">  function onTypeFilter(cb) </span><span class="se">{{</span>
+<span class="s2">    if (cb.checked) hiddenTypes.delete(cb.dataset.type);</span>
+<span class="s2">    else            hiddenTypes.add(cb.dataset.type);</span>
+<span class="s2">    applyFilters();</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  // ── Toggle-all helpers ────────────────────────────────────────────────────────</span>
+<span class="s2">  function toggleGroup(kind, checked) </span><span class="se">{{</span>
+<span class="s2">    const selector = kind === &#39;milestone&#39;</span>
+<span class="s2">      ? &#39;#legendMilestone input&#39;</span>
+<span class="s2">      : &#39;#legendType input&#39;;</span>
+<span class="s2">    document.querySelectorAll(selector).forEach(cb =&gt; </span><span class="se">{{</span>
+<span class="s2">      cb.checked = checked;</span>
+<span class="s2">      if (kind === &#39;milestone&#39;) </span><span class="se">{{</span>
+<span class="s2">        if (checked) hiddenMilestones.delete(cb.dataset.milestone);</span>
+<span class="s2">        else         hiddenMilestones.add(cb.dataset.milestone);</span>
+<span class="s2">      </span><span class="se">}}</span><span class="s2"> else </span><span class="se">{{</span>
+<span class="s2">        if (checked) hiddenTypes.delete(cb.dataset.type);</span>
+<span class="s2">        else         hiddenTypes.add(cb.dataset.type);</span>
+<span class="s2">      </span><span class="se">}}</span>
+<span class="s2">    </span><span class="se">}}</span><span class="s2">);</span>
+<span class="s2">    applyFilters();</span>
+<span class="s2">  </span><span class="se">}}</span>
+<span class="s2">  </span>
+<span class="s2">  function onToggleTaskArrows(cb) </span><span class="se">{{</span>
+<span class="s2">    showAllTaskArrows = cb.checked;</span>
+<span class="s2">    drawDependencyArrows();</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  // ── Draw SVG Arrows for Critical Path ──────────────────────────────────────────</span>
+<span class="s2">  const CRITICAL_LINKS = </span><span class="si">{</span><span class="n">critical_links_json</span><span class="si">}</span><span class="s2">; // Assuming critical_links is still passed for identification</span>
+<span class="s2">  const svgOverlay = document.getElementById(&#39;criticalSvg&#39;);</span>
+<span class="s2">  </span>
+<span class="s2">  function drawDependencyArrows() </span><span class="se">{{</span>
+<span class="s2">      // clear existing paths (keep defs)</span>
+<span class="s2">      const paths = svgOverlay.querySelectorAll(&#39;path&#39;);</span>
+<span class="s2">      paths.forEach(p =&gt; p.remove());</span>
+
+<span class="s2">      if (ALL_TASK_LINKS.length === 0 &amp;&amp; CRITICAL_LINKS.length === 0) return;</span>
+
+<span class="s2">      const ganttRect = document.getElementById(&#39;gantt&#39;).getBoundingClientRect();</span>
+<span class="s2">      const panelOuter = document.querySelector(&#39;.vis-panel.vis-center&#39;);</span>
+<span class="s2">      if (!panelOuter) return;</span>
+<span class="s2">      const panelRect = panelOuter.getBoundingClientRect();</span>
+
+<span class="s2">      // We need offset relative to our absolute SVG container</span>
+<span class="s2">      const offsetX = panelRect.left - ganttRect.left;</span>
+<span class="s2">      const offsetY = panelRect.top - ganttRect.top;</span>
+
+<span class="s2">      ALL_TASK_LINKS.forEach(link =&gt; </span><span class="se">{{</span>
+<span class="s2">          const isCritical = CRITICAL_LINKS.some(cl =&gt; cl.from === link.from &amp;&amp; cl.to === link.to);</span>
+
+<span class="s2">          if (!showAllTaskArrows &amp;&amp; !isCritical) return; // Skip if not showing all and not critical</span>
+
+<span class="s2">          const itemFrom = timeline.itemSet.items[link.from];</span>
+<span class="s2">          const itemTo = timeline.itemSet.items[link.to];</span>
+
+<span class="s2">          if (itemFrom &amp;&amp; itemTo &amp;&amp; itemFrom.displayed &amp;&amp; itemTo.displayed) </span><span class="se">{{</span>
+<span class="s2">               // Extract DOM element boxes inside the vis-panel</span>
+<span class="s2">               const bFrom = itemFrom.dom.box.getBoundingClientRect();</span>
+<span class="s2">               const bTo = itemTo.dom.box.getBoundingClientRect();</span>
+
+<span class="s2">               // Calculate relative coordinates in our SVG space</span>
+<span class="s2">               const x1 = (bFrom.right - panelRect.left) + offsetX;</span>
+<span class="s2">               const y1 = (bFrom.top + bFrom.height/2 - panelRect.top) + offsetY;</span>
+<span class="s2">               const x2 = (bTo.left - panelRect.left) + offsetX;</span>
+<span class="s2">               const y2 = (bTo.top + bTo.height/2 - panelRect.top) + offsetY;</span>
+
+<span class="s2">               const path = document.createElementNS(&#39;http://www.w3.org/2000/svg&#39;, &#39;path&#39;);</span>
+<span class="s2">               path.setAttribute(&#39;class&#39;, isCritical ? &#39;cp-path&#39; : &#39;task-path&#39;);</span>
+<span class="s2">               path.setAttribute(&#39;marker-end&#39;, isCritical ? &#39;url(#arrowhead)&#39; : &#39;url(#arrowhead-task)&#39;);</span>
+
+<span class="s2">               // Check if successor is on a different row, if so use an S-curve, otherwise straight line</span>
+<span class="s2">               if (Math.abs(y1 - y2) &lt; 5) </span><span class="se">{{</span>
+<span class="s2">                   path.setAttribute(&#39;d&#39;, `M $</span><span class="se">{{</span><span class="s2">x1</span><span class="se">}}</span><span class="s2"> $</span><span class="se">{{</span><span class="s2">y1</span><span class="se">}}</span><span class="s2"> L $</span><span class="se">{{</span><span class="s2">x2</span><span class="se">}}</span><span class="s2"> $</span><span class="se">{{</span><span class="s2">y2</span><span class="se">}}</span><span class="s2">`);</span>
+<span class="s2">               </span><span class="se">}}</span><span class="s2"> else </span><span class="se">{{</span>
+<span class="s2">                   const cpX = (x1 + x2) / 2;</span>
+<span class="s2">                   path.setAttribute(&#39;d&#39;, `M $</span><span class="se">{{</span><span class="s2">x1</span><span class="se">}}</span><span class="s2"> $</span><span class="se">{{</span><span class="s2">y1</span><span class="se">}}</span><span class="s2"> C $</span><span class="se">{{</span><span class="s2">cpX</span><span class="se">}}</span><span class="s2"> $</span><span class="se">{{</span><span class="s2">y1</span><span class="se">}}</span><span class="s2">, $</span><span class="se">{{</span><span class="s2">cpX</span><span class="se">}}</span><span class="s2"> $</span><span class="se">{{</span><span class="s2">y2</span><span class="se">}}</span><span class="s2">, $</span><span class="se">{{</span><span class="s2">x2</span><span class="se">}}</span><span class="s2"> $</span><span class="se">{{</span><span class="s2">y2</span><span class="se">}}</span><span class="s2">`);</span>
+<span class="s2">               </span><span class="se">}}</span>
+<span class="s2">               svgOverlay.appendChild(path);</span>
+<span class="s2">          </span><span class="se">}}</span>
+<span class="s2">      </span><span class="se">}}</span><span class="s2">);</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  timeline.on(&#39;changed&#39;, drawDependencyArrows);</span>
+<span class="s2">  timeline.on(&#39;scroll&#39;, drawDependencyArrows);</span>
+
+<span class="s2">  // ── Export ───────────────────────────────────────────────────────────────────</span>
+<span class="s2">  function showToast(msg) </span><span class="se">{{</span>
+<span class="s2">    const t = document.getElementById(&#39;toast&#39;);</span>
+<span class="s2">    t.textContent = msg;</span>
+<span class="s2">    t.classList.add(&#39;show&#39;);</span>
+<span class="s2">    setTimeout(() =&gt; t.classList.remove(&#39;show&#39;), 2500);</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  function exportJSON() </span><span class="se">{{</span>
+<span class="s2">    const rows = ALL_ITEMS.map(item =&gt; (</span><span class="se">{{</span>
+<span class="s2">      id: item._task_id, name: item._name,</span>
+<span class="s2">      milestone: item._milestone, type: item._type,</span>
+<span class="s2">      part: item._part, duration_h: item._duration_h,</span>
+<span class="s2">      start: item._start, end: item._end,</span>
+<span class="s2">      predecessors: item._preds, successors: item._succs,</span>
+<span class="s2">    </span><span class="se">}}</span><span class="s2">));</span>
+<span class="s2">    _download(new Blob([JSON.stringify(rows, null, 2)], </span><span class="se">{{</span><span class="s2">type: &#39;application/json&#39;</span><span class="se">}}</span><span class="s2">), &#39;gantt_tasks.json&#39;);</span>
+<span class="s2">    showToast(&#39;✓ JSON exported&#39;);</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  function exportCSV() </span><span class="se">{{</span>
+<span class="s2">    const cols = [&#39;id&#39;,&#39;name&#39;,&#39;milestone&#39;,&#39;type&#39;,&#39;part&#39;,&#39;duration_h&#39;,&#39;start&#39;,&#39;end&#39;,&#39;predecessors&#39;,&#39;successors&#39;];</span>
+<span class="s2">    const esc  = v =&gt; `&quot;$</span><span class="se">{{</span><span class="s2">String(v ?? &#39;&#39;).replace(/&quot;/g,&#39;&quot;&quot;&#39;)</span><span class="se">}}</span><span class="s2">&quot;`;</span>
+<span class="s2">    const rows = [cols.join(&#39;,&#39;)];</span>
+<span class="s2">    ALL_ITEMS.forEach(item =&gt; rows.push([</span>
+<span class="s2">      item._task_id, item._name, item._milestone, item._type,</span>
+<span class="s2">      item._part,    item._duration_h, item._start, item._end,</span>
+<span class="s2">      item._preds,   item._succs,</span>
+<span class="s2">    ].map(esc).join(&#39;,&#39;)));</span>
+<span class="s2">    _download(new Blob([rows.join(&#39;</span><span class="se">\\</span><span class="s2">n&#39;)], </span><span class="se">{{</span><span class="s2">type: &#39;text/csv&#39;</span><span class="se">}}</span><span class="s2">), &#39;gantt_tasks.csv&#39;);</span>
+<span class="s2">    showToast(&#39;✓ CSV exported&#39;);</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  function _download(blob, filename) </span><span class="se">{{</span>
+<span class="s2">    const url = URL.createObjectURL(blob);</span>
+<span class="s2">    const a = Object.assign(document.createElement(&#39;a&#39;), </span><span class="se">{{</span><span class="s2">href:url, download:filename</span><span class="se">}}</span><span class="s2">);</span>
+<span class="s2">    document.body.appendChild(a); a.click();</span>
+<span class="s2">    document.body.removeChild(a); URL.revokeObjectURL(url);</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  setTimeout(() =&gt; </span><span class="se">{{</span>
+<span class="s2">    timeline.fit();</span>
+<span class="s2">    drawDependencyArrows(); // Draw arrows after initial fit</span>
+<span class="s2">  </span><span class="se">}}</span><span class="s2">, 150);</span>
+<span class="s2">&lt;/script&gt;</span>
+<span class="s2">&lt;/body&gt;</span>
+<span class="s2">&lt;/html&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+    <span class="n">output_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+    <span class="n">output_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">output_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interactive Gantt saved to: </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Chrono Tailoring Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

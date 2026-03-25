@@ -1,0 +1,1296 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to Chrono Tailoring’s documentation! &mdash; Chrono Tailoring 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = `pre.mermaid {
+    /* Same as .mermaid-container > pre */
+    display: block;
+    width: 100%;
+}
+
+pre.mermaid > svg {
+    /* Same as .mermaid-container > pre > svg */
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}`;
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = `.mermaid-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.mermaid-container > pre {
+    display: block;
+    width: 100%;
+}
+
+.mermaid-container > pre > svg {
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}
+
+.mermaid-fullscreen-btn {
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    color: #333;
+}
+
+.mermaid-fullscreen-btn:hover {
+    opacity: 100% !important;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-btn.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-btn.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal {
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 95vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.98);
+    z-index: 9999;
+    padding: 20px;
+    overflow: auto;
+}
+
+.mermaid-fullscreen-modal.dark-theme {
+    background: rgba(0, 0, 0, 0.98);
+}
+
+.mermaid-fullscreen-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen {
+    position: relative;
+    width: 95vw;
+    height: 90vh;
+    max-width: 95vw;
+    max-height: 90vh;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen.dark-theme {
+    background: #1a1a1a;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+.mermaid-container-fullscreen pre.mermaid {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen .mermaid svg {
+    height: 100% !important;
+    width: 100% !important;
+    cursor: grab;
+}
+
+.mermaid-fullscreen-close {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
+    font-size: 24px;
+    line-height: 1;
+    color: #333;
+}
+
+.mermaid-fullscreen-close:hover {
+    background: white;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-close.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-close.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
+    display: none !important;
+}`;
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        all_mermaids.forEach((el) => {
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+        await mermaid.run();
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
+
+    if ("False" === "True") {
+        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll("");
+            if(all_mermaids.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else if(svgs.size() !== mermaids_to_add_zoom) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else {
+                svgs.each(function() {
+                    var svg = d3.select(this);
+                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+                    var inner = svg.select("g");
+                    var zoom = d3.zoom().on("zoom", function(event) {
+                        inner.attr("transform", event.transform);
+                    });
+                    svg.call(zoom);
+                });
+            }
+        }
+    } else if(all_mermaids.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if ("True" !== "True") return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    const closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = '⛶';
+        fullscreenBtn.style.opacity = '50%';
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scroll, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.sdisplay = 'block';
+
+                if ("False" === "True") {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+const load = async () => {
+    initStyles();
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...JSON.parse(
+                    `{"startOnLoad": false}`
+                ),
+                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...JSON.parse(
+        `{"startOnLoad": false}`
+    ),
+    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+    }
+);
+
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Chrono Tailoring User Guide" href="user_guide.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            Chrono Tailoring
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">Chrono Tailoring User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">System Specifications</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Chrono Tailoring</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Welcome to Chrono Tailoring’s documentation!</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="welcome-to-chrono-tailoring-s-documentation">
+<h1>Welcome to Chrono Tailoring’s documentation!<a class="headerlink" href="#welcome-to-chrono-tailoring-s-documentation" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">Chrono Tailoring User Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user_guide.html#quick-start-running-from-zero">1. Quick Start: Running from Zero</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide.html#input-file-formats-examples">2. Input File Formats &amp; Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide.html#advanced-features">3. Advanced Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user_guide.html#understanding-outputs">4. Understanding Outputs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">System Specifications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="requirements.html#functional-requirements">Functional Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="requirements.html#non-functional-requirements">Non-Functional Requirements</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="developer-python-apis">
+<h2>Developer Python APIs<a class="headerlink" href="#developer-python-apis" title="Link to this heading"></a></h2>
+<section id="module-src.core.models">
+<span id="core-models"></span><h3>Core Models<a class="headerlink" href="#module-src.core.models" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.core.models.CustomizationType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.core.models.</span></span><span class="sig-name descname"><span class="pre">CustomizationType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/models.html#CustomizationType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.core.models.CustomizationType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Maps a customization tag to its configuration file and cached dictionary data.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.core.models.CustomizationType.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#src.core.models.CustomizationType.name" title="Link to this definition"></a></dt>
+<dd><p>The unique name of the customization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.core.models.CustomizationType.file_path">
+<span class="sig-name descname"><span class="pre">file_path</span></span><a class="headerlink" href="#src.core.models.CustomizationType.file_path" title="Link to this definition"></a></dt>
+<dd><p>Path to the underlying CSV file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.core.models.CustomizationType.df">
+<span class="sig-name descname"><span class="pre">df</span></span><a class="headerlink" href="#src.core.models.CustomizationType.df" title="Link to this definition"></a></dt>
+<dd><p>Internal hashed dictionary containing configuration logic.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">df</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">file_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.core.models.ProjectMilestone">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.core.models.</span></span><span class="sig-name descname"><span class="pre">ProjectMilestone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">milestone_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">milestone_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/models.html#ProjectMilestone"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.core.models.ProjectMilestone" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Groups a logical subset of tasks representing a major project milestone or deliverable.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.core.models.ProjectMilestone.milestone_id">
+<span class="sig-name descname"><span class="pre">milestone_id</span></span><a class="headerlink" href="#src.core.models.ProjectMilestone.milestone_id" title="Link to this definition"></a></dt>
+<dd><p>Unique identifier for this milestone phase.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.core.models.ProjectMilestone.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#src.core.models.ProjectMilestone.name" title="Link to this definition"></a></dt>
+<dd><p>Display name representing the milestone objective.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.core.models.ProjectMilestone.milestone_data">
+<span class="sig-name descname"><span class="pre">milestone_data</span></span><a class="headerlink" href="#src.core.models.ProjectMilestone.milestone_data" title="Link to this definition"></a></dt>
+<dd><p>Dictionary of overrides and settings specific to this milestone group.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.core.models.Task">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.core.models.</span></span><span class="sig-name descname"><span class="pre">Task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">part_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#src.core.models.TaskType" title="src.core.models.TaskType"><span class="pre">TaskType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">successors_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variant_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variant_customizations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">milestone_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration_minutes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/models.html#Task"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.core.models.Task" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Core domain object representing an individual deliverable or manufacturing operation.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.core.models.Task.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#src.core.models.Task.id" title="Link to this definition"></a></dt>
+<dd><p>Unique identifier for the task instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.core.models.Task.part_number">
+<span class="sig-name descname"><span class="pre">part_number</span></span><a class="headerlink" href="#src.core.models.Task.part_number" title="Link to this definition"></a></dt>
+<dd><p>Associated product or module code.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.core.models.Task.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#src.core.models.Task.name" title="Link to this definition"></a></dt>
+<dd><p>Human-readable name of the task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.core.models.Task.task_type">
+<span class="sig-name descname"><span class="pre">task_type</span></span><a class="headerlink" href="#src.core.models.Task.task_type" title="Link to this definition"></a></dt>
+<dd><p>Classification and processing strategy for the task.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#src.core.models.TaskType" title="src.core.models.TaskType">TaskType</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.core.models.Task.successors_str">
+<span class="sig-name descname"><span class="pre">successors_str</span></span><a class="headerlink" href="#src.core.models.Task.successors_str" title="Link to this definition"></a></dt>
+<dd><p>Raw string of successor IDs prior to resolution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.core.models.Task.variant_name">
+<span class="sig-name descname"><span class="pre">variant_name</span></span><a class="headerlink" href="#src.core.models.Task.variant_name" title="Link to this definition"></a></dt>
+<dd><p>Distinguishes tasks generated for particular product variants.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.core.models.Task.variant_customizations">
+<span class="sig-name descname"><span class="pre">variant_customizations</span></span><a class="headerlink" href="#src.core.models.Task.variant_customizations" title="Link to this definition"></a></dt>
+<dd><p>Variable overrides applied during timeline building.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[Dict[str, Any]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.core.models.Task.milestone_id">
+<span class="sig-name descname"><span class="pre">milestone_id</span></span><a class="headerlink" href="#src.core.models.Task.milestone_id" title="Link to this definition"></a></dt>
+<dd><p>The ID of the milestone this task belongs to.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.core.models.Task.duration_minutes">
+<span class="sig-name descname"><span class="pre">duration_minutes</span></span><a class="headerlink" href="#src.core.models.Task.duration_minutes" title="Link to this definition"></a></dt>
+<dd><p>The estimated time required to execute this operation (in minutes).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.core.models.Task.clone">
+<span class="sig-name descname"><span class="pre">clone</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#src.core.models.Task" title="src.core.models.Task"><span class="pre">Task</span></a></span></span><a class="reference internal" href="_modules/src/core/models.html#Task.clone"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.core.models.Task.clone" title="Link to this definition"></a></dt>
+<dd><p>Creates a shallow copy without duplicating the entire task graph.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.core.models.Task.resolve_successors">
+<span class="sig-name descname"><span class="pre">resolve_successors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#src.core.models.Task" title="src.core.models.Task"><span class="pre">Task</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/models.html#Task.resolve_successors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.core.models.Task.resolve_successors" title="Link to this definition"></a></dt>
+<dd><p>Links this task’s ‘successors_tasks’ list to the actual Task objects
+found in the provided task_map based on ‘successors_ids’.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.core.models.TaskType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.core.models.</span></span><span class="sig-name descname"><span class="pre">TaskType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/core/models.html#TaskType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.core.models.TaskType" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents the type of a task, optionally indicating a specialized mapping strategy.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.core.models.TaskType.description">
+<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#src.core.models.TaskType.description" title="Link to this definition"></a></dt>
+<dd><p>The main classification of the task (e.g., ‘release’, ‘drawing’).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.core.models.TaskType.strategy">
+<span class="sig-name descname"><span class="pre">strategy</span></span><a class="headerlink" href="#src.core.models.TaskType.strategy" title="Link to this definition"></a></dt>
+<dd><p>Used when a specific processing logic overrides standard behaviour (e.g., ‘consolidated’).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-src.core.time_calc">
+<span id="time-calculation-rules"></span><h3>Time Calculation Rules<a class="headerlink" href="#module-src.core.time_calc" title="Link to this heading"></a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.core.time_calc.get_next_working_time">
+<span class="sig-prename descclassname"><span class="pre">src.core.time_calc.</span></span><span class="sig-name descname"><span class="pre">get_next_working_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration_minutes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">holidays</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">date</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">working_start_hour</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">working_end_hour</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">16</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">datetime</span></span></span><a class="reference internal" href="_modules/src/core/time_calc.html#get_next_working_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.core.time_calc.get_next_working_time" title="Link to this definition"></a></dt>
+<dd><p>Calculates the end time by advancing current_time by duration_minutes,
+respecting working hours, skipping weekends and holidays.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>current_time</strong> (<em>datetime</em>) – The starting datetime.</p></li>
+<li><p><strong>duration_minutes</strong> (<em>int</em>) – How many working minutes to advance.</p></li>
+<li><p><strong>holidays</strong> (<em>Set</em><em>[</em><em>date</em><em>]</em>) – Set of dates to skip.</p></li>
+<li><p><strong>working_start_hour</strong> (<em>int</em><em>, </em><em>optional</em>) – Start of the working day. Defaults to WORKING_START_HOUR.</p></li>
+<li><p><strong>working_end_hour</strong> (<em>int</em><em>, </em><em>optional</em>) – End of the working day. Defaults to WORKING_END_HOUR.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If <cite>working_start_hour</cite> &gt;= <cite>working_end_hour</cite>.</p></li>
+<li><p><strong>ValueError</strong> – If <cite>duration_minutes</cite> is negative.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The resulting datetime after duration has accumulated.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>datetime</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.core.time_calc.is_working_day">
+<span class="sig-prename descclassname"><span class="pre">src.core.time_calc.</span></span><span class="sig-name descname"><span class="pre">is_working_day</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">day</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">holidays</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">date</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/src/core/time_calc.html#is_working_day"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.core.time_calc.is_working_day" title="Link to this definition"></a></dt>
+<dd><p>Checks if a given day is a working day, skipping weekends and holidays.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>day</strong> (<em>date</em>) – The date to check.</p></li>
+<li><p><strong>holidays</strong> (<em>Set</em><em>[</em><em>date</em><em>]</em>) – A set containing all known holiday dates.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if it is a working weekday, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-src.schedule.engine">
+<span id="schedule-engine"></span><h3>Schedule Engine<a class="headerlink" href="#module-src.schedule.engine" title="Link to this heading"></a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.schedule.engine.calculate_task_dates">
+<span class="sig-prename descclassname"><span class="pre">src.schedule.engine.</span></span><span class="sig-name descname"><span class="pre">calculate_task_dates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tasks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.core.models.Task" title="src.core.models.Task"><span class="pre">Task</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_start_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">holidays</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">date</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_resources</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">working_start_hour</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">working_end_hour</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">16</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/src/schedule/engine.html#calculate_task_dates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.schedule.engine.calculate_task_dates" title="Link to this definition"></a></dt>
+<dd><p>Calculates the initiation and end dates for all tasks in the given list,
+respecting dependencies, working days/hours, and resource availability limits.</p>
+<pre  class="mermaid">
+        graph TD
+    A[Start] --&gt; B[&quot;Reset Tasks Slack/Dates&quot;]
+    B --&gt; C[&quot;Identify Ready Tasks&lt;br/&gt;(In-Degree = 0)&quot;]
+    C --&gt; D{Ready Queue?}
+    D -- Yes --&gt; E[&quot;Pop task with min earliest_start&quot;]
+    E --&gt; F{Resource Available?}
+    F -- Yes --&gt; G[Schedule Task]
+    G --&gt; H[&quot;Update Successors&lt;br/&gt;Decrement In-Degree&quot;]
+    H --&gt; D
+    F -- No --&gt; I[Wait for next task finish]
+    I --&gt; D
+    D -- No --&gt; J[&quot;Backward Pass: Critical Path&quot;]
+    J --&gt; End
+    </pre><p>The scheduling process uses Kahn’s algorithm for topological sorting.
+A task’s <strong>In-Degree</strong> is the number of its unfinished predecessors.
+When a task’s in-degree reaches 0, it means all its dependencies are satisfied.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tasks</strong> (<em>List</em><em>[</em><a class="reference internal" href="#src.core.models.Task" title="src.core.models.Task"><em>Task</em></a><em>]</em>) – The overall project task sequence graph. These instances are mutated in place.</p></li>
+<li><p><strong>project_start_date</strong> (<em>datetime</em>) – Baseline timestamp for project progression.</p></li>
+<li><p><strong>holidays</strong> (<em>Set</em><em>[</em><em>date</em><em>]</em>) – Days that will be entirely avoided when counting working time.</p></li>
+<li><p><strong>num_resources</strong> (<em>int</em>) – System-wide constraints setting parallel task limit execution.</p></li>
+<li><p><strong>working_start_hour</strong> (<em>int</em><em>, </em><em>optional</em>) – Factory shift start. Defaults to 8.</p></li>
+<li><p><strong>working_end_hour</strong> (<em>int</em><em>, </em><em>optional</em>) – Factory shift end. Defaults to 16.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>RuntimeError</strong> – If Kahn’s algorithm detects cycles in the task dependencies.</p></li>
+<li><p><strong>RuntimeError</strong> – If the scheduler inexplicably hangs without advancing all items.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-src.schedule.loader">
+<span id="loader-handlers"></span><h3>Loader Handlers<a class="headerlink" href="#module-src.schedule.loader" title="Link to this heading"></a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.schedule.loader.load_customization_types">
+<span class="sig-prename descclassname"><span class="pre">src.schedule.loader.</span></span><span class="sig-name descname"><span class="pre">load_customization_types</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.core.models.CustomizationType" title="src.core.models.CustomizationType"><span class="pre">CustomizationType</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/src/schedule/loader.html#load_customization_types"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.schedule.loader.load_customization_types" title="Link to this definition"></a></dt>
+<dd><p>Reads customization types from a CSV file, constructs their file paths, and caches them in memory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_path</strong> (<em>Path</em>) – Path to the customization_overview.csv file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of resolved CustomizationType configurations.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="#src.core.models.CustomizationType" title="src.core.models.CustomizationType">CustomizationType</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.schedule.loader.load_holidays">
+<span class="sig-prename descclassname"><span class="pre">src.schedule.loader.</span></span><span class="sig-name descname"><span class="pre">load_holidays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">date</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/src/schedule/loader.html#load_holidays"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.schedule.loader.load_holidays" title="Link to this definition"></a></dt>
+<dd><p>Loads holidays from a CSV file into a set of date objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_path</strong> (<em>Path</em>) – Path to the holidays.csv file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A set containing all valid parsed holiday dates.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Set[date]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.schedule.loader.load_project_requirements">
+<span class="sig-prename descclassname"><span class="pre">src.schedule.loader.</span></span><span class="sig-name descname"><span class="pre">load_project_requirements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/schedule/loader.html#load_project_requirements"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.schedule.loader.load_project_requirements" title="Link to this definition"></a></dt>
+<dd><p>Reads project requirements from a JSON file.</p>
+<dl class="simple">
+<dt>Supports two formats:</dt><dd><ul class="simple">
+<li><p>New: { “settings”: {…}, “milestones”: […] }</p></li>
+<li><p>Legacy: […] (flat array of milestone dicts)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_path</strong> (<em>Path</em>) – Path to the project requirements JSON file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A tuple containing:</dt><dd><ul class="simple">
+<li><p>settings (dict): Global project configuration settings.</p></li>
+<li><p>milestones (List[Dict]): The list of configured milestones.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.schedule.loader.load_raw_tasks_from_csv">
+<span class="sig-prename descclassname"><span class="pre">src.schedule.loader.</span></span><span class="sig-name descname"><span class="pre">load_raw_tasks_from_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_csv_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.core.models.Task" title="src.core.models.Task"><span class="pre">Task</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/src/schedule/loader.html#load_raw_tasks_from_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.schedule.loader.load_raw_tasks_from_csv" title="Link to this definition"></a></dt>
+<dd><p>Loads all tasks from the CSV file into raw Task objects.</p>
+<p>This is used to create a template of tasks before any milestone-specific processing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>task_csv_path</strong> (<em>Path</em>) – Path to the <cite>deliverable_structure.csv</cite> file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A sequential list of un-linked baseline Task templates.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="#src.core.models.Task" title="src.core.models.Task">Task</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.schedule.loader.read_customization_duration">
+<span class="sig-prename descclassname"><span class="pre">src.schedule.loader.</span></span><span class="sig-name descname"><span class="pre">read_customization_duration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lookup_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">customization_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">customization_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_type_desc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/src/schedule/loader.html#read_customization_duration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.schedule.loader.read_customization_duration" title="Link to this definition"></a></dt>
+<dd><p>Reads the duration from a specific customization cached Hash Map.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lookup_dict</strong> (<em>Any</em>) – The cached dictionary containing the CSV configurations.</p></li>
+<li><p><strong>customization_name</strong> (<em>str</em>) – The customization tag.</p></li>
+<li><p><strong>customization_value</strong> (<em>str</em>) – The value selected for the customization.</p></li>
+<li><p><strong>task_name</strong> (<em>str</em>) – The target task name.</p></li>
+<li><p><strong>task_type_desc</strong> (<em>str</em>) – The target task type.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The parsed duration in minutes. None if not matched.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-src.schedule.project">
+<span id="project-schedule"></span><h3>Project Schedule<a class="headerlink" href="#module-src.schedule.project" title="Link to this heading"></a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.schedule.project.ProjectSchedule">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.schedule.project.</span></span><span class="sig-name descname"><span class="pre">ProjectSchedule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_requirements_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_resources</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">customization_overview_csv_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">holidays_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_start_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/schedule/project.html#ProjectSchedule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.schedule.project.ProjectSchedule" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Orchestrates full schedule computing: loads, customises, schedules and consolidates tasks.</p>
+<pre  class="mermaid">
+        graph TD
+    A[Load project_config.json] --&gt; B[Load deliverable_structure.csv]
+    B --&gt; C{For Each Milestone}
+    C --&gt; D[Process Variants &amp; Duplication]
+    D --&gt; E[Apply Customizations]
+    E --&gt; F[Consolidate Drawing Tasks]
+    F --&gt; G[Bridge Zero-Duration Tasks]
+    G --&gt; H[Engine: Calculate Dates]
+    H --&gt; I[Finish]
+    </pre><dl class="py attribute">
+<dt class="sig sig-object py" id="src.schedule.project.ProjectSchedule.num_resources">
+<span class="sig-name descname"><span class="pre">num_resources</span></span><a class="headerlink" href="#src.schedule.project.ProjectSchedule.num_resources" title="Link to this definition"></a></dt>
+<dd><p>Maximum default resources acting in parallel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schedule.project.ProjectSchedule.project_requirements_path">
+<span class="sig-name descname"><span class="pre">project_requirements_path</span></span><a class="headerlink" href="#src.schedule.project.ProjectSchedule.project_requirements_path" title="Link to this definition"></a></dt>
+<dd><p>Path to the requirements dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schedule.project.ProjectSchedule.project_requirements_data">
+<span class="sig-name descname"><span class="pre">project_requirements_data</span></span><a class="headerlink" href="#src.schedule.project.ProjectSchedule.project_requirements_data" title="Link to this definition"></a></dt>
+<dd><p>Loaded requirements payload.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[Dict[str, Any]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schedule.project.ProjectSchedule.holidays">
+<span class="sig-name descname"><span class="pre">holidays</span></span><a class="headerlink" href="#src.schedule.project.ProjectSchedule.holidays" title="Link to this definition"></a></dt>
+<dd><p>Loaded non-working days.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Set[datetime.date]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schedule.project.ProjectSchedule.working_start_hour">
+<span class="sig-name descname"><span class="pre">working_start_hour</span></span><a class="headerlink" href="#src.schedule.project.ProjectSchedule.working_start_hour" title="Link to this definition"></a></dt>
+<dd><p>Start of the working shift.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schedule.project.ProjectSchedule.working_end_hour">
+<span class="sig-name descname"><span class="pre">working_end_hour</span></span><a class="headerlink" href="#src.schedule.project.ProjectSchedule.working_end_hour" title="Link to this definition"></a></dt>
+<dd><p>End of the working shift.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schedule.project.ProjectSchedule.milestones">
+<span class="sig-name descname"><span class="pre">milestones</span></span><a class="headerlink" href="#src.schedule.project.ProjectSchedule.milestones" title="Link to this definition"></a></dt>
+<dd><p>Built sequence of project milestones.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="#src.core.models.ProjectMilestone" title="src.core.models.ProjectMilestone">ProjectMilestone</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schedule.project.ProjectSchedule.tasks">
+<span class="sig-name descname"><span class="pre">tasks</span></span><a class="headerlink" href="#src.schedule.project.ProjectSchedule.tasks" title="Link to this definition"></a></dt>
+<dd><p>The master flat list of instantiated tasks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="#src.core.models.Task" title="src.core.models.Task">Task</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schedule.project.ProjectSchedule.transformation_log">
+<span class="sig-name descname"><span class="pre">transformation_log</span></span><a class="headerlink" href="#src.schedule.project.ProjectSchedule.transformation_log" title="Link to this definition"></a></dt>
+<dd><p>Audit trailing for debugging structure transformations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[Dict[str, Any]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.schedule.project.ProjectSchedule.customization_types">
+<span class="sig-name descname"><span class="pre">customization_types</span></span><a class="headerlink" href="#src.schedule.project.ProjectSchedule.customization_types" title="Link to this definition"></a></dt>
+<dd><p>Cached strategy overlays.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="#src.core.models.CustomizationType" title="src.core.models.CustomizationType">CustomizationType</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.schedule.project.ProjectSchedule.get_deliverable_end_date">
+<span class="sig-name descname"><span class="pre">get_deliverable_end_date</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">datetime</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/src/schedule/project.html#ProjectSchedule.get_deliverable_end_date"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.schedule.project.ProjectSchedule.get_deliverable_end_date" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.schedule.project.ProjectSchedule.get_deliverable_init_date">
+<span class="sig-name descname"><span class="pre">get_deliverable_init_date</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">datetime</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/src/schedule/project.html#ProjectSchedule.get_deliverable_init_date"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.schedule.project.ProjectSchedule.get_deliverable_init_date" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.schedule.project.ProjectSchedule.get_total_duration">
+<span class="sig-name descname"><span class="pre">get_total_duration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">timedelta</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="_modules/src/schedule/project.html#ProjectSchedule.get_total_duration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.schedule.project.ProjectSchedule.get_total_duration" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-src.export.csv_export">
+<span id="exporters"></span><h3>Exporters<a class="headerlink" href="#module-src.export.csv_export" title="Link to this heading"></a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.export.csv_export.export_tasks_to_csv">
+<span class="sig-prename descclassname"><span class="pre">src.export.csv_export.</span></span><span class="sig-name descname"><span class="pre">export_tasks_to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schedule</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#src.schedule.project.ProjectSchedule" title="src.schedule.project.ProjectSchedule"><span class="pre">ProjectSchedule</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/export/csv_export.html#export_tasks_to_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.export.csv_export.export_tasks_to_csv" title="Link to this definition"></a></dt>
+<dd><p>Exports all tasks with their related information to a CSV file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>schedule</strong> (<a class="reference internal" href="#src.schedule.project.ProjectSchedule" title="src.schedule.project.ProjectSchedule"><em>ProjectSchedule</em></a>) – The fully computed project schedule to export.</p></li>
+<li><p><strong>file_path</strong> (<em>str</em>) – The output file path.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.export.csv_export.update_customization_overview_csv">
+<span class="sig-prename descclassname"><span class="pre">src.export.csv_export.</span></span><span class="sig-name descname"><span class="pre">update_customization_overview_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/export/csv_export.html#update_customization_overview_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.export.csv_export.update_customization_overview_csv" title="Link to this definition"></a></dt>
+<dd><p>Reads customization_overview.csv, adds ‘path’ and ‘status’ columns,
+and writes the updated DataFrame back to the CSV.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_path</strong> (<em>Path</em>) – Path to the customization_overview.csv file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function" id="module-src.export.mermaid">
+<dt class="sig sig-object py" id="src.export.mermaid.export_tasks_to_mermaid_gantt">
+<span class="sig-prename descclassname"><span class="pre">src.export.mermaid.</span></span><span class="sig-name descname"><span class="pre">export_tasks_to_mermaid_gantt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schedule</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.core.models.ProjectMilestone" title="src.core.models.ProjectMilestone"><span class="pre">ProjectMilestone</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detail_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'full'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/src/export/mermaid.html#export_tasks_to_mermaid_gantt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.export.mermaid.export_tasks_to_mermaid_gantt" title="Link to this definition"></a></dt>
+<dd><p>Generates a Mermaid Gantt chart representation of tasks, grouped by milestone.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>schedule</strong> (<em>List</em><em>[</em><a class="reference internal" href="#src.core.models.ProjectMilestone" title="src.core.models.ProjectMilestone"><em>ProjectMilestone</em></a><em>]</em>) – The grouped sequence of milestones and tasks.</p></li>
+<li><p><strong>output_file_path</strong> (<em>Optional</em><em>[</em><em>Path</em><em>]</em><em>, </em><em>optional</em>) – Where to write the syntax file. Defaults to None.</p></li>
+<li><p><strong>detail_level</strong> (<em>str</em><em>, </em><em>optional</em>) – Export abstraction level (‘full’, ‘type’, ‘milestone_type_summary’). Defaults to ‘full’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If <cite>detail_level</cite> is not recognized.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The raw Mermaid Gantt syntax string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.export.mermaid.export_tasks_to_mermaid_graph">
+<span class="sig-prename descclassname"><span class="pre">src.export.mermaid.</span></span><span class="sig-name descname"><span class="pre">export_tasks_to_mermaid_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schedule</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.core.models.ProjectMilestone" title="src.core.models.ProjectMilestone"><span class="pre">ProjectMilestone</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detail_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'full'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/src/export/mermaid.html#export_tasks_to_mermaid_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.export.mermaid.export_tasks_to_mermaid_graph" title="Link to this definition"></a></dt>
+<dd><p>Generates a Mermaid flowchart (graph TD) representation of tasks, grouped by milestone.</p>
+<p>Can generate a detailed graph of individual tasks or a high-level graph based on task types.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>schedule</strong> (<em>List</em><em>[</em><a class="reference internal" href="#src.core.models.ProjectMilestone" title="src.core.models.ProjectMilestone"><em>ProjectMilestone</em></a><em>]</em>) – The grouped sequence of milestones and tasks.</p></li>
+<li><p><strong>output_file_path</strong> (<em>Optional</em><em>[</em><em>Path</em><em>]</em><em>, </em><em>optional</em>) – Where to write the syntax file. Defaults to None.</p></li>
+<li><p><strong>detail_level</strong> (<em>str</em><em>, </em><em>optional</em>) – Graph abstraction level (‘full’, ‘type’, or ‘milestone’). Defaults to ‘full’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If <cite>detail_level</cite> is not recognized.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The raw Mermaid syntax string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p id="module-src.export.gantt_interactive">src/export/gantt_interactive.py</p>
+<p>Generates a self-contained interactive HTML Gantt chart from a list of Tasks.
+Uses Vis.js Timeline (loaded from CDN) — no extra Python dependencies.</p>
+<dl class="simple">
+<dt>Layout:</dt><dd><ul class="simple">
+<li><p>Rows  = unique task names  (e.g. “core_door”, “ply_adjustable_shelf”, …)</p></li>
+<li><p>Bars  = individual tasks, colour-coded by milestone</p></li>
+<li><p>Sidebar panel 1: Milestone filter (toggle visibility per milestone colour)</p></li>
+<li><p>Sidebar panel 2: Task-type filter (part_model / part_list / release / drawing …)</p></li>
+</ul>
+</dd>
+<dt>Features:</dt><dd><ul class="simple">
+<li><p>Pan / zoom / fit-all / today</p></li>
+<li><p>Hover tooltip with full task detail</p></li>
+<li><p>Export to JSON and CSV from the browser</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.export.gantt_interactive.export_interactive_gantt">
+<span class="sig-prename descclassname"><span class="pre">src.export.gantt_interactive.</span></span><span class="sig-name descname"><span class="pre">export_interactive_gantt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tasks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.core.models.Task" title="src.core.models.Task"><span class="pre">Task</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Chrono</span> <span class="pre">Tailoring</span> <span class="pre">—</span> <span class="pre">Interactive</span> <span class="pre">Gantt</span> <span class="pre">Chart'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">milestone_name_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_resources</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_requirements_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">holidays</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">date</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_task_arrows</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/src/export/gantt_interactive.html#export_interactive_gantt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.export.gantt_interactive.export_interactive_gantt" title="Link to this definition"></a></dt>
+<dd><p>Serialises tasks to JSON and writes a self-contained Vis.js HTML Gantt.</p>
+<p>Rows  = unique task names (swim-lanes).
+Items = individual task instances, coloured by milestone.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tasks</strong> (<em>List</em><em>[</em><a class="reference internal" href="#src.core.models.Task" title="src.core.models.Task"><em>Task</em></a><em>]</em>) – Flat list of Task objects with init_date / end_date set.</p></li>
+<li><p><strong>output_path</strong> (<em>Path</em>) – Where to write the .html file.</p></li>
+<li><p><strong>title</strong> (<em>str</em><em>, </em><em>optional</em>) – Browser title / header text. Defaults to “Chrono Tailoring — Interactive Gantt Chart”.</p></li>
+<li><p><strong>milestone_name_map</strong> (<em>Optional</em><em>[</em><em>Dict</em><em>[</em><em>Any</em><em>, </em><em>str</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – Mapping of milestone IDs to names. Defaults to None.</p></li>
+<li><p><strong>total_resources</strong> (<em>int</em><em>, </em><em>optional</em>) – The total number of parallel resources applied. Defaults to 1.</p></li>
+<li><p><strong>project_requirements_path</strong> (<em>Optional</em><em>[</em><em>Path</em><em>]</em><em>, </em><em>optional</em>) – Path to requirements for the info sidebar. Defaults to None.</p></li>
+<li><p><strong>holidays</strong> (<em>Optional</em><em>[</em><em>Set</em><em>[</em><em>date</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – Dates to format differently. Defaults to None.</p></li>
+<li><p><strong>show_task_arrows</strong> (<em>bool</em><em>, </em><em>optional</em>) – Auto-enable standard dependency arrows on load. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function" id="module-src.export.plot">
+<dt class="sig sig-object py" id="src.export.plot.plot_resource_vs_duration">
+<span class="sig-prename descclassname"><span class="pre">src.export.plot.</span></span><span class="sig-name descname"><span class="pre">plot_resource_vs_duration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_schedule</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#src.schedule.project.ProjectSchedule" title="src.schedule.project.ProjectSchedule"><span class="pre">ProjectSchedule</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_resources</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_resources</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_plot_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/export/plot.html#plot_resource_vs_duration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.export.plot.plot_resource_vs_duration" title="Link to this definition"></a></dt>
+<dd><p>Runs scheduling for multiple resource counts, collects total durations, and plots the results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_schedule</strong> (<a class="reference internal" href="#src.schedule.project.ProjectSchedule" title="src.schedule.project.ProjectSchedule"><em>ProjectSchedule</em></a>) – The project schedule configuration.</p></li>
+<li><p><strong>min_resources</strong> (<em>int</em><em>, </em><em>optional</em>) – The minimum resources to simulate. Defaults to 1.</p></li>
+<li><p><strong>max_resources</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum resources to simulate. Defaults to 10.</p></li>
+<li><p><strong>output_plot_path</strong> (<em>Optional</em><em>[</em><em>Path</em><em>]</em><em>, </em><em>optional</em>) – Where to save the generated scatter plot. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="user_guide.html" class="btn btn-neutral float-right" title="Chrono Tailoring User Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Chrono Tailoring Team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
