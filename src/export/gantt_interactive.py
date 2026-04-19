@@ -696,7 +696,12 @@ def export_interactive_gantt(
     /* ── Vis.js overrides ────────────────────────────────────────────────────── */
     .vis-timeline {{ border: none; }}
     .vis-panel.vis-center {{ background: #0d0f1a; }}
-    .vis-panel.vis-left   {{ background: var(--surface); }}
+    .vis-panel.vis-left {{
+      background: var(--surface);
+      min-width: 225px !important;
+      max-width: 225px !important;
+      width:     225px !important;
+    }}
     .vis-time-axis .vis-text {{ color: var(--muted); font-size: 0.7rem; font-family: inherit; }}
     .vis-time-axis .vis-grid.vis-minor {{ border-color: #161826; }}
     .vis-time-axis .vis-grid.vis-major {{ border-color: var(--border); }}
@@ -744,10 +749,52 @@ def export_interactive_gantt(
       fill: #6b728e !important;
       font-size: 9px !important;
     }}
+
+    .chart-axis-label {{
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 10px;
+      line-height: 1.3;
+      color: #8a94b5;
+      font-family: inherit;
+      pointer-events: none;
+      z-index: 10;
+    }}
     text.vis-title {{
       fill: #8a94b5 !important;
       font-size: 10px !important;
       font-weight: 400 !important;
+    }}
+
+    /* ── Sync Cursor ─────────────────────────────────────────────────────────── */
+    .vis-custom-time.sync-cursor {{
+      background-color: var(--accent);
+      width: 1px;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 100;
+      transition: opacity 0.15s;
+    }}
+    .vis-custom-time.sync-cursor.active {{
+      opacity: 0.6;
+    }}
+
+    #sync-label {{
+      position: fixed;
+      pointer-events: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      z-index: 2000;
+      display: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transform: translate(-50%, -100%);
+      margin-top: -10px;
     }}
 
     /* ── Custom Tooltips ─────────────────────────────────────────────────────── */
@@ -913,6 +960,7 @@ def export_interactive_gantt(
 </div>
 
 <div id="toast"></div>
+<div id="sync-label"></div>
 
 <script>
   // ── Injected data ────────────────────────────────────────────────────────────
@@ -939,6 +987,8 @@ def export_interactive_gantt(
   document.getElementById('taskCount').textContent =
     `${{ALL_ITEMS.length}} tasks · ${{ALL_GROUPS.length}} rows`;
 
+  const AXIS_WIDTH = '225px';
+
   const timelineOptions = {{
       height:       '100%',
       orientation:  {{ axis: 'top' }},
@@ -952,6 +1002,7 @@ def export_interactive_gantt(
       zoomMin: 1000 * 60 * 60,
       zoomMax: 1000 * 60 * 60 * 24 * 365 * 2,
       margin: {{ item: {{ horizontal: 2, vertical: 4 }}, axis: 6 }},
+      groupWidth: AXIS_WIDTH,
       format: {{
         minorLabels: {{
           minute: 'HH:mm', hour: 'HH:mm',
@@ -979,8 +1030,8 @@ def export_interactive_gantt(
       drawPoints: false,
       dataAxis: {{
         visible: true,
+        width: AXIS_WIDTH,
         left: {{
-            title: {{ text: `Active Tasks (limit: ${{TOTAL_RESOURCES}})` }},
             format: function (value) {{ return Math.round(value); }}
         }}
       }},
@@ -1002,8 +1053,8 @@ def export_interactive_gantt(
       drawPoints: false,
       dataAxis: {{
         visible: true,
+        width: AXIS_WIDTH,
         left: {{
-            title: {{ text: 'Resource Allocation (%)' }},
             format: function (value) {{ return Math.round(value) + '%'; }}
         }}
       }},
@@ -1015,6 +1066,75 @@ def export_interactive_gantt(
       allocDataset,
       allocOptions
   );
+
+  // ── Horizontal axis title overlays (HTML div, not SVG – immune to vis.js re-renders) ─
+  function addAxisTitleOverlay(containerId, lines) {{
+    const wrap = document.getElementById(containerId);
+    if (!wrap) return;
+    wrap.style.position = 'relative';
+    const div = document.createElement('div');
+    div.className = 'chart-axis-label';
+    div.innerHTML = lines.join('<br>');
+    wrap.appendChild(div);
+  }}
+  addAxisTitleOverlay('resourceGraph',   ['Active Tasks', `(max: ${{TOTAL_RESOURCES}})` ]);
+  addAxisTitleOverlay('allocationGraph', ['Resource', 'Alloc. (%)']);
+
+  // ── Sync Cursor Initialization ──────────────────────────────────────────────
+  const SYNC_ID = 'sync-cursor';
+  const now = new Date();
+  timeline.addCustomTime(now, SYNC_ID);
+  resourceGraph.addCustomTime(now, SYNC_ID);
+  allocationGraph.addCustomTime(now, SYNC_ID);
+
+  const syncLabel = document.getElementById('sync-label');
+
+  function getSnapInterval() {{
+    const win = timeline.getWindow();
+    const durationHrs = (win.end - win.start) / (1000 * 60 * 60);
+
+    if (durationHrs > 24 * 7) return 1000 * 60 * 60 * 24; // > 7 days: Snap to 1 Day
+    if (durationHrs > 12)     return 1000 * 60 * 60;      // > 12 hours: Snap to 1 Hour
+    return 1000 * 60 * 5;                                 // < 12 hours: Snap to 5 Minutes
+  }}
+
+  function updateSyncCursor(event, instance) {{
+    const props = instance.getEventProperties(event);
+    if (!props.time) return;
+
+    const interval = getSnapInterval();
+    const snappedTime = new Date(Math.round(props.time.getTime() / interval) * interval);
+
+    timeline.setCustomTime(snappedTime, SYNC_ID);
+    resourceGraph.setCustomTime(snappedTime, SYNC_ID);
+    allocationGraph.setCustomTime(snappedTime, SYNC_ID);
+
+    // Update label
+    syncLabel.style.display = 'block';
+    syncLabel.style.left = event.pageX + 'px';
+    syncLabel.style.top  = event.pageY + 'px';
+    
+    const options = {{ day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }};
+    syncLabel.textContent = snappedTime.toLocaleString('pt-BR', options).replace(',', '');
+
+    // Set cursor to active
+    document.querySelectorAll('.vis-custom-time.sync-cursor').forEach(el => el.classList.add('active'));
+  }}
+
+  function hideSyncCursor() {{
+    syncLabel.style.display = 'none';
+    document.querySelectorAll('.vis-custom-time.sync-cursor').forEach(el => el.classList.remove('active'));
+  }}
+
+  // Event Listeners
+  [
+    {{ el: document.getElementById('gantt'), inst: timeline }},
+    {{ el: document.getElementById('resourceGraph'), inst: resourceGraph }},
+    {{ el: document.getElementById('allocationGraph'), inst: allocationGraph }}
+  ].forEach(pair => {{
+    pair.el.addEventListener('mousemove', (e) => updateSyncCursor(e, pair.inst));
+    pair.el.addEventListener('mouseleave', hideSyncCursor);
+  }});
 
   // Sync range changes between timeline and graph
   timeline.on('rangechange', function (properties) {{
@@ -1037,10 +1157,33 @@ def export_interactive_gantt(
   }});
 
   // ── Toolbar ───────────────────────────────────────────────────────────────────
-  function fitAll()  {{ timeline.fit(); }}
-  function zoomIn()  {{ timeline.zoomIn(0.5); }}
-  function zoomOut() {{ timeline.zoomOut(0.5); }}
-  function goToday() {{ timeline.moveTo(new Date()); }}
+  function _syncGraphs(start, end) {{
+    resourceGraph.setWindow(start, end, {{ animation: false }});
+    allocationGraph.setWindow(start, end, {{ animation: false }});
+  }}
+
+  function fitAll() {{
+    timeline.fit();
+    setTimeout(() => {{
+      const w = timeline.getWindow();
+      _syncGraphs(w.start, w.end);
+    }}, 50);
+  }}
+  function zoomIn() {{
+    timeline.zoomIn(0.5);
+    const w = timeline.getWindow(); _syncGraphs(w.start, w.end);
+  }}
+  function zoomOut() {{
+    timeline.zoomOut(0.5);
+    const w = timeline.getWindow(); _syncGraphs(w.start, w.end);
+  }}
+  function goToday() {{
+    timeline.moveTo(new Date());
+    setTimeout(() => {{
+      const w = timeline.getWindow();
+      _syncGraphs(w.start, w.end);
+    }}, 50);
+  }}
   
   let sortAlpha = false;
   function toggleSort() {{
@@ -1057,7 +1200,7 @@ def export_interactive_gantt(
     // Apply order
     groups.clear();
     groups.add(gArray);
-    drawDependencyArrows();
+    groups.add(gArray);
   }}
 
   // ── Re-apply all active filters and refresh dataset ───────────────────────────
@@ -1076,7 +1219,7 @@ def export_interactive_gantt(
       groups.update({{ id: g.id, visible: visibleNames.has(g.id) }});
     }});
     
-    setTimeout(drawDependencyArrows, 50);
+    // Hide/show row labels for rows that have no visible items
   }}
 
   // ── Sidebar: Milestones ───────────────────────────────────────────────────────
