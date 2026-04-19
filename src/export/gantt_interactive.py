@@ -251,26 +251,53 @@ def export_interactive_gantt(
             task_types.append(td)
     task_types.sort()
 
-    # [Req: RF-21.1, RF-21.2, RF-21.3] — Sweep-line resource histogram: +1 at init_date, -1 at end_date; double-point for step chart
-    events = []
-    for task in tasks:
-        if task.init_date and task.end_date and getattr(task, 'duration_minutes', 0) > 0:
-            events.append((task.init_date, 1))   # [Req: RF-21.1] — +1 event
-            events.append((task.end_date, -1))   # [Req: RF-21.1] — -1 event
-    events.sort(key=lambda x: x[0])
-
+    valid_tasks = [t for t in tasks if t.init_date and t.end_date and getattr(t, 'duration_minutes', 0) > 0 and getattr(t.type, 'strategy', None) != 'consolidated']
     resource_data = []
-    current_load = 0
-    if events:
-        start_buffer = events[0][0].replace(hour=0, minute=0, second=0)
-        resource_data.append({"x": start_buffer.strftime('%Y-%m-%dT%H:%M:%S'), "y": 0})
+    
+    if valid_tasks:
+        import datetime
+        import math
+        
+        min_date = min(t.init_date for t in valid_tasks)
+        max_date = max(t.end_date for t in valid_tasks)
+        
+        minute_aligned = min_date.minute - (min_date.minute % 5)
+        start_ts = min_date.replace(minute=minute_aligned, second=0, microsecond=0)
+        
+        total_minutes = int((max_date - start_ts).total_seconds() / 60)
+        num_frames = math.ceil(total_minutes / 5)
+        if num_frames == 0:
+            num_frames = 1
+            
+        frames = [0] * num_frames
+        
+        for t in valid_tasks:
+            start_idx = max(0, int((t.init_date - start_ts).total_seconds() // 300))
+            frame_i = start_idx
+            
+            while frame_i < num_frames:
+                f_start = start_ts + datetime.timedelta(minutes=5 * frame_i)
+                f_end = f_start + datetime.timedelta(minutes=5)
+                
+                if f_start >= t.end_date:
+                    break
+                    
+                if t.init_date < f_end and t.end_date > f_start:
+                    overlap_start = max(t.init_date, f_start)
+                    overlap_end = min(t.end_date, f_end)
+                    overlap_mins = (overlap_end - overlap_start).total_seconds() / 60.0
+                    frames[frame_i] += overlap_mins
+                
+                frame_i += 1
 
-    for time_val, delta in events:
-        time_str = time_val.strftime('%Y-%m-%dT%H:%M:%S')
-        # [Req: RF-21.3] — Emit previous Y then new Y at same X to force true step chart in Vis.js
-        resource_data.append({"x": time_str, "y": current_load})
-        current_load += delta
-        resource_data.append({"x": time_str, "y": current_load})
+        for i in range(num_frames):
+            if frames[i] > 0:
+                avg_load = frames[i] / 5.0
+                f_start = start_ts + datetime.timedelta(minutes=5 * i)
+                resource_data.append({
+                    "x": f_start.strftime('%Y-%m-%dT%H:%M:%S'),
+                    "y": round(avg_load, 2)
+                })
         
     items_json          = json.dumps(items,          ensure_ascii=False)
     groups_json         = json.dumps(groups,         ensure_ascii=False)
@@ -295,6 +322,27 @@ def export_interactive_gantt(
     req_text = ""
     if project_requirements_path and project_requirements_path.exists():
         req_text = project_requirements_path.read_text('utf-8')
+    # Calculate Efficiency Index
+    actual_work_minutes = sum(getattr(t, 'duration_minutes', 0) for t in tasks if getattr(t, 'duration_minutes', 0) > 0)
+    core_work_minutes = sum(getattr(t, 'duration_minutes', 0) for t in tasks if getattr(t, 'duration_minutes', 0) > 0 and getattr(t.type, 'strategy', None) != 'consolidated')
+    total_capacity_minutes = 0
+    if tasks:
+        all_starts = [t.init_date for t in tasks if t.init_date]
+        all_ends = [t.end_date for t in tasks if t.end_date]
+        if all_starts and all_ends:
+            min_all = min(all_starts)
+            max_all = max(all_ends)
+            curr = min_all
+            import datetime
+            while curr < max_all:
+                if curr.weekday() < 5 and (holidays is None or curr.date() not in holidays):
+                    if 8 <= curr.hour < 16:
+                        total_capacity_minutes += 5
+                curr += datetime.timedelta(minutes=5)
+            total_capacity_minutes *= total_resources
+
+    efficiency_index = actual_work_minutes / total_capacity_minutes if total_capacity_minutes > 0 else 0
+    core_efficiency_index = core_work_minutes / total_capacity_minutes if total_capacity_minutes > 0 else 0
 
     # ── 4. Render HTML ────────────────────────────────────────────────────────────
     html = f"""<!DOCTYPE html>
@@ -320,6 +368,92 @@ def export_interactive_gantt(
       --text:      #dde1f0;
       --muted:     #6b728e;
       --radius:    10px;
+    }}
+
+    [data-theme="light"] {{
+      --bg:        #f0f2f8;
+      --surface:   #ffffff;
+      --surface2:  #e8eaf2;
+      --border:    #d0d5e8;
+      --accent:    #3a7be0;
+      --accent2:   #6340d9;
+      --text:      #1a1f36;
+      --muted:     #7880a0;
+    }}
+    [data-theme="light"] body {{
+      background: var(--bg);
+    }}
+    [data-theme="light"] header {{
+      background: linear-gradient(90deg, #e4e8f8 0%, #f0f2f8 60%) !important;
+    }}
+    [data-theme="light"] .vis-panel.vis-center {{
+      background: #f5f7fc !important;
+    }}
+    [data-theme="light"] .vis-panel.vis-left {{
+      background: var(--surface) !important;
+    }}
+    [data-theme="light"] .vis-time-axis .vis-grid.vis-minor {{
+      border-color: #e4e8f4 !important;
+    }}
+    [data-theme="light"] .vis-time-axis .vis-grid.vis-major {{
+      border-color: var(--border) !important;
+    }}
+    [data-theme="light"] #resourceGraph,
+    [data-theme="light"] #allocationGraph {{
+      background: #f0f2f8 !important;
+    }}
+    [data-theme="light"] .vis-tooltip {{
+      background: #ffffff !important;
+      border-color: var(--border) !important;
+      color: var(--text) !important;
+    }}
+    [data-theme="light"] .vis-time-axis .vis-text {{
+      color: var(--muted) !important;
+    }}
+    [data-theme="light"] .vis-label {{
+      color: var(--text) !important;
+    }}
+    [data-theme="light"] #gantt {{
+      background: #f5f7fc;
+    }}
+    [data-theme="light"] aside {{
+      background: #ffffff !important;
+      border-right-color: var(--border) !important;
+    }}
+    [data-theme="light"] .sidebar-scroll {{
+      background: #ffffff;
+    }}
+    [data-theme="light"] .summary-box {{
+      background: #f0f2f8;
+    }}
+    [data-theme="light"] .req-box {{
+      background: #e8eaf2;
+      color: #5a6280;
+    }}
+    [data-theme="light"] .section-label {{
+      color: #7880a0;
+    }}
+    [data-theme="light"] .section-sep {{
+      border-color: #d0d5e8;
+    }}
+
+    /* Theme toggle button */
+    #themeToggle {{
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3px 10px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      color: var(--muted);
+      display: flex; align-items: center; gap: 5px;
+      transition: all 0.2s;
+      font-family: inherit;
+    }}
+    #themeToggle:hover {{
+      color: var(--text);
+      border-color: var(--muted);
+      background: var(--surface2);
     }}
 
     body {{
@@ -480,7 +614,7 @@ def export_interactive_gantt(
     
     /* ── Summary & Requirements ─────────────────────────────────────────────── */
     .summary-box {{
-      background: #151828;
+      background: var(--surface2);
       border: 1px solid var(--border);
       border-radius: 6px;
       padding: 10px;
@@ -496,13 +630,13 @@ def export_interactive_gantt(
     .summary-val {{ color: var(--text); font-weight: 600; text-align: right; }}
     
     .req-box {{
-      background: #0d0f1a;
+      background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 6px;
       padding: 8px;
       font-family: monospace;
       font-size: 0.65rem;
-      color: #929ebd;
+      color: var(--muted);
       white-space: pre-wrap;
       overflow-x: auto;
       margin-top: 2px;
@@ -556,21 +690,8 @@ def export_interactive_gantt(
       position: relative;
     }}
     #gantt {{ flex: 1; overflow: hidden; }}
-    #resourceGraph {{ height: 160px; border-top: 1px solid var(--border); background: var(--bg); flex-shrink: 0; }}
-    
-    #criticalSvg {{
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-      z-index: 10;
-    }}
-    .cp-path {{
-      stroke: #E8453C;
-      stroke-width: 2.5px;
-      fill: none;
-      filter: drop-shadow(0 0 3px rgba(232, 69, 60, 0.6));
-    }}
+    #resourceGraph, #allocationGraph {{ height: 160px; border-top: 1px solid var(--border); background: var(--bg); flex-shrink: 0; }}
+
 
     /* ── Vis.js overrides ────────────────────────────────────────────────────── */
     .vis-timeline {{ border: none; }}
@@ -612,6 +733,54 @@ def export_interactive_gantt(
     .tt .tt-row {{ color: var(--muted); font-size: 0.72rem; }}
     .tt .tt-row span {{ color: var(--text); }}
 
+    /* ── Graph2d Custom UI/UX ────────────────────────────────────────────────── */
+    .vis-graph-group0 {{
+      fill: #4c8bf5 !important;
+      fill-opacity: 0.45 !important;
+      stroke: #4c8bf5 !important;
+      stroke-width: 1.5px !important;
+    }}
+    text.vis-measure {{
+      fill: #6b728e !important;
+      font-size: 9px !important;
+    }}
+    text.vis-title {{
+      fill: #8a94b5 !important;
+      font-size: 10px !important;
+      font-weight: 400 !important;
+    }}
+
+    /* ── Custom Tooltips ─────────────────────────────────────────────────────── */
+    .info-tooltip-wrap {{
+      position: relative;
+      cursor: help;
+      display: inline-block;
+      border-bottom: 1px dashed #6b728e;
+    }}
+    .info-tooltip-wrap:hover .info-tooltip-content {{
+      opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0);
+    }}
+    .info-tooltip-content {{
+      position: absolute; bottom: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%) translateY(4px);
+      background: #181c2e; color: #dde1f0;
+      padding: 10px 14px; border-radius: 6px;
+      font-size: 0.7rem; font-weight: normal; white-space: normal;
+      width: 220px; box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+      border: 1px solid #2e3555; text-align: left;
+      opacity: 0; visibility: hidden; transition: all 0.2s;
+      z-index: 100; pointer-events: none;
+    }}
+    .info-tooltip-content::after {{
+      content: ''; position: absolute; top: 100%; left: 50%;
+      transform: translateX(-50%); border-width: 5px; border-style: solid;
+      border-color: #2e3555 transparent transparent transparent;
+    }}
+
+    /* ── Graph Observation ───────────────────────────────────────────────────── */
+    .graph-wrapper {{ position: relative; flex-shrink: 0; }}
+
+
     /* ── Scrollbar ───────────────────────────────────────────────────────────── */
     ::-webkit-scrollbar {{ width: 4px; height: 4px; }}
     ::-webkit-scrollbar-track {{ background: transparent; }}
@@ -649,6 +818,8 @@ def export_interactive_gantt(
       <div class="divider"></div>
       <button class="btn btn-export" onclick="exportJSON()">⬇ JSON</button>
       <button class="btn btn-export" onclick="exportCSV()">⬇ CSV</button>
+      <div class="divider"></div>
+      <button id="themeToggle" onclick="toggleTheme()">🌙 Dark</button>
     </div>
     <div class="badge" id="taskCount"></div>
   </div>
@@ -682,7 +853,26 @@ def export_interactive_gantt(
             <div class="summary-row"><span class="summary-key">Start</span><span class="summary-val">{p_start_str}</span></div>
             <div class="summary-row"><span class="summary-key">End</span><span class="summary-val">{p_end_str}</span></div>
             <div class="summary-row"><span class="summary-key">Duration</span><span class="summary-val">{p_dur_days} days</span></div>
-            <div class="summary-row"><span class="summary-key">Resources</span><span class="summary-val">{total_resources}</span></div>
+            <div class="summary-row" style="margin-bottom: 6px;"><span class="summary-key">Resources</span><span class="summary-val">{total_resources}</span></div>
+            
+            <div class="summary-row" style="border-top: 1px dashed var(--border); padding-top: 6px; overflow:visible;">
+                <span class="summary-key info-tooltip-wrap">
+                   Gross Eff.
+                   <div class="info-tooltip-content">
+                     <b>Gross Efficiency</b><br>Includes 100% of all estimated tasks, including consolidated drawing blocks running in the background. Reflects total systemic density.
+                   </div>
+                </span>
+                <span class="summary-val" style="color: {{ '#a0ffcb' if efficiency_index >= 0.8 else '#ffcc00' if efficiency_index >= 0.5 else '#ff6b6b' }}">{efficiency_index:.2f}</span>
+            </div>
+            <div class="summary-row" style="overflow:visible;">
+                <span class="summary-key info-tooltip-wrap">
+                   Core Eff.
+                   <div class="info-tooltip-content">
+                     <b>Core Efficiency</b><br>Excludes consolidated drawings. This matches the visual idleness on the charts and reveals actual capacity gaps when engineers are blocked.
+                   </div>
+                </span>
+                <span class="summary-val" style="color: {{ '#a0ffcb' if core_efficiency_index >= 0.8 else '#ffcc00' if core_efficiency_index >= 0.5 else '#ff6b6b' }}">{core_efficiency_index:.2f}</span>
+            </div>
           </div>
       </div>
       
@@ -700,38 +890,25 @@ def export_interactive_gantt(
           <div id="legendType"></div>
       </div>
       
-      <hr class="section-sep"/>
 
-      <div>
-          <div class="section-label">Dependencies</div>
-          <div class="filter-item">
-            <input type="checkbox" id="toggleTaskArrows" checked onchange="onToggleTaskArrows(this)"/>
-            <span class="filter-label">Show Task Arrows</span>
-          </div>
-      </div>
-      
-      <hr class="section-sep"/>
       
       <div>
           <div class="section-label">Requirements</div>
           <div class="req-box">{req_text}</div>
       </div>
+      
+
     </div>
   </aside>
 
   <div class="main-content">
     <div id="gantt"></div>
-    <div id="resourceGraph"></div>
-    <svg id="criticalSvg">
-      <defs>
-        <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-          <polygon points="0 0, 6 3, 0 6" fill="#E8453C" />
-        </marker>
-        <marker id="arrowhead-task" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-          <polygon points="0 0, 6 3, 0 6" fill="#6b728e" />
-        </marker>
-      </defs>
-    </svg>
+    <div class="graph-wrapper">
+       <div id="resourceGraph"></div>
+    </div>
+    <div class="graph-wrapper">
+       <div id="allocationGraph"></div>
+    </div>
   </div>
 </div>
 
@@ -797,9 +974,9 @@ def export_interactive_gantt(
   const resDataset = new vis.DataSet(RESOURCE_DATA);
   const resOptions = {{
       height: '100%',
+      style: 'bar',
+      barChart: {{ width: 50, align: 'center' }},
       drawPoints: false,
-      interpolation: {{ parametrization: 'step' }},
-      shaded: {{ orientation: 'bottom' }},
       dataAxis: {{
         visible: true,
         left: {{
@@ -817,15 +994,45 @@ def export_interactive_gantt(
       resOptions
   );
 
+  const allocDataset = new vis.DataSet(RESOURCE_DATA.map(d => ({{ x: d.x, y: (d.y / TOTAL_RESOURCES) * 100 }})));
+  const allocOptions = {{
+      height: '100%',
+      style: 'bar',
+      barChart: {{ width: 50, align: 'center' }},
+      drawPoints: false,
+      dataAxis: {{
+        visible: true,
+        left: {{
+            title: {{ text: 'Resource Allocation (%)' }},
+            format: function (value) {{ return Math.round(value) + '%'; }}
+        }}
+      }},
+      zoomMin: timelineOptions.zoomMin,
+      zoomMax: timelineOptions.zoomMax,
+  }};
+  const allocationGraph = new vis.Graph2d(
+      document.getElementById('allocationGraph'),
+      allocDataset,
+      allocOptions
+  );
+
   // Sync range changes between timeline and graph
   timeline.on('rangechange', function (properties) {{
       if (properties.byUser) {{
-          resourceGraph.setOptions({{ start: properties.start, end: properties.end }});
+          resourceGraph.setWindow(properties.start, properties.end, {{ animation: false }});
+          allocationGraph.setWindow(properties.start, properties.end, {{ animation: false }});
       }}
   }});
   resourceGraph.on('rangechange', function (properties) {{
       if (properties.byUser) {{
-          timeline.setOptions({{ start: properties.start, end: properties.end }});
+          timeline.setWindow(properties.start, properties.end, {{ animation: false }});
+          allocationGraph.setWindow(properties.start, properties.end, {{ animation: false }});
+      }}
+  }});
+  allocationGraph.on('rangechange', function (properties) {{
+      if (properties.byUser) {{
+          timeline.setWindow(properties.start, properties.end, {{ animation: false }});
+          resourceGraph.setWindow(properties.start, properties.end, {{ animation: false }});
       }}
   }});
 
@@ -930,68 +1137,6 @@ def export_interactive_gantt(
     applyFilters();
   }}
   
-  function onToggleTaskArrows(cb) {{
-    showAllTaskArrows = cb.checked;
-    drawDependencyArrows();
-  }}
-
-  // ── Draw SVG Arrows for Critical Path ──────────────────────────────────────────
-  const CRITICAL_LINKS = {critical_links_json}; // Assuming critical_links is still passed for identification
-  const svgOverlay = document.getElementById('criticalSvg');
-  
-  function drawDependencyArrows() {{
-      // clear existing paths (keep defs)
-      const paths = svgOverlay.querySelectorAll('path');
-      paths.forEach(p => p.remove());
-
-      if (ALL_TASK_LINKS.length === 0 && CRITICAL_LINKS.length === 0) return;
-
-      const ganttRect = document.getElementById('gantt').getBoundingClientRect();
-      const panelOuter = document.querySelector('.vis-panel.vis-center');
-      if (!panelOuter) return;
-      const panelRect = panelOuter.getBoundingClientRect();
-
-      // We need offset relative to our absolute SVG container
-      const offsetX = panelRect.left - ganttRect.left;
-      const offsetY = panelRect.top - ganttRect.top;
-
-      ALL_TASK_LINKS.forEach(link => {{
-          const isCritical = CRITICAL_LINKS.some(cl => cl.from === link.from && cl.to === link.to);
-
-          if (!showAllTaskArrows && !isCritical) return; // Skip if not showing all and not critical
-
-          const itemFrom = timeline.itemSet.items[link.from];
-          const itemTo = timeline.itemSet.items[link.to];
-
-          if (itemFrom && itemTo && itemFrom.displayed && itemTo.displayed) {{
-               // Extract DOM element boxes inside the vis-panel
-               const bFrom = itemFrom.dom.box.getBoundingClientRect();
-               const bTo = itemTo.dom.box.getBoundingClientRect();
-
-               // Calculate relative coordinates in our SVG space
-               const x1 = (bFrom.right - panelRect.left) + offsetX;
-               const y1 = (bFrom.top + bFrom.height/2 - panelRect.top) + offsetY;
-               const x2 = (bTo.left - panelRect.left) + offsetX;
-               const y2 = (bTo.top + bTo.height/2 - panelRect.top) + offsetY;
-
-               const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-               path.setAttribute('class', isCritical ? 'cp-path' : 'task-path');
-               path.setAttribute('marker-end', isCritical ? 'url(#arrowhead)' : 'url(#arrowhead-task)');
-
-               // Check if successor is on a different row, if so use an S-curve, otherwise straight line
-               if (Math.abs(y1 - y2) < 5) {{
-                   path.setAttribute('d', `M ${{x1}} ${{y1}} L ${{x2}} ${{y2}}`);
-               }} else {{
-                   const cpX = (x1 + x2) / 2;
-                   path.setAttribute('d', `M ${{x1}} ${{y1}} C ${{cpX}} ${{y1}}, ${{cpX}} ${{y2}}, ${{x2}} ${{y2}}`);
-               }}
-               svgOverlay.appendChild(path);
-          }}
-      }});
-  }}
-
-  timeline.on('changed', drawDependencyArrows);
-  timeline.on('scroll', drawDependencyArrows);
 
   // ── Export ───────────────────────────────────────────────────────────────────
   function showToast(msg) {{
@@ -1033,9 +1178,24 @@ def export_interactive_gantt(
     document.body.removeChild(a); URL.revokeObjectURL(url);
   }}
 
+  // ── Theme toggle ─────────────────────────────────────────────────────────────
+  function toggleTheme() {{
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const next = isLight ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('chrono-theme', next);
+    document.getElementById('themeToggle').textContent = next === 'light' ? '🌙 Dark' : '☀️ Light';
+  }}
+
+  // Apply saved theme on load
+  (function() {{
+    const saved = localStorage.getItem('chrono-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+    document.getElementById('themeToggle').textContent = saved === 'light' ? '🌙 Dark' : '☀️ Light';
+  }})();
+
   setTimeout(() => {{
     timeline.fit();
-    drawDependencyArrows(); // Draw arrows after initial fit
   }}, 150);
 </script>
 </body>
