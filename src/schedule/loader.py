@@ -125,7 +125,8 @@ def load_raw_tasks_from_csv(task_csv_path: Path) -> List[Task]:
     raw_tasks: List[Task] = []
     try:
         df = pd.read_csv(task_csv_path, delimiter=';')
-        print(f"DEBUG load_raw_tasks: found {len(df)} rows in {task_csv_path}")
+        if config.DEBUG:
+            print(f"DEBUG load_raw_tasks: found {len(df)} rows in {task_csv_path}")
         df['strategy'] = df['strategy'].fillna('')
         # Only fill string/object columns with '' — numeric columns stay as NaN
         obj_cols = df.select_dtypes(include='object').columns

@@ -1349,4 +1349,5 @@ def export_interactive_gantt(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(html, encoding='utf-8')
     if DEBUG:
-        print(f"Interactive Gantt saved to: {output_path}")
+        from src import config
+        print(f"Interactive Gantt saved to: {config.rel_path(output_path)}")

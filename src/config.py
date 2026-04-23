@@ -15,4 +15,11 @@ OUTPUT_DIR = BASE_DIR / 'output'
 # are now configured in input/project_config.json under "settings".
 
 # Debugging flag
-DEBUG = True
+DEBUG = False
+
+def rel_path(path: Path) -> Path:
+    """Returns the path relative to BASE_DIR if possible, otherwise returns absolute path."""
+    try:
+        return path.resolve().relative_to(BASE_DIR.resolve())
+    except (ValueError, RuntimeError):
+        return path

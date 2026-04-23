@@ -1,5 +1,6 @@
 import pandas as pd
 from pathlib import Path
+from src import config
 from src.config import INPUT_DIR, DEBUG
 from src.schedule.project import ProjectSchedule
 
@@ -28,7 +29,7 @@ def update_customization_overview_csv(file_path: Path):
         # Write the updated DataFrame back to the CSV
         df.to_csv(file_path, sep=';', index=False)
         if DEBUG:
-            print(f"Updated {file_path} with 'path' and 'status' columns.")
+            print(f"Updated {config.rel_path(file_path)} with 'path' and 'status' columns.")
 
     except FileNotFoundError:
         print(f"Error: Customization overview file not found at {file_path}")
@@ -65,7 +66,9 @@ def export_tasks_to_csv(schedule: ProjectSchedule, file_path: str):
                 'End Date': task.end_date.strftime('%Y-%m-%d %H:%M') if task.end_date else '',
                 'Predecessor IDs': ', '.join(str(p.id) for p in task.predecessors),
                 'Successor IDs': ', '.join(str(s.id) for s in getattr(task, 'successors_tasks', [])),
-                'Variant Name': getattr(task, 'variant_name', '')
+                'Variant Name': getattr(task, 'variant_name', ''),
+                'Is Critical': getattr(task, 'is_critical', False),
+                'Slack (min)': getattr(task, 'slack', 0),
             }
             
             # [Req: RF-14.3] — Consolidated drawing tasks span multiple milestones; leave Milestone ID blank
@@ -84,7 +87,38 @@ def export_tasks_to_csv(schedule: ProjectSchedule, file_path: str):
         df = pd.DataFrame(data)
         df.to_csv(file_path, index=False)
         if DEBUG:
-            print(f"Successfully exported {len(schedule.tasks)} tasks to {file_path}")
+            print(f"Successfully exported {len(schedule.tasks)} tasks to {config.rel_path(Path(file_path))}")
 
     except Exception as e:
         print(f"An error occurred while exporting tasks to {file_path}: {e}")
+
+
+# [Req: RF-12.6] — Exports only critical-path tasks (slack == 0) to a dedicated CSV
+def export_critical_path_csv(schedule: ProjectSchedule, file_path: str):
+    """Exports only the critical-path tasks (is_critical=True / slack=0) to a CSV file.
+
+    Args:
+        schedule (ProjectSchedule): The fully computed project schedule.
+        file_path (str): The output file path.
+    """
+    try:
+        critical_tasks = [t for t in schedule.tasks if getattr(t, 'is_critical', False)]
+        data = []
+        for task in critical_tasks:
+            data.append({
+                'Task ID': task.id,
+                'Part Number': task.part_number,
+                'Task Name': task.name,
+                'Task Type': task.type.description,
+                'Duration (min)': task.duration_minutes,
+                'Slack (min)': getattr(task, 'slack', 0),
+                'Start Date': task.init_date.strftime('%Y-%m-%d %H:%M') if task.init_date else '',
+                'End Date': task.end_date.strftime('%Y-%m-%d %H:%M') if task.end_date else '',
+                'Predecessor IDs': ', '.join(str(p.id) for p in task.predecessors),
+                'Successor IDs': ', '.join(str(s.id) for s in getattr(task, 'successors_tasks', [])),
+            })
+        df = pd.DataFrame(data)
+        df.to_csv(file_path, index=False, encoding='utf-8-sig')
+        print(f"Critical path exported: {len(critical_tasks)} tasks -> {config.rel_path(Path(file_path))}")
+    except Exception as e:
+        print(f"An error occurred while exporting critical path to {file_path}: {e}")

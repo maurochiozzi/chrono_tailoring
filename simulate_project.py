@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 from src import config
 from src.schedule.project import ProjectSchedule
-from src.export.csv_export import update_customization_overview_csv, export_tasks_to_csv
+from src.export.csv_export import update_customization_overview_csv, export_tasks_to_csv, export_critical_path_csv
 from src.export.plot import plot_resource_vs_duration
 from src.export.mermaid import export_tasks_to_mermaid_graph, export_tasks_to_mermaid_gantt
 from src.export.gantt_interactive import export_interactive_gantt
@@ -32,7 +32,7 @@ def main():
     if not config.OUTPUT_DIR.exists():
         config.OUTPUT_DIR.mkdir(parents=True)
         if config.DEBUG:
-            print(f"Created output directory: {config.OUTPUT_DIR}")
+            print(f"Created output directory: {config.rel_path(config.OUTPUT_DIR)}")
 
     if config.DEBUG:
         print("\n--- Final Project Schedule Summary ---")
@@ -41,14 +41,18 @@ def main():
     # 1. Export standard task data to CSV
     export_csv_path = config.OUTPUT_DIR / "exported_tasks.csv"
     if config.DEBUG:
-        print(f"\nExporting tasks to CSV: {export_csv_path}")
+        print(f"\nExporting tasks to CSV: {config.rel_path(export_csv_path)}")
     export_tasks_to_csv(schedule, str(export_csv_path))
+
+    # 1b. Export critical-path tasks to a dedicated CSV
+    critical_path_csv = config.OUTPUT_DIR / "critical_path.csv"
+    export_critical_path_csv(schedule, str(critical_path_csv))
 
     # 2. Analyze resource bottleneck limits (calculates curves and exports plot map)
     print("\n--- Analyzing Resource Constraints ---")
     plot_resource_vs_duration(
         base_schedule=schedule,
-        max_resources=10, 
+        max_resources=20, 
         min_resources=1,
         output_plot_path=config.OUTPUT_DIR / "resource_vs_duration.png"
     )
@@ -97,7 +101,7 @@ def main():
     # 6. Export trace log
     trace_log_path = config.OUTPUT_DIR / "transformation_log.json"
     if config.DEBUG:
-        print(f"Exporting trace log to JSON: {trace_log_path}")
+        print(f"Exporting trace log to JSON: {config.rel_path(trace_log_path)}")
     import json
     with open(trace_log_path, "w", encoding="utf-8") as f:
         json.dump(schedule.transformation_log, f, indent=2, ensure_ascii=False)

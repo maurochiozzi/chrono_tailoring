@@ -170,7 +170,8 @@ class ProjectSchedule:
 
         milestone_template_task = next((t for t in milestone_template.tasks if t.type.description == "milestone"), None)
         
-        print(f"DEBUG {milestone_data.get('milestone_id')}: base_tasks_len={len(base_tasks_for_milestone)}, template_len={len(milestone_template.tasks)}")
+        if config.DEBUG:
+            print(f"DEBUG {milestone_data.get('milestone_id')}: base_tasks_len={len(base_tasks_for_milestone)}, template_len={len(milestone_template.tasks)}")
 
         # [Req: RF-03.3] — Milestone marker task is always included regardless of selection filters
         if milestone_template_task:

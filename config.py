@@ -18,4 +18,4 @@ OUTPUT_DIR = BASE_DIR / 'output'
 PROJECT_START_DATE_STR = "2026-02-08"
 
 # Debugging flag
-DEBUG = True
+DEBUG = False

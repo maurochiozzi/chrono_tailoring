@@ -65,13 +65,19 @@ def export_tasks_to_mermaid_graph(schedule: List[ProjectMilestone], output_file_
                 mermaid_lines.append(f"        {node_definition}")
 
                 color_style = task_type_colors.get(task.type.description, 'fill:#CCC')
-                node_styles.append(f"        style {task.id} {color_style}")
+                if getattr(task, 'is_critical', False):
+                    node_styles.append(f"        style {task.id} {color_style},stroke:#E8453C,stroke-width:3px,color:#fff")
+                else:
+                    node_styles.append(f"        style {task.id} {color_style}")
             mermaid_lines.append("    end")
         
         for task in all_tasks:
             for successor_task in getattr(task, 'successors_tasks', []):
                 if any(s_task.id == successor_task.id for m in schedule for s_task in m.tasks):
-                    mermaid_lines.append(f"    {task.id} --> {successor_task.id}")
+                    if getattr(task, 'is_critical', False) and getattr(successor_task, 'is_critical', False):
+                        mermaid_lines.append(f"    {task.id} ==> {successor_task.id}")
+                    else:
+                        mermaid_lines.append(f"    {task.id} --> {successor_task.id}")
         
         mermaid_lines.extend(node_styles)
 
@@ -145,7 +151,8 @@ def export_tasks_to_mermaid_graph(schedule: List[ProjectMilestone], output_file_
         try:
             output_file_path.write_text(mermaid_syntax)
             if DEBUG:
-                print(f"Mermaid graph exported to: {output_file_path}")
+                from src import config
+                print(f"Mermaid graph exported to: {config.rel_path(output_file_path)}")
         except Exception as e:
             print(f"Error exporting Mermaid graph to {output_file_path}: {e}")
             
@@ -366,7 +373,8 @@ def export_tasks_to_mermaid_gantt(schedule: List[ProjectMilestone], output_file_
         try:
             output_file_path.write_text(mermaid_syntax)
             if DEBUG:
-                print(f"Mermaid Gantt chart exported to: {output_file_path}")
+                from src import config
+                print(f"Mermaid Gantt chart exported to: {config.rel_path(output_file_path)}")
         except Exception as e:
             print(f"Error exporting Mermaid Gantt chart to {output_file_path}: {e}")
             
