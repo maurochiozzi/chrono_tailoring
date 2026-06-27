@@ -86,8 +86,7 @@ def export_tasks_to_csv(schedule: ProjectSchedule, file_path: str):
 
         df = pd.DataFrame(data)
         df.to_csv(file_path, index=False)
-        if DEBUG:
-            print(f"Successfully exported {len(schedule.tasks)} tasks to {config.rel_path(Path(file_path))}")
+        print(f"Successfully exported {len(schedule.tasks)} tasks to {config.rel_path(Path(file_path))}")
 
     except Exception as e:
         print(f"An error occurred while exporting tasks to {file_path}: {e}")

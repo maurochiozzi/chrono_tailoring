@@ -68,7 +68,7 @@ class TestInteractiveGanttExport:
         output_path = tmp_path / "gantt_critical.html"
         export_interactive_gantt(sample_tasks, output_path, show_task_arrows=False)
 
-        html_content = output_path.read_text()
+        html_content = output_path.read_text(encoding='utf-8')
         critical_links = self._get_links_from_html(html_content, 'CRITICAL_LINKS')
 
         # Expect only critical path arrows: Task 1 -> Task 2
@@ -80,7 +80,7 @@ class TestInteractiveGanttExport:
         output_path = tmp_path / "gantt_all_arrows.html"
         export_interactive_gantt(sample_tasks, output_path, show_task_arrows=True)
 
-        html_content = output_path.read_text()
+        html_content = output_path.read_text(encoding='utf-8')
         all_links = self._get_links_from_html(html_content, 'ALL_TASK_LINKS')
         critical_links = self._get_links_from_html(html_content, 'CRITICAL_LINKS')
 

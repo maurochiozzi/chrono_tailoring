@@ -9,6 +9,8 @@ from src.export.gantt_interactive import export_interactive_gantt
 from src.schedule.loader import load_project_requirements
 
 def main():
+    import time
+    start_time = time.time()
     print("--- Starting Chrono Tailoring Project Simulation ---")
 
     # Update customization overview matching input structure
@@ -34,14 +36,12 @@ def main():
         if config.DEBUG:
             print(f"Created output directory: {config.rel_path(config.OUTPUT_DIR)}")
 
-    if config.DEBUG:
-        print("\n--- Final Project Schedule Summary ---")
-        print(schedule)
+    print("\n--- Final Project Schedule Summary ---")
+    print(schedule)
 
     # 1. Export standard task data to CSV
     export_csv_path = config.OUTPUT_DIR / "exported_tasks.csv"
-    if config.DEBUG:
-        print(f"\nExporting tasks to CSV: {config.rel_path(export_csv_path)}")
+    print(f"\nExporting tasks to CSV: {config.rel_path(export_csv_path)}")
     export_tasks_to_csv(schedule, str(export_csv_path))
 
     # 1b. Export critical-path tasks to a dedicated CSV
@@ -107,6 +107,8 @@ def main():
         json.dump(schedule.transformation_log, f, indent=2, ensure_ascii=False)
 
     print("\n--- Simulation Complete ---")
+    duration = time.time() - start_time
+    print(f"Total simulation time: {duration:.2f} seconds")
 
 if __name__ == "__main__":
     main()

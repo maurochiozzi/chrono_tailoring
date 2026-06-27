@@ -115,15 +115,18 @@ def plot_resource_vs_duration(
             ax2.tick_params(axis='y', labelcolor=color_gain)
             ax2.set_ylim(bottom=0)
 
-            # Convergence line — horizontal dashed line at the maximum gain% (asymptote)
-            convergence_value = max(gain_pct_list)
-            ax2.axhline(y=convergence_value, color=color_gain, linestyle=':', linewidth=1.2, alpha=0.7,
-                        label=f'Convergence ({convergence_value:.1f}%)')
-            ax2.annotate(f'{convergence_value:.1f}%',
-                         xy=(num_resources_list[-1], convergence_value),
-                         xytext=(4, -10), textcoords='offset points',
-                         ha='left', fontsize=8, color=color_gain,
-                         fontweight='bold')
+            # Convergence zone — shaded area from max gain to (max gain - 5%)
+            max_gain = max(gain_pct_list)
+            zone_bottom = max_gain - 5
+            convergence_midpoint = max_gain - 2.5
+            
+            # Draw shaded zone
+            ax2.axhspan(zone_bottom, max_gain, color=color_gain, alpha=0.1, 
+                        label=f'Convergence Zone ({zone_bottom:.1f}% - {max_gain:.1f}%)')
+            
+            # Midpoint convergence line
+            ax2.axhline(y=convergence_midpoint, color=color_gain, linestyle=':', linewidth=1.2, alpha=0.7,
+                        label=f'Asymptote ({convergence_midpoint:.1f}%)')
 
             # Annotate gain values on the secondary axis (skip first point — always 0%)
             for x, y in zip(num_resources_list[1:], gain_pct_list[1:]):
