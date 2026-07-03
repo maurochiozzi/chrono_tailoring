@@ -19,7 +19,7 @@ RF-01: Project Requirements Loading
     Centralize all project configuration in a single human-readable file, facilitating changes without touching the code.
 
 **Source Traceability**
-    src/schedule/loader.py:L10-37
+    src/schedule/loader.py:L11-44
 
 
 RF-01.1: New Requirements Format
@@ -32,7 +32,7 @@ RF-01.1: New Requirements Format
     Allow the configuration file to evolve with extra fields without breaking the structure.
 
 **Source Traceability**
-    src/schedule/loader.py:L28-30
+    src/schedule/loader.py:L34-37
 
 
 RF-01.2: Legacy Requirements Format
@@ -45,7 +45,7 @@ RF-01.2: Legacy Requirements Format
     Ensure that projects configured before the introduction of the settings block continue to work without forced migration.
 
 **Source Traceability**
-    src/schedule/loader.py:L24-26
+    src/schedule/loader.py:L30-32
 
 
 RF-01.3: Settings Block Fields
@@ -61,7 +61,7 @@ RF-01.3: Settings Block Fields
     ``project_start_date: 2026-02-08, num_resources: 2``
 
 **Source Traceability**
-    src/schedule/project.py:L31-32 + src/schedule/project.py:L74-80
+    src/schedule/project.py:L61-62 + src/schedule/project.py:L109-116
 
 
 RF-01.4: Error Handling in Loading
@@ -74,7 +74,7 @@ RF-01.4: Error Handling in Loading
     Avoid silent crashes or exposing stack traces to the end user in case of misconfiguration.
 
 **Source Traceability**
-    src/schedule/loader.py:L32-37
+    src/schedule/loader.py:L39-44
 
 
 Data
@@ -90,7 +90,7 @@ RF-02: Deliverable Structure Loading
     Decouple the task structure definition from the code, allowing tasks to be added/removed by editing only the CSV.
 
 **Source Traceability**
-    src/schedule/loader.py:L69-136
+    src/schedule/loader.py:L114-191
 
 
 RF-02.1: Mandatory Task CSV Fields
@@ -103,7 +103,7 @@ RF-02.1: Mandatory Task CSV Fields
     Ensure the loader knows exactly which columns to look for, making the read deterministic.
 
 **Source Traceability**
-    src/core/models.py:L14-35
+    src/core/models.py:L47-67
 
 
 RF-02.2: Native Duration Reading in Minutes
@@ -119,7 +119,7 @@ RF-02.2: Native Duration Reading in Minutes
     ``std_duration=150 -> 150 minutes``
 
 **Source Traceability**
-    src/schedule/loader.py:L101-105
+    src/schedule/loader.py:L154-159
 
 
 RF-02.3: Robust Successor Parsing
@@ -145,7 +145,7 @@ RF-02.4: Graph Resolution on Loading
     Materializing object references facilitates graph traversal without repetitive lookups in the ID map.
 
 **Source Traceability**
-    src/schedule/loader.py:L117-128
+    src/schedule/loader.py:L171-183
 
 
 RF-02.5: TaskType Cache
@@ -158,7 +158,7 @@ RF-02.5: TaskType Cache
     Reduce memory allocations and ensure object identity among tasks of the same type.
 
 **Source Traceability**
-    src/core/models.py:L4-7 + src/schedule/loader.py:L83-93
+    src/core/models.py:L7-16 + src/schedule/loader.py:L136-144
 
 
 RF-24: Customization Status Verification
@@ -171,7 +171,7 @@ RF-24: Customization Status Verification
     Detecting missing customization files before running avoids silent duration=None errors.
 
 **Source Traceability**
-    src/export/csv_export.py:6-31
+    src/export/csv_export.py:L7-37
 
 
 RF-24.1: Path and Status Calculation
@@ -184,7 +184,7 @@ RF-24.1: Path and Status Calculation
     Clear separation between what is available and what is missing, traceable in the CSV itself.
 
 **Source Traceability**
-    src/export/csv_export.py:L18-21
+    src/export/csv_export.py:L23-27
 
 
 RF-24.2: CSV Rewrite with Updated Columns
@@ -197,7 +197,7 @@ RF-24.2: CSV Rewrite with Updated Columns
     Keeps the overview always synced with the real file system state.
 
 **Source Traceability**
-    src/export/csv_export.py:L21-26
+    src/export/csv_export.py:L29-30
 
 
 RF-24.3: Unnamed Column Discard
@@ -210,7 +210,7 @@ RF-24.3: Unnamed Column Discard
     Pandas generates ghost columns if the CSV has extra delimiters - removing them avoids corruption.
 
 **Source Traceability**
-    src/export/csv_export.py:L14-15
+    src/export/csv_export.py:L19-20
 
 
 RF-25: External Holiday Loading
@@ -223,7 +223,7 @@ RF-25: External Holiday Loading
     Externalizing holidays allows annual updates without code modification, and Set ensures O(1) lookup.
 
 **Source Traceability**
-    src/schedule/loader.py:L39-53
+    src/schedule/loader.py:L46-68
 
 
 RF-25.1: YYYY-MM-DD Format per Line
@@ -236,7 +236,7 @@ RF-25.1: YYYY-MM-DD Format per Line
     Minimalist format readable by humans and without complex parsing library dependency.
 
 **Source Traceability**
-    src/schedule/loader.py:L43-49
+    src/schedule/loader.py:L59-62
 
 
 RF-25.2: Invalid Line Tolerance
@@ -249,7 +249,7 @@ RF-25.2: Invalid Line Tolerance
     A poorly formatted holiday should not invalidate all others.
 
 **Source Traceability**
-    src/schedule/loader.py:L49
+    src/schedule/loader.py:L63-64
 
 
 RF-25.3: Result as Set[date]
@@ -278,7 +278,7 @@ RF-03: Task Generation per Milestone
     Each milestone represents a distinct product/deliverable that needs its own execution plan without interfering with others.
 
 **Source Traceability**
-    src/schedule/project.py:L16-98
+    src/schedule/project.py:L83-93
 
 
 RF-03.1: Selection by deliverable_structure
@@ -343,7 +343,7 @@ RF-03.5: milestone_id Assignment to Tasks
     Allows filtering and grouping tasks by milestone in visualization and export.
 
 **Source Traceability**
-    src/schedule/project.py:L135-137 + src/core/models.py:L96-104
+    src/schedule/project.py:L135-137 + src/core/models.py:L131-144
 
 
 RF-03.6: Post-Copy Dependency Re-wiring
@@ -356,7 +356,7 @@ RF-03.6: Post-Copy Dependency Re-wiring
     Without re-wiring, clones would point to tasks from another milestone, creating incorrect cross-milestone dependencies.
 
 **Source Traceability**
-    src/schedule/project.py:L160-179 + src/core/models.py:L83-93
+    src/schedule/project.py:L160-179 + src/core/models.py:L117-128
 
 
 RF-04: Recursive Task Duplication with Variants
@@ -476,7 +476,7 @@ RF-08.1: Removal from Task List
     Prevents the scheduler from allocating a resource slot for a task with no real work.
 
 **Source Traceability**
-    src/schedule/project.py:L280-284
+    src/schedule/project.py:L359-377
 
 
 RF-08.2: Dependency Bridging
@@ -489,7 +489,7 @@ RF-08.2: Dependency Bridging
     Preserves the logical dependency chain even with the eliminated task, avoiding graph gaps.
 
 **Source Traceability**
-    src/schedule/project.py:L294-304
+    src/schedule/project.py:L387-401
 
 
 RF-08.3: Post-Removal Graph Reconstruction
@@ -515,7 +515,7 @@ RF-09: Date Calculation with Working Hours
     Manufacturing project planning needs real work dates, not simple calendar time.
 
 **Source Traceability**
-    src/core/time_calc.py:L19-95
+    src/core/time_calc.py:L29-118
 
 
 RF-09.1: Configurable Working Hours
@@ -528,7 +528,7 @@ RF-09.1: Configurable Working Hours
     Companies with shifts different from the 8-16 standard can adjust without modifying code.
 
 **Source Traceability**
-    src/core/time_calc.py:L4-7 + src/schedule/project.py:L31-32
+    src/core/time_calc.py:L5-7 + src/schedule/project.py:L61-62
 
 
 RF-09.2: Pre-Work Time Advance
@@ -554,7 +554,7 @@ RF-09.3: Next Day Advance if Post-Work
     Avoids tasks being scheduled outside hours, which would produce impossible end_dates.
 
 **Source Traceability**
-    src/core/time_calc.py:L46-51
+    src/core/time_calc.py:L66-72
 
 
 RF-09.4: Weekend Skipping
@@ -596,7 +596,7 @@ RF-09.6: Progressive Daily Duration Distribution
     ``Task starts 3PM with 120min -> ends 9AM next working day``
 
 **Source Traceability**
-    src/core/time_calc.py:L60-93
+    src/core/time_calc.py:L86-116
 
 
 RF-09.7: Zero Duration Special Case
@@ -609,7 +609,7 @@ RF-09.7: Zero Duration Special Case
     Zero-duration tasks (milestones) should not modify the scheduler's time pointer.
 
 **Source Traceability**
-    src/core/time_calc.py:L37-38
+    src/core/time_calc.py:L58-59
 
 
 RF-10: Scheduling with Resource Constraints
@@ -635,7 +635,7 @@ RF-10.1: Ready Tasks Priority Queue
     Dispatch always chooses the task that can start earliest, maximizing resource utilization.
 
 **Source Traceability**
-    src/schedule/engine.py:L60-70
+    src/schedule/engine.py:L93-104
 
 
 RF-10.2: Active Tasks Heap
@@ -648,7 +648,7 @@ RF-10.2: Active Tasks Heap
     Allows efficiently detecting when a resource slot becomes free without scanning the entire list.
 
 **Source Traceability**
-    src/schedule/engine.py:L73-74
+    src/schedule/engine.py:L107-108
 
 
 RF-10.3: Event-Driven Time Advance
@@ -661,7 +661,7 @@ RF-10.3: Event-Driven Time Advance
     Event-driven: the scheduler only processes when something changes, avoiding unnecessary polling.
 
 **Source Traceability**
-    src/schedule/engine.py:L77-90
+    src/schedule/engine.py:L111-119
 
 
 RF-10.4: Block when Resources Exhausted
@@ -674,7 +674,7 @@ RF-10.4: Block when Resources Exhausted
     Without this block, the scheduler would ignore the resource constraint.
 
 **Source Traceability**
-    src/schedule/engine.py:L81-83
+    src/schedule/engine.py:L116-117 + L148
 
 
 RF-10.5: init_date as Max of Predecessors and Event
@@ -687,7 +687,7 @@ RF-10.5: init_date as Max of Predecessors and Event
     Ensures the task only starts after all predecessors are finished AND after there is a resource slot.
 
 **Source Traceability**
-    src/schedule/engine.py:L121-127
+    src/schedule/engine.py:L156-161
 
 
 RF-10.6: earliest_start Propagation to Successors
@@ -713,7 +713,7 @@ RF-10.7: Safety Final Step
     Defense-in-depth against graph edge cases that might leave tasks unscheduled.
 
 **Source Traceability**
-    src/schedule/engine.py:L133-136
+    src/schedule/engine.py:L167-171
 
 
 RF-11: Circular Dependency Detection
@@ -742,7 +742,7 @@ RF-11.1: Kahn's Algorithm (in-degree)
     Classic O(V+E) algorithm for cycle detection in DAGs.
 
 **Source Traceability**
-    src/schedule/engine.py:L24-43
+    src/schedule/engine.py:L56-76
 
 
 RF-11.2: RuntimeError with Task Count
@@ -755,7 +755,7 @@ RF-11.2: RuntimeError with Task Count
     Facilitates diagnosis: the developer knows the extent of the cycle without manual graph inspection.
 
 **Source Traceability**
-    src/schedule/engine.py:L44-46
+    src/schedule/engine.py:L77-79
 
 
 RF-12: Critical Path Calculation
@@ -768,7 +768,7 @@ RF-12: Critical Path Calculation
     The critical path determines the minimum project duration, identifying it allows focusing optimization efforts.
 
 **Source Traceability**
-    src/schedule/engine.py:L138-181
+    src/schedule/engine.py:L173-220
 
 
 RF-12.1: project_end as max(end_date)
@@ -781,7 +781,7 @@ RF-12.1: project_end as max(end_date)
     Reference for the backward pass - without it, there's no way to calculate relative slacks.
 
 **Source Traceability**
-    src/schedule/engine.py:L141
+    src/schedule/engine.py:L176
 
 
 RF-12.2: Terminal Task latest_end = project_end
@@ -794,7 +794,7 @@ RF-12.2: Terminal Task latest_end = project_end
     Terminal tasks are anchor points from which slacks are propagated.
 
 **Source Traceability**
-    src/schedule/engine.py:L143-147
+    src/schedule/engine.py:L179-182
 
 
 RF-12.3: Backward Pass via out_degree
@@ -807,7 +807,7 @@ RF-12.3: Backward Pass via out_degree
     The minimum ensures the predecessor cannot end later than what the children's earliest start requires.
 
 **Source Traceability**
-    src/schedule/engine.py:L162-175
+    src/schedule/engine.py:L197-211
 
 
 RF-12.4: Slack Calculation in Minutes
@@ -820,7 +820,7 @@ RF-12.4: Slack Calculation in Minutes
     Minutes unit is consistent with duration_minutes, facilitating comparisons.
 
 **Source Traceability**
-    src/schedule/engine.py:L178-179
+    src/schedule/engine.py:L215-216
 
 
 RF-12.5: is_critical Flag
@@ -833,7 +833,7 @@ RF-12.5: is_critical Flag
     Boolean flag used by Gantt to render red arrows without reprocessing the graph.
 
 **Source Traceability**
-    src/schedule/engine.py:L179-180
+    src/schedule/engine.py:L217
 
 
 RF-12.6: Final Sort by init_date
@@ -846,7 +846,7 @@ RF-12.6: Final Sort by init_date
     Chronological order facilitates export to CSV and sequential rendering on the Gantt.
 
 **Source Traceability**
-    src/schedule/engine.py:L182
+    src/schedule/engine.py:L219-220
 
 
 RF-13: Drawing Task Consolidation
@@ -859,7 +859,7 @@ RF-13: Drawing Task Consolidation
     In practice, a part's drawing is done once - duplicating per variant artificially inflates the schedule.
 
 **Source Traceability**
-    src/schedule/project.py:L183-244
+    src/schedule/project.py:L245-315
 
 
 RF-13.1: Selection Criterion: type==drawing
@@ -872,7 +872,7 @@ RF-13.1: Selection Criterion: type==drawing
     Other task types are variant-specific and should not be consolidated.
 
 **Source Traceability**
-    src/schedule/project.py:L187-188
+    src/schedule/project.py:L250-251
 
 
 RF-13.2: Exclusion of 7XXXX part_numbers
@@ -885,7 +885,7 @@ RF-13.2: Exclusion of 7XXXX part_numbers
     7XXXX part_numbers are milestone markers, not physical parts - consolidating them would distort the hierarchy.
 
 **Source Traceability**
-    src/schedule/project.py:L188-190
+    src/schedule/project.py:L251-253
 
 
 RF-13.3: Single Task Groups Not Consolidated
@@ -898,7 +898,7 @@ RF-13.3: Single Task Groups Not Consolidated
     Consolidating a task with itself would generate an unnecessary replacement task.
 
 **Source Traceability**
-    src/schedule/project.py:L198-199
+    src/schedule/project.py:L258-259
 
 
 RF-13.4: Consolidated Task Attributes
@@ -911,7 +911,7 @@ RF-13.4: Consolidated Task Attributes
     Accumulated duration and full time span are the truest representation of real drawing effort.
 
 **Source Traceability**
-    src/schedule/project.py:L204-213
+    src/schedule/project.py:L261-285
 
 
 RF-13.5: Phase 1: successors_ids Remapping
@@ -924,7 +924,7 @@ RF-13.5: Phase 1: successors_ids Remapping
     Must occur before removal so that no pointers remain dangling.
 
 **Source Traceability**
-    src/schedule/project.py:L220-228
+    src/schedule/project.py:L289-297
 
 
 RF-13.6: Phase 2: Task Array Swap
@@ -937,7 +937,7 @@ RF-13.6: Phase 2: Task Array Swap
     Array mutation done in a separate phase to not interfere with Phase 1 traversal.
 
 **Source Traceability**
-    src/schedule/project.py:L230-232
+    src/schedule/project.py:L299-302
 
 
 RF-13.7: Phase 3: Full Graph Reconstruction
@@ -950,7 +950,7 @@ RF-13.7: Phase 3: Full Graph Reconstruction
     Ensures all object references are consistent after Phase 1 and 2 substitutions.
 
 **Source Traceability**
-    src/schedule/project.py:L234-244
+    src/schedule/project.py:L304-315
 
 
 Customization
@@ -966,7 +966,7 @@ RF-05: Customizations per Milestone and Variant
     Products of the same family can share most customizations but differ in specific details per variant.
 
 **Source Traceability**
-    src/schedule/project.py:L246-315
+    src/schedule/project.py:L318-384
 
 
 RF-05.1: Milestone Level (Default)
@@ -982,7 +982,7 @@ RF-05.1: Milestone Level (Default)
     ``color: red applies to entire 70015``
 
 **Source Traceability**
-    src/schedule/project.py:L260-263
+    src/schedule/project.py:L338-341
 
 
 RF-05.2: Variant Level (Exclusive Override)
@@ -1011,7 +1011,7 @@ RF-05.3: Milestone Customization Inheritance
     Avoids unnecessary configuration repetition for variants that do not differ from the default.
 
 **Source Traceability**
-    src/schedule/project.py:L260-263
+    src/schedule/project.py:L338-341
 
 
 RF-05.4: Global Customization Name Collection
@@ -1024,7 +1024,7 @@ RF-05.4: Global Customization Name Collection
     Ensure the list of customization types is complete before processing any duration.
 
 **Source Traceability**
-    src/schedule/project.py:L47-65
+    src/schedule/project.py:L82-100
 
 
 RF-06: Duration Lookup by Customization Type
@@ -1037,7 +1037,7 @@ RF-06: Duration Lookup by Customization Type
     Separate customization data from source code allows managers to update durations without programming.
 
 **Source Traceability**
-    src/schedule/loader.py:L138-172
+    src/schedule/loader.py:L193-231
 
 
 RF-06.1: Customization File Resolution
@@ -1053,7 +1053,7 @@ RF-06.1: Customization File Resolution
     ``customization_color.csv``
 
 **Source Traceability**
-    src/schedule/loader.py:L55-67 + src/core/models.py:L9-12
+    src/schedule/loader.py:L71-111 + src/core/models.py:L18-30
 
 
 RF-06.2: Match by Task Name or Type
@@ -1066,7 +1066,7 @@ RF-06.2: Match by Task Name or Type
     Allows lookup either by specific name (granular) or generic type.
 
 **Source Traceability**
-    src/schedule/loader.py:L154-158
+    src/schedule/loader.py:L215-217
 
 
 RF-06.3: Duration Column Selection
@@ -1082,7 +1082,7 @@ RF-06.3: Duration Column Selection
     ``drawing_st, part_model_st``
 
 **Source Traceability**
-    src/schedule/loader.py:L148-151
+    src/schedule/loader.py:L213 + L221-222
 
 
 RF-06.4: Customization as Descriptive Tag
@@ -1137,7 +1137,7 @@ RF-07.1: Collection of All Valid Durations
     Ensure no duration source is discarded before comparison.
 
 **Source Traceability**
-    src/schedule/project.py:L276-278
+    src/schedule/project.py:L330-353
 
 
 RF-07.2: Applying max()
@@ -1150,7 +1150,7 @@ RF-07.2: Applying max()
     Simple, auditable rule without ambiguity.
 
 **Source Traceability**
-    src/schedule/project.py:L278-286
+    src/schedule/project.py:L358
 
 
 RF-07.3: Maintaining Default Duration without Customization
@@ -1163,36 +1163,49 @@ RF-07.3: Maintaining Default Duration without Customization
     Tasks not affected by customizations should not have their durations accidentally changed.
 
 **Source Traceability**
-    src/schedule/project.py:L276-288
+    src/schedule/project.py:L356 + L380-381
 
 
 Export
 ^^^^^^
 
+RF-12.6a: Critical Path CSV Export
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Description**
+    Critical path tasks (is_critical=True / slack=0) exported to critical_path.csv.
+
+**Intention**
+    Dedicated CSV allows managers to quickly review and share the project's critical path without filtering.
+
+**Source Traceability**
+    src/export/csv_export.py:L95-123 + simulate_project.py:L47-49
+
+
 RF-14: Task Export to CSV
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Description**
-    All final tasks exported to exported_tasks.csv.
+    All final tasks exported to exported_tasks.csv including Is Critical and Slack columns.
 
 **Intention**
     Provides an auditable artifact importable by external tools (Excel, BI) of the final schedule state.
 
 **Source Traceability**
-    src/export/csv_export.py:L34-81
+    src/export/csv_export.py:L40-92
 
 
 RF-14.1: Fixed CSV Fields
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Description**
-    Task ID, Part Number, Task Name, Task Type Description, Strategy, Duration (min), Start Date, End Date, Predecessors, Successors, Variant Name, Milestone ID.
+    Task ID, Part Number, Task Name, Task Type Description, Strategy, Duration (min), Start Date, End Date, Predecessors, Successors, Variant Name, Milestone ID, Is Critical, Slack (min).
 
 **Intention**
     Minimum set to track each task and reconstruct the dependency graph.
 
 **Source Traceability**
-    src/export/csv_export.py:L47-58
+    src/export/csv_export.py:L57-78
 
 
 RF-14.2: Dynamic Customization Columns
@@ -1208,7 +1221,7 @@ RF-14.2: Dynamic Customization Columns
     ``Customization_color, Customization_length``
 
 **Source Traceability**
-    src/export/csv_export.py:L40-43 + L69-72
+    src/export/csv_export.py:L49-53 + L81-83
 
 
 RF-14.3: Blank Milestone ID for Consolidated
@@ -1221,7 +1234,7 @@ RF-14.3: Blank Milestone ID for Consolidated
     Consolidated tasks belong to multiple milestones - assigning a single one would be incorrect.
 
 **Source Traceability**
-    src/export/csv_export.py:L62-66
+    src/export/csv_export.py:L74-78
 
 
 RF-14.4: YYYY-MM-DD HH:MM Date Format
@@ -1234,7 +1247,7 @@ RF-14.4: YYYY-MM-DD HH:MM Date Format
     Ambiguity-safe ISO format readable by humans and importable by pandas/Excel without extra config.
 
 **Source Traceability**
-    src/export/csv_export.py:L54-55
+    src/export/csv_export.py:L65-66
 
 
 RF-16: Mermaid Diagram Export
@@ -1247,7 +1260,7 @@ RF-16: Mermaid Diagram Export
     Mermaid diagrams are renderable in Markdown (GitHub, Notion, Obsidian) without extra tools.
 
 **Source Traceability**
-    src/export/mermaid.py:L7-351
+    src/export/mermaid.py:L7-382
 
 
 RF-16.1: Full Flowchart (per Task)
@@ -1260,7 +1273,7 @@ RF-16.1: Full Flowchart (per Task)
     Granular view for detailed dependency analysis between individual tasks.
 
 **Source Traceability**
-    src/export/mermaid.py:L19-64
+    src/export/mermaid.py:L30-64
 
 
 RF-16.2: Type Flowchart (per Task Type)
@@ -1351,7 +1364,7 @@ RF-17: Self-Contained Interactive HTML Gantt
     A single HTML file can be shared without needing a server, facilitating distribution.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L51-290
+    src/export/gantt_interactive.py:L51-1354
 
 
 RF-17.1: JSON Embedded Data in HTML
@@ -1364,7 +1377,7 @@ RF-17.1: JSON Embedded Data in HTML
     Self-contained: works offline and in any browser without external API calls.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L110-192
+    src/export/gantt_interactive.py:L302-309 + L966-976
 
 
 RF-17.2: Swim-lanes by Task Name
@@ -1377,7 +1390,7 @@ RF-17.2: Swim-lanes by Task Name
     Visually groups all instances of a task across different milestones into the same row.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L89-108
+    src/export/gantt_interactive.py:L102-114
 
 
 RF-17.3: Colors by Milestone
@@ -1390,7 +1403,7 @@ RF-17.3: Colors by Milestone
     Immediate visual distinction of bars belonging to each product/deliverable.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:76-87
+    src/export/gantt_interactive.py:L88-92
 
 
 RF-17.4: Configurable Title and Start Date
@@ -1403,7 +1416,7 @@ RF-17.4: Configurable Title and Start Date
     Generator function reusability for different projects without changing the source.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L51-60
+    src/export/gantt_interactive.py:L52-60
 
 
 RF-22: In-Browser Data Export
@@ -1416,7 +1429,7 @@ RF-22: In-Browser Data Export
     Allows the user to save a filtered schedule snapshot without server file system access.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L636-643 (HTML buttons)
+    src/export/gantt_interactive.py:L866-868 (HTML buttons)
 
 
 RF-22.1: JSON Export
@@ -1429,7 +1442,7 @@ RF-22.1: JSON Export
     JSON preserves all structured metadata and is readable by any programming language.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L716-726 (JS exportJSON)
+    src/export/gantt_interactive.py:L1292-1302
 
 
 RF-22.2: CSV Export
@@ -1442,7 +1455,7 @@ RF-22.2: CSV Export
     CSV is importable directly by Excel, facilitating analysis by non-technical users.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L728-743 (JS exportCSV)
+    src/export/gantt_interactive.py:L1304-1315
 
 
 RF-22.3: Embedded Metadata per Item
@@ -1455,7 +1468,7 @@ RF-22.3: Embedded Metadata per Item
     Avoids re-export browser processing - all data for export is already in each item object.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L181-191
+    src/export/gantt_interactive.py:L186-198
 
 
 Analysis
@@ -1471,7 +1484,7 @@ RF-15: Resource Sensitivity Analysis
     Allows the manager to identify the point of diminishing returns in adding resources, optimizing cost vs. deadline.
 
 **Source Traceability**
-    src/export/plot.py:L18-98
+    src/export/plot.py:L22-159
 
 
 RF-15.1: Configurable Resource Range
@@ -1497,7 +1510,7 @@ RF-15.2: ProjectSchedule Base Reuse
     Avoid recreating the schedule from scratch in each iteration significantly reduces I/O and CPU time.
 
 **Source Traceability**
-    src/export/plot.py:L38-43 + L56-65
+    src/export/plot.py:L46 + L63-70
 
 
 RF-15.3: Internal Output Suppression
@@ -1510,7 +1523,7 @@ RF-15.3: Internal Output Suppression
     The loop runs N times - without suppression, the terminal would be flooded with repetitive output.
 
 **Source Traceability**
-    src/export/plot.py:L57-65
+    src/export/plot.py:L62
 
 
 RF-15.4: Total Duration in Minutes
@@ -1523,20 +1536,20 @@ RF-15.4: Total Duration in Minutes
     Minutes are more accurate than days for comparing small differences between resource scenarios.
 
 **Source Traceability**
-    src/export/plot.py:L69-73
+    src/export/plot.py:L75
 
 
 RF-15.5: Exported Matplotlib Graph
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Description**
-    resource_vs_duration.png with X-axis=resources, Y-axis=minutes, markers, and grid.
+    resource_vs_duration.png with X-axis=resources, Y-axis=minutes, markers, dual-axis gain%, and grid.
 
 **Intention**
     Immediate visualization of the efficiency curve, faster to interpret than a table of numbers.
 
 **Source Traceability**
-    src/export/plot.py:L79-93
+    src/export/plot.py:L85-159
 
 
 RF-15.6: Graceful Degradation without Matplotlib
@@ -1549,7 +1562,7 @@ RF-15.6: Graceful Degradation without Matplotlib
     Headless environments or minimal setups should not be blocked by an optional visualization dependency.
 
 **Source Traceability**
-    src/export/plot.py:L95-98
+    src/export/plot.py:L15-20
 
 
 Visualization
@@ -1565,7 +1578,7 @@ RF-18: Interactive Gantt Filters
     In projects with many milestones and types, the full view is dense - filters allow focusing on relevant subsets.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L745-755 (JS filterItems)
+    src/export/gantt_interactive.py:L1206-1281
 
 
 RF-18.1: Milestone Filter
@@ -1578,7 +1591,7 @@ RF-18.1: Milestone Filter
     Allows comparing only selected milestones side-by-side on the same timeline.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L652-658 (HTML sidebar)
+    src/export/gantt_interactive.py:L1225-1243
 
 
 RF-18.2: Task Type Filter
@@ -1591,7 +1604,7 @@ RF-18.2: Task Type Filter
     Allows focusing on only 'release' tasks to review delivery points, for example.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L661-668 (HTML sidebar)
+    src/export/gantt_interactive.py:L1245-1263
 
 
 RF-18.3: Combined Filters (AND Logic)
@@ -1604,7 +1617,7 @@ RF-18.3: Combined Filters (AND Logic)
     AND logic avoids displaying partially filtered items and maintains visual consistency.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L746-748 (JS)
+    src/export/gantt_interactive.py:L1207-1222
 
 
 RF-18.4: Visible Item Count in Header
@@ -1617,7 +1630,7 @@ RF-18.4: Visible Item Count in Header
     Immediate user feedback on how many items are visible after applying filters.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L754-755 (JS)
+    src/export/gantt_interactive.py:L987-988
 
 
 RF-19: SVG Dependency Arrows
@@ -1630,7 +1643,7 @@ RF-19: SVG Dependency Arrows
     Invisible dependencies make it hard to identify the critical path and impact of delays.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L113-197
+    src/export/gantt_interactive.py:L157-171 + L976
 
 
 RF-19.1: Red Critical Arrows
@@ -1643,33 +1656,33 @@ RF-19.1: Red Critical Arrows
     The critical path is the most actionable project info - must be immediately visible.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L152-158
+    src/export/gantt_interactive.py:L157-164
 
 
 RF-19.2: Gray Non-Critical Arrows
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Description**
-    All other dependencies are gray (#6b728e).
+    All other dependencies are gray.
 
 **Intention**
     Keeps the critical path highlighted while still providing full dependency context.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L160-165
+    src/export/gantt_interactive.py:L166-171
 
 
 RF-19.3: Non-Critical Arrow Toggle
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Description**
-    'Show Task Arrows' checkbox in sidebar controls gray arrow visibility.
+    'showAllTaskArrows' flag and state toggle controls gray arrow visibility.
 
 **Intention**
     In dense projects, many arrows clutter the view - the toggle allows clearing it without losing the critical path.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L700-703 (JS toggle handler)
+    src/export/gantt_interactive.py:L981
 
 
 RF-19.4: Auto-Redraw on Move/Zoom
@@ -1682,7 +1695,7 @@ RF-19.4: Auto-Redraw on Move/Zoom
     Without redrawing, arrows would stay in place while bars move with pan/zoom.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L875-885 (JS event listeners)
+    src/export/gantt_interactive.py:L1139-1157
 
 
 RF-19.5: Bezier Arrow Geometry
@@ -1695,7 +1708,7 @@ RF-19.5: Bezier Arrow Geometry
     Bezier curve avoids bar overlap and is more readable than straight lines.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:820-850 (JS drawArrow)
+    src/export/gantt_interactive.py:L157-171 (JS drawArrow)
 
 
 RF-20: Non-Working Day Highlighting
@@ -1708,7 +1721,7 @@ RF-20: Non-Working Day Highlighting
     Makes it immediate for the user why certain bars skip days, avoiding gap misinterpretation.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L199-219
+    src/export/gantt_interactive.py:L206-226
 
 
 RF-20.1: Non-Working Day Background
@@ -1721,7 +1734,7 @@ RF-20.1: Non-Working Day Background
     Vis.js supports background items natively - the approach is idiomatic and performant.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L209-218
+    src/export/gantt_interactive.py:L215-225
 
 
 RF-20.2: CSS Styling (holiday-bg)
@@ -1734,85 +1747,85 @@ RF-20.2: CSS Styling (holiday-bg)
     Separates data from presentation - color can be changed without modifying the Python generator.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L302-304 (CSS .holiday-bg)
+    src/export/gantt_interactive.py:L222-224 (className: 'holiday-bg')
 
 
 RF-21: Resource Histogram
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Description**
-    Step chart below the timeline showing active tasks over time.
+    5-minute frame bar chart below the timeline showing active task load over time via vis.Graph2d.
 
 **Intention**
     Allows visualizing allocation bottlenecks: peaks above the resource limit indicate potential conflict.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L247-266
+    src/export/gantt_interactive.py:L254-300 + L1025-1081
 
 
-RF-21.1: +1/-1 events per Task
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+RF-21.1: 5-minute Frame Sampling
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Description**
-    init_date generates +1 and end_date generates -1 in the time series.
+    Tasks are mapped to 5-minute frames
 
 **Intention**
-    Efficient sweep-line model to calculate load without iterating over all timesteps.
+     overlap minutes are accumulated per frame.
 
-**Source Traceability**
-    src/export/gantt_interactive.py:L249-252
+**Example**
+    ``Fine-grained 5-min resolution captures intra-day load spikes missed by event-only approaches.``
 
 
-RF-21.2: Sequential Event Processing
+RF-21.2: Sequential Frame Processing
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Description**
-    Events sorted and processed to accumulate current load.
+    Frames sorted and accumulated into a resource_data JSON array.
 
 **Intention**
     Ordered processing ensures load never becomes negative or incorrect.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L253-257
+    src/export/gantt_interactive.py:L293-300
 
 
-RF-21.3: Double Points for Step Chart
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+RF-21.3: Vis.Graph2d Bar Chart
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Description**
-    Two points (old and new value) emitted per event to force step visualization.
+    resource_data rendered as Graph2d bar chart (style:'bar') with 50px bar width.
 
 **Intention**
-    Vis.js interpolates by default - the double point makes the curve a perfect step faithful to discrete allocation.
+    Bar chart is more readable than a line for discrete 5-min buckets.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L261-266
+    src/export/gantt_interactive.py:L1025-1046
 
 
 RF-21.4: Y-axis Label with Resource Limit
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Description**
-    Y-axis displays 'Active Tasks (limit: N)' where N is total_resources.
+    Overlay HTML div added with 'Active Tasks (max: N)' label.
 
 **Intention**
     Without the explicit limit, the user would need external knowledge to interpret the graph.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L797-799 (JS Graph2d options)
+    src/export/gantt_interactive.py:L1080
 
 
-RF-21.5: Resource Limit Reference Line
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+RF-21.5: Resource Alloc % Graph
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Description**
-    Horizontal line at the total_resources value displayed in the graph.
+    Second vis.Graph2d chart shows resource utilization as percentage of TOTAL_RESOURCES.
 
 **Intention**
     Immediate visual reference of where parallelism ceiling is exceeded.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L809-814 (JS setCustomTime)
+    src/export/gantt_interactive.py:L1048-1068
 
 
 RF-23: Sidebar Summary and Requirements Panel
@@ -1825,20 +1838,20 @@ RF-23: Sidebar Summary and Requirements Panel
     Contextualizes the Gantt without opening other files - the viewer is self-sufficient.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L277-290
+    src/export/gantt_interactive.py:L311-345 + L897-945
 
 
 RF-23.1: Project Summary
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Description**
-    Start, end, calendar duration, and resource count calculated during generation.
+    Start, end, calendar duration, resource count and efficiency indices calculated during generation.
 
 **Intention**
     High-level metrics a manager checks first upon opening the Gantt.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L277-285
+    src/export/gantt_interactive.py:L311-345
 
 
 RF-23.2: Raw Requirements Content
@@ -1851,7 +1864,7 @@ RF-23.2: Raw Requirements Content
     Allows verifying what settings generated the displayed schedule without leaving the page.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L287-290
+    src/export/gantt_interactive.py:L321-324
 
 
 Audit
@@ -1861,13 +1874,13 @@ RF-26: Transformation Trace Log
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Description**
-    The system must generate a JSON log with all graph mutations (zero-duration bridging and drawing consolidation).
+    The system must generate a JSON log (transformation_log.json) with all graph mutations (zero-duration task removal and drawing consolidation).
 
 **Intention**
     Automatic graph mutations hinder auditing - the log provides full transparency on why dates changed.
 
 **Source Traceability**
-    src/schedule/project.py:L37-41 + L230-239 + L300-311
+    src/schedule/project.py:L68-69 + L277-285 + L365-375 + simulate_project.py:L101-107
 
 
 Non-Functional Requirements
@@ -1931,30 +1944,30 @@ RNF-01.3: export/ Module
 Configuration
 ^^^^^^^^^^^^^
 
-RNF-02: Centralized Config via config.py
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+RNF-02: Centralized Config via src/config.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Description**
-    All paths and global parameters in config.py using pathlib.Path.
+    All paths and global parameters in src/config.py using pathlib.Path (src/config.py is the active config used by all modules).
 
 **Intention**
     A single point of change for adapting the project to a new directory structure.
 
 **Source Traceability**
-    config.py:L1-21
+    src/config.py:L1-26
 
 
 RNF-02.1: __file__ Derived BASE_DIR
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Description**
-    BASE_DIR = Path(__file__).parent - all paths derive from it.
+    BASE_DIR = Path(__file__).resolve().parent.parent - all paths derive from it.
 
 **Intention**
     Ensures operation independent of the Python process's working directory.
 
 **Source Traceability**
-    config.py:L8
+    src/config.py:L4
 
 
 RNF-02.2: Automatic OUTPUT_DIR Creation
@@ -1967,7 +1980,7 @@ RNF-02.2: Automatic OUTPUT_DIR Creation
     Zero-setup experience: the user does not need to create directories manually.
 
 **Source Traceability**
-    simulate_project.py:L32-35
+    simulate_project.py:L34-37
 
 
 RNF-02.3: Global DEBUG Flag
@@ -1980,7 +1993,7 @@ RNF-02.3: Global DEBUG Flag
     A single flag disables all prints without manually commenting each occurrence in the code.
 
 **Source Traceability**
-    config.py:L21
+    src/config.py:L18
 
 
 Compatibility
@@ -1996,7 +2009,7 @@ RNF-03: Legacy Format Backward Compatibility
     Existing projects do not need to migrate their project_config.json to continue working.
 
 **Source Traceability**
-    src/schedule/loader.py:L24-26
+    src/schedule/loader.py:L30-32
 
 
 Performance
@@ -2012,46 +2025,46 @@ RNF-04: O(log n) Scheduler with heapq
     Linear search alternative would be O(n) per event - for projects with hundreds of tasks, the difference is significant.
 
 **Source Traceability**
-    src/schedule/engine.py:L60-70
+    src/schedule/engine.py:L93-104
 
 
 RNF-10: Output Suppression in Analysis Loop
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Description**
-    redirect_stdout(os.devnull) during plot_resource_vs_duration iterations.
+    contextlib.redirect_stdout(io.StringIO()) during plot_resource_vs_duration iterations.
 
 **Intention**
     Without suppression, N runs × K prints = proportional noise that degrades terminal UX.
 
 **Source Traceability**
-    src/export/plot.py:L57-65
+    src/export/plot.py:L62
 
 
-RNF-16: Customization CSV Cache
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+RNF-16: Customization Dictionary Cache
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Description**
-    Customization CSVs are loaded into memory DataFrames at the start instead of reading from disk per task.
+    Customization CSVs are loaded into in-memory hash-map dictionaries (keyed by document_name or part_document_type) at boot instead of reading from disk per task.
 
 **Intention**
     With dozens of milestones and hundreds of tasks, repeated disk reads would degrade performance (I/O burst).
 
 **Source Traceability**
-    src/schedule/loader.py:L55-64 + L142-156
+    src/schedule/loader.py:L89-106
 
 
-RNF-21: Customization Lookup Cache
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+RNF-21: Customization Lookup via Hash Map
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Description**
-    Load all customization CSVs into dictionaries (hash maps) in memory during boot.
+    Customization CSVs are converted to dictionaries (hash maps) keyed by document_name/part_document_type
 
 **Intention**
-    Optimize processing speed, especially for Sensitivity Analysis (RF-15)
+     O(1) lookup per task per customization.
 
-**Source Traceability**
-    src/schedule/loader.py
+**Example**
+    ``Optimize processing speed, especially for Sensitivity Analysis (RF-15) which re-runs hundreds of times.``
 
 
 Distribution
@@ -2067,7 +2080,7 @@ RNF-05: Self-Contained HTML without Server
     Facilitates distribution via email or storage in shared drives without infrastructure.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L291-300 (self-contained HTML)
+    src/export/gantt_interactive.py:L1348-1354 (self-contained HTML write)
 
 
 Frontend
@@ -2083,7 +2096,7 @@ RNF-06: Framework-less Frontend
     Zero build dependencies on frontend: the generated HTML is immediately functional.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L298-300 (CDN links)
+    src/export/gantt_interactive.py:L354-356 (CDN links)
 
 
 Quality
@@ -2112,7 +2125,7 @@ RNF-07.1: No State Between Runs
     Side effects between runs would make results non-reproducible.
 
 **Source Traceability**
-    src/schedule/project.py:L16 (always new instance)
+    src/schedule/project.py:L18 (always new instance)
 
 
 RNF-07.2: Config-Based Start Date
@@ -2125,20 +2138,20 @@ RNF-07.2: Config-Based Start Date
     datetime.now() would produce different results per run, breaking idempotency.
 
 **Source Traceability**
-    src/schedule/project.py:L74-80
+    src/schedule/project.py:L109-116
 
 
 RNF-22: Business Time Validation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Description**
-    Validate if working_start < working_end and if durations are non-negative, emitting clear errors.
+    Validate if working_start < working_end and if durations are non-negative, raising ValueError with clear messages.
 
 **Intention**
     Prevent incoherent calendar settings from causing infinite loops or impossible dates
 
 **Source Traceability**
-    src/core/time_calc.py
+    src/core/time_calc.py:L53-56
 
 
 Resilience
@@ -2154,7 +2167,7 @@ RNF-08: Matplotlib Graceful Degradation
     CI/CD environments or headless servers should not fail due to a visualization dependency.
 
 **Source Traceability**
-    src/export/plot.py:L11-16
+    src/export/plot.py:L15-20
 
 
 Observability
@@ -2170,7 +2183,7 @@ RNF-09: Conditional Debug Output
     Silent production, verbose development — without code modification between the two.
 
 **Source Traceability**
-    config.py:L21 + (usage in all modules)
+    src/config.py:L18 + (usage in all modules)
 
 
 Robustness
@@ -2186,7 +2199,7 @@ RNF-11: Robust Numeric Parsing
     CSVs generated by Numbers/Excel frequently have formatting artifacts - the parser should not fail because of them.
 
 **Source Traceability**
-    src/core/models.py:L38-49 + src/schedule/loader.py:L78-81
+    src/core/models.py:L70-82 + src/schedule/loader.py:L154-159
 
 
 Extensibility
@@ -2205,7 +2218,7 @@ RNF-12: Extensible Customization via File
     ``electronic_equipment and door_position already listed with 'nok' status``
 
 **Source Traceability**
-    src/schedule/loader.py:L55-67 + src/export/csv_export.py:L6-31
+    src/schedule/loader.py:L71-111 + src/export/csv_export.py:L7-37
 
 
 Integrity
@@ -2221,7 +2234,7 @@ RNF-13: Global Task ID Uniqueness
     Duplicate IDs would cause collisions in the task map and incorrect Gantt display.
 
 **Source Traceability**
-    src/schedule/project.py:L36 + L150-154
+    src/schedule/project.py:L66 + L150-156
 
 
 RNF-14: Graph Reconstruction after Mutation
@@ -2234,20 +2247,20 @@ RNF-14: Graph Reconstruction after Mutation
     Outdated object references are the most common cause of silent bugs in mutable graphs.
 
 **Source Traceability**
-    src/schedule/project.py:L234-244 + L306-315
+    src/schedule/project.py:L304-315 + L403-412
 
 
-RNF-20: Transformation Audit Log
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+RNF-20: Transformation Audit Log (Text)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Description**
-    The system must generate audit.log detailing zero-duration removals (RF-08) and consolidations (RF-13).
+    The system generates audit.log (plain-text via Python logging) with INFO-level entries for each drawing consolidation and zero-duration task removal.
 
 **Intention**
-    Allow auditing and debugging of how the original graph was transformed into the final schedule
+    Complements the JSON trace log (RF-26) with a timestamped, human-readable audit trail.
 
 **Source Traceability**
-    src/core/logger.py
+    src/core/logger.py:L5-33 + src/schedule/project.py:L6 + L285 + L375
 
 
 UX/UI
@@ -2257,13 +2270,13 @@ RNF-15: HTML Dark Mode Visual Design
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Description**
-    Dark system design with Inter typography, subtle borders, hover transitions, and styled tooltips without external CSS.
+    Dark system design with Inter typography, subtle borders, hover transitions, styled tooltips, and light/dark theme toggle without external CSS.
 
 **Intention**
     Professional interface increases tool adoption by project managers.
 
 **Source Traceability**
-    src/export/gantt_interactive.py:L303-400 (CSS block)
+    src/export/gantt_interactive.py:L358-851 (CSS block)
 
 
 Documentation
@@ -2292,7 +2305,7 @@ RNF-18: Automated PDF Generation (Sphinx)
     Professionalize the deliverable and ensure technical documentation is always in sync with code
 
 **Source Traceability**
-    docs/conf.py + Makefile
+    docs/conf.py + docs/Makefile
 
 
 RNF-19: Requirements List Integration
@@ -2318,6 +2331,6 @@ RNF-23: User Manual (README/Markdown)
     Reduce the learning curve for new Project Managers utilizing the tool
 
 **Source Traceability**
-    README.md / docs/user_guide.md
+    README.md + docs/user_guide.md
 
 

@@ -141,3 +141,49 @@ The system automatically identifies "drawing" tasks for the same base part acros
 - **`output/resource_vs_duration.png`**: Sensitivity analysis showing how adding resources impacts the deadline.
 - **`output/transformation_log.json`**: An audit trail showing exactly which tasks were merged or removed.
 - **`output/*.mmd`**: Mermaid source files for inclusion in documentation or GitHub.
+
+---
+
+## 5. Developer Guide: Maintenance, Testing, and Documentation
+
+This section provides instructions for developers maintaining the Chrono Tailoring project.
+
+### 5.1. Running the Test Suite
+The project uses `pytest` for unit and integration testing. All tests are located in the `tests/` directory.
+
+To run the full test suite from the root of the project:
+```bash
+pytest
+```
+
+To run with verbose output:
+```bash
+pytest -v
+```
+
+To run a specific test module (for example, the time calculation rules):
+```bash
+pytest tests/unit/test_time_calc.py
+```
+
+### 5.2. Updating Requirements & Traceability
+The source of truth for the project's requirements and source-code implementation mapping is `input/system_specifications.csv`.
+
+When updating requirements or source code references:
+1. Edit the semicolon-delimited file `input/system_specifications.csv`.
+2. Regenerate the Sphinx RestructuredText file (`docs/requirements.rst`) by running the rendering script from the root directory:
+   ```bash
+   python scripts/render_requirements.py
+   ```
+
+### 5.3. Building the Sphinx Documentation
+Sphinx is used to compile the docstrings and Markdown/reST files into standard formats (like HTML).
+
+To compile the documentation as HTML:
+1. Ensure the required Python packages are installed (including `sphinx`, `myst_parser`, `sphinxcontrib-mermaid`, and `sphinx_rtd_theme`).
+2. Run `sphinx-build` from the project root:
+   ```bash
+   sphinx-build -b html docs docs/_build/html
+   ```
+3. Once the build completes, the static HTML files will be available inside `docs/_build/html/`. Open `index.html` in any web browser to view the documentation.
+

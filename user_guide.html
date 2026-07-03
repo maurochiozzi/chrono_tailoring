@@ -58,6 +58,12 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#understanding-outputs">4. Understanding Outputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#developer-guide-maintenance-testing-and-documentation">5. Developer Guide: Maintenance, Testing, and Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#running-the-test-suite">5.1. Running the Test Suite</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#updating-requirements-traceability">5.2. Updating Requirements &amp; Traceability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#building-the-sphinx-documentation">5.3. Building the Sphinx Documentation</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="requirements.html">System Specifications</a></li>
@@ -244,6 +250,54 @@ Example: If you have a row with <code class="docutils literal notranslate"><span
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">output/transformation_log.json</span></code></strong>: An audit trail showing exactly which tasks were merged or removed.</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">output/*.mmd</span></code></strong>: Mermaid source files for inclusion in documentation or GitHub.</p></li>
 </ul>
+</section>
+<hr class="docutils" />
+<section id="developer-guide-maintenance-testing-and-documentation">
+<h2>5. Developer Guide: Maintenance, Testing, and Documentation<a class="headerlink" href="#developer-guide-maintenance-testing-and-documentation" title="Link to this heading"></a></h2>
+<p>This section provides instructions for developers maintaining the Chrono Tailoring project.</p>
+<section id="running-the-test-suite">
+<h3>5.1. Running the Test Suite<a class="headerlink" href="#running-the-test-suite" title="Link to this heading"></a></h3>
+<p>The project uses <code class="docutils literal notranslate"><span class="pre">pytest</span></code> for unit and integration testing. All tests are located in the <code class="docutils literal notranslate"><span class="pre">tests/</span></code> directory.</p>
+<p>To run the full test suite from the root of the project:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest
+</pre></div>
+</div>
+<p>To run with verbose output:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>-v
+</pre></div>
+</div>
+<p>To run a specific test module (for example, the time calculation rules):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>tests/unit/test_time_calc.py
+</pre></div>
+</div>
+</section>
+<section id="updating-requirements-traceability">
+<h3>5.2. Updating Requirements &amp; Traceability<a class="headerlink" href="#updating-requirements-traceability" title="Link to this heading"></a></h3>
+<p>The source of truth for the project’s requirements and source-code implementation mapping is <code class="docutils literal notranslate"><span class="pre">input/system_specifications.csv</span></code>.</p>
+<p>When updating requirements or source code references:</p>
+<ol class="arabic">
+<li><p>Edit the semicolon-delimited file <code class="docutils literal notranslate"><span class="pre">input/system_specifications.csv</span></code>.</p></li>
+<li><p>Regenerate the Sphinx RestructuredText file (<code class="docutils literal notranslate"><span class="pre">docs/requirements.rst</span></code>) by running the rendering script from the root directory:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/render_requirements.py
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="building-the-sphinx-documentation">
+<h3>5.3. Building the Sphinx Documentation<a class="headerlink" href="#building-the-sphinx-documentation" title="Link to this heading"></a></h3>
+<p>Sphinx is used to compile the docstrings and Markdown/reST files into standard formats (like HTML).</p>
+<p>To compile the documentation as HTML:</p>
+<ol class="arabic">
+<li><p>Ensure the required Python packages are installed (including <code class="docutils literal notranslate"><span class="pre">sphinx</span></code>, <code class="docutils literal notranslate"><span class="pre">myst_parser</span></code>, <code class="docutils literal notranslate"><span class="pre">sphinxcontrib-mermaid</span></code>, and <code class="docutils literal notranslate"><span class="pre">sphinx_rtd_theme</span></code>).</p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">sphinx-build</span></code> from the project root:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sphinx-build<span class="w"> </span>-b<span class="w"> </span>html<span class="w"> </span>docs<span class="w"> </span>docs/_build/html
+</pre></div>
+</div>
+</li>
+<li><p>Once the build completes, the static HTML files will be available inside <code class="docutils literal notranslate"><span class="pre">docs/_build/html/</span></code>. Open <code class="docutils literal notranslate"><span class="pre">index.html</span></code> in any web browser to view the documentation.</p></li>
+</ol>
+</section>
 </section>
 </section>
 

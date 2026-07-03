@@ -145,6 +145,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#export">Export</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#rf-12-6a-critical-path-csv-export">RF-12.6a: Critical Path CSV Export</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#rf-14-task-export-to-csv">RF-14: Task Export to CSV</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#rf-14-1-fixed-csv-fields">RF-14.1: Fixed CSV Fields</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#rf-14-2-dynamic-customization-columns">RF-14.2: Dynamic Customization Columns</a></li>
@@ -195,11 +196,11 @@
 <li class="toctree-l4"><a class="reference internal" href="#rf-20-1-non-working-day-background">RF-20.1: Non-Working Day Background</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#rf-20-2-css-styling-holiday-bg">RF-20.2: CSS Styling (holiday-bg)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#rf-21-resource-histogram">RF-21: Resource Histogram</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#rf-21-1-1-1-events-per-task">RF-21.1: +1/-1 events per Task</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#rf-21-2-sequential-event-processing">RF-21.2: Sequential Event Processing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#rf-21-3-double-points-for-step-chart">RF-21.3: Double Points for Step Chart</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-21-1-5-minute-frame-sampling">RF-21.1: 5-minute Frame Sampling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-21-2-sequential-frame-processing">RF-21.2: Sequential Frame Processing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-21-3-vis-graph2d-bar-chart">RF-21.3: Vis.Graph2d Bar Chart</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#rf-21-4-y-axis-label-with-resource-limit">RF-21.4: Y-axis Label with Resource Limit</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#rf-21-5-resource-limit-reference-line">RF-21.5: Resource Limit Reference Line</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rf-21-5-resource-alloc-graph">RF-21.5: Resource Alloc % Graph</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#rf-23-sidebar-summary-and-requirements-panel">RF-23: Sidebar Summary and Requirements Panel</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#rf-23-1-project-summary">RF-23.1: Project Summary</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#rf-23-2-raw-requirements-content">RF-23.2: Raw Requirements Content</a></li>
@@ -220,7 +221,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#id1">Configuration</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#rnf-02-centralized-config-via-config-py">RNF-02: Centralized Config via config.py</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-02-centralized-config-via-src-config-py">RNF-02: Centralized Config via src/config.py</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#rnf-02-1-file-derived-base-dir">RNF-02.1: __file__ Derived BASE_DIR</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#rnf-02-2-automatic-output-dir-creation">RNF-02.2: Automatic OUTPUT_DIR Creation</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#rnf-02-3-global-debug-flag">RNF-02.3: Global DEBUG Flag</a></li>
@@ -233,8 +234,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#performance">Performance</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#rnf-04-o-log-n-scheduler-with-heapq">RNF-04: O(log n) Scheduler with heapq</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#rnf-10-output-suppression-in-analysis-loop">RNF-10: Output Suppression in Analysis Loop</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#rnf-16-customization-csv-cache">RNF-16: Customization CSV Cache</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#rnf-21-customization-lookup-cache">RNF-21: Customization Lookup Cache</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-16-customization-dictionary-cache">RNF-16: Customization Dictionary Cache</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-21-customization-lookup-via-hash-map">RNF-21: Customization Lookup via Hash Map</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#distribution">Distribution</a><ul>
@@ -271,7 +272,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#integrity">Integrity</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#rnf-13-global-task-id-uniqueness">RNF-13: Global Task ID Uniqueness</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#rnf-14-graph-reconstruction-after-mutation">RNF-14: Graph Reconstruction after Mutation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#rnf-20-transformation-audit-log">RNF-20: Transformation Audit Log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rnf-20-transformation-audit-log-text">RNF-20: Transformation Audit Log (Text)</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#ux-ui">UX/UI</a><ul>
@@ -329,7 +330,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Centralize all project configuration in a single human-readable file, facilitating changes without touching the code.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L10-37</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L11-44</p>
 </dd>
 </dl>
 </section>
@@ -340,7 +341,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Allow the configuration file to evolve with extra fields without breaking the structure.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L28-30</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L34-37</p>
 </dd>
 </dl>
 </section>
@@ -351,7 +352,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Ensure that projects configured before the introduction of the settings block continue to work without forced migration.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L24-26</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L30-32</p>
 </dd>
 </dl>
 </section>
@@ -364,7 +365,7 @@
 </dd>
 <dt><strong>Example</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">project_start_date:</span> <span class="pre">2026-02-08,</span> <span class="pre">num_resources:</span> <span class="pre">2</span></code></p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L31-32 + src/schedule/project.py:L74-80</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L61-62 + src/schedule/project.py:L109-116</p>
 </dd>
 </dl>
 </section>
@@ -375,7 +376,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Avoid silent crashes or exposing stack traces to the end user in case of misconfiguration.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L32-37</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L39-44</p>
 </dd>
 </dl>
 </section>
@@ -389,7 +390,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Decouple the task structure definition from the code, allowing tasks to be added/removed by editing only the CSV.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L69-136</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L114-191</p>
 </dd>
 </dl>
 </section>
@@ -400,7 +401,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Ensure the loader knows exactly which columns to look for, making the read deterministic.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/core/models.py:L14-35</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/core/models.py:L47-67</p>
 </dd>
 </dl>
 </section>
@@ -413,7 +414,7 @@
 </dd>
 <dt><strong>Example</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">std_duration=150</span> <span class="pre">-&gt;</span> <span class="pre">150</span> <span class="pre">minutes</span></code></p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L101-105</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L154-159</p>
 </dd>
 </dl>
 </section>
@@ -435,7 +436,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Materializing object references facilitates graph traversal without repetitive lookups in the ID map.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L117-128</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L171-183</p>
 </dd>
 </dl>
 </section>
@@ -446,7 +447,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Reduce memory allocations and ensure object identity among tasks of the same type.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/core/models.py:L4-7 + src/schedule/loader.py:L83-93</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/core/models.py:L7-16 + src/schedule/loader.py:L136-144</p>
 </dd>
 </dl>
 </section>
@@ -457,7 +458,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Detecting missing customization files before running avoids silent duration=None errors.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:6-31</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:L7-37</p>
 </dd>
 </dl>
 </section>
@@ -468,7 +469,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Clear separation between what is available and what is missing, traceable in the CSV itself.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:L18-21</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:L23-27</p>
 </dd>
 </dl>
 </section>
@@ -479,7 +480,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Keeps the overview always synced with the real file system state.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:L21-26</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:L29-30</p>
 </dd>
 </dl>
 </section>
@@ -490,7 +491,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Pandas generates ghost columns if the CSV has extra delimiters - removing them avoids corruption.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:L14-15</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:L19-20</p>
 </dd>
 </dl>
 </section>
@@ -501,7 +502,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Externalizing holidays allows annual updates without code modification, and Set ensures O(1) lookup.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L39-53</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L46-68</p>
 </dd>
 </dl>
 </section>
@@ -512,7 +513,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Minimalist format readable by humans and without complex parsing library dependency.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L43-49</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L59-62</p>
 </dd>
 </dl>
 </section>
@@ -523,7 +524,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>A poorly formatted holiday should not invalidate all others.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L49</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L63-64</p>
 </dd>
 </dl>
 </section>
@@ -548,7 +549,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Each milestone represents a distinct product/deliverable that needs its own execution plan without interfering with others.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L16-98</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L83-93</p>
 </dd>
 </dl>
 </section>
@@ -603,7 +604,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Allows filtering and grouping tasks by milestone in visualization and export.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L135-137 + src/core/models.py:L96-104</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L135-137 + src/core/models.py:L131-144</p>
 </dd>
 </dl>
 </section>
@@ -614,7 +615,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Without re-wiring, clones would point to tasks from another milestone, creating incorrect cross-milestone dependencies.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L160-179 + src/core/models.py:L83-93</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L160-179 + src/core/models.py:L117-128</p>
 </dd>
 </dl>
 </section>
@@ -715,7 +716,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Prevents the scheduler from allocating a resource slot for a task with no real work.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L280-284</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L359-377</p>
 </dd>
 </dl>
 </section>
@@ -726,7 +727,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Preserves the logical dependency chain even with the eliminated task, avoiding graph gaps.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L294-304</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L387-401</p>
 </dd>
 </dl>
 </section>
@@ -748,7 +749,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Manufacturing project planning needs real work dates, not simple calendar time.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/core/time_calc.py:L19-95</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/core/time_calc.py:L29-118</p>
 </dd>
 </dl>
 </section>
@@ -759,7 +760,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Companies with shifts different from the 8-16 standard can adjust without modifying code.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/core/time_calc.py:L4-7 + src/schedule/project.py:L31-32</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/core/time_calc.py:L5-7 + src/schedule/project.py:L61-62</p>
 </dd>
 </dl>
 </section>
@@ -781,7 +782,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Avoids tasks being scheduled outside hours, which would produce impossible end_dates.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/core/time_calc.py:L46-51</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/core/time_calc.py:L66-72</p>
 </dd>
 </dl>
 </section>
@@ -816,7 +817,7 @@
 </dd>
 <dt><strong>Example</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">Task</span> <span class="pre">starts</span> <span class="pre">3PM</span> <span class="pre">with</span> <span class="pre">120min</span> <span class="pre">-&gt;</span> <span class="pre">ends</span> <span class="pre">9AM</span> <span class="pre">next</span> <span class="pre">working</span> <span class="pre">day</span></code></p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/core/time_calc.py:L60-93</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/core/time_calc.py:L86-116</p>
 </dd>
 </dl>
 </section>
@@ -827,7 +828,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Zero-duration tasks (milestones) should not modify the scheduler’s time pointer.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/core/time_calc.py:L37-38</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/core/time_calc.py:L58-59</p>
 </dd>
 </dl>
 </section>
@@ -849,7 +850,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Dispatch always chooses the task that can start earliest, maximizing resource utilization.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L60-70</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L93-104</p>
 </dd>
 </dl>
 </section>
@@ -860,7 +861,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Allows efficiently detecting when a resource slot becomes free without scanning the entire list.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L73-74</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L107-108</p>
 </dd>
 </dl>
 </section>
@@ -871,7 +872,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Event-driven: the scheduler only processes when something changes, avoiding unnecessary polling.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L77-90</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L111-119</p>
 </dd>
 </dl>
 </section>
@@ -882,7 +883,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Without this block, the scheduler would ignore the resource constraint.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L81-83</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L116-117 + L148</p>
 </dd>
 </dl>
 </section>
@@ -893,7 +894,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Ensures the task only starts after all predecessors are finished AND after there is a resource slot.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L121-127</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L156-161</p>
 </dd>
 </dl>
 </section>
@@ -915,7 +916,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Defense-in-depth against graph edge cases that might leave tasks unscheduled.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L133-136</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L167-171</p>
 </dd>
 </dl>
 </section>
@@ -939,7 +940,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Classic O(V+E) algorithm for cycle detection in DAGs.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L24-43</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L56-76</p>
 </dd>
 </dl>
 </section>
@@ -950,7 +951,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Facilitates diagnosis: the developer knows the extent of the cycle without manual graph inspection.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L44-46</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L77-79</p>
 </dd>
 </dl>
 </section>
@@ -961,7 +962,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>The critical path determines the minimum project duration, identifying it allows focusing optimization efforts.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L138-181</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L173-220</p>
 </dd>
 </dl>
 </section>
@@ -972,7 +973,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Reference for the backward pass - without it, there’s no way to calculate relative slacks.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L141</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L176</p>
 </dd>
 </dl>
 </section>
@@ -983,7 +984,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Terminal tasks are anchor points from which slacks are propagated.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L143-147</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L179-182</p>
 </dd>
 </dl>
 </section>
@@ -994,7 +995,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>The minimum ensures the predecessor cannot end later than what the children’s earliest start requires.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L162-175</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L197-211</p>
 </dd>
 </dl>
 </section>
@@ -1005,7 +1006,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Minutes unit is consistent with duration_minutes, facilitating comparisons.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L178-179</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L215-216</p>
 </dd>
 </dl>
 </section>
@@ -1016,7 +1017,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Boolean flag used by Gantt to render red arrows without reprocessing the graph.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L179-180</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L217</p>
 </dd>
 </dl>
 </section>
@@ -1027,7 +1028,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Chronological order facilitates export to CSV and sequential rendering on the Gantt.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L182</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L219-220</p>
 </dd>
 </dl>
 </section>
@@ -1038,7 +1039,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>In practice, a part’s drawing is done once - duplicating per variant artificially inflates the schedule.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L183-244</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L245-315</p>
 </dd>
 </dl>
 </section>
@@ -1049,7 +1050,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Other task types are variant-specific and should not be consolidated.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L187-188</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L250-251</p>
 </dd>
 </dl>
 </section>
@@ -1060,7 +1061,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>7XXXX part_numbers are milestone markers, not physical parts - consolidating them would distort the hierarchy.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L188-190</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L251-253</p>
 </dd>
 </dl>
 </section>
@@ -1071,7 +1072,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Consolidating a task with itself would generate an unnecessary replacement task.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L198-199</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L258-259</p>
 </dd>
 </dl>
 </section>
@@ -1082,7 +1083,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Accumulated duration and full time span are the truest representation of real drawing effort.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L204-213</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L261-285</p>
 </dd>
 </dl>
 </section>
@@ -1093,7 +1094,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Must occur before removal so that no pointers remain dangling.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L220-228</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L289-297</p>
 </dd>
 </dl>
 </section>
@@ -1104,7 +1105,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Array mutation done in a separate phase to not interfere with Phase 1 traversal.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L230-232</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L299-302</p>
 </dd>
 </dl>
 </section>
@@ -1115,7 +1116,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Ensures all object references are consistent after Phase 1 and 2 substitutions.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L234-244</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L304-315</p>
 </dd>
 </dl>
 </section>
@@ -1129,7 +1130,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Products of the same family can share most customizations but differ in specific details per variant.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L246-315</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L318-384</p>
 </dd>
 </dl>
 </section>
@@ -1142,7 +1143,7 @@
 </dd>
 <dt><strong>Example</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">color:</span> <span class="pre">red</span> <span class="pre">applies</span> <span class="pre">to</span> <span class="pre">entire</span> <span class="pre">70015</span></code></p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L260-263</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L338-341</p>
 </dd>
 </dl>
 </section>
@@ -1166,7 +1167,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Avoids unnecessary configuration repetition for variants that do not differ from the default.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L260-263</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L338-341</p>
 </dd>
 </dl>
 </section>
@@ -1177,7 +1178,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Ensure the list of customization types is complete before processing any duration.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L47-65</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L82-100</p>
 </dd>
 </dl>
 </section>
@@ -1188,7 +1189,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Separate customization data from source code allows managers to update durations without programming.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L138-172</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L193-231</p>
 </dd>
 </dl>
 </section>
@@ -1201,7 +1202,7 @@
 </dd>
 <dt><strong>Example</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">customization_color.csv</span></code></p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L55-67 + src/core/models.py:L9-12</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L71-111 + src/core/models.py:L18-30</p>
 </dd>
 </dl>
 </section>
@@ -1212,7 +1213,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Allows lookup either by specific name (granular) or generic type.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L154-158</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L215-217</p>
 </dd>
 </dl>
 </section>
@@ -1225,7 +1226,7 @@
 </dd>
 <dt><strong>Example</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">drawing_st,</span> <span class="pre">part_model_st</span></code></p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L148-151</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L213 + L221-222</p>
 </dd>
 </dl>
 </section>
@@ -1271,7 +1272,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Ensure no duration source is discarded before comparison.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L276-278</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L330-353</p>
 </dd>
 </dl>
 </section>
@@ -1282,7 +1283,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Simple, auditable rule without ambiguity.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L278-286</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L358</p>
 </dd>
 </dl>
 </section>
@@ -1293,32 +1294,43 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Tasks not affected by customizations should not have their durations accidentally changed.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L276-288</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L356 + L380-381</p>
 </dd>
 </dl>
 </section>
 </section>
 <section id="export">
 <h3>Export<a class="headerlink" href="#export" title="Link to this heading"></a></h3>
+<section id="rf-12-6a-critical-path-csv-export">
+<h4>RF-12.6a: Critical Path CSV Export<a class="headerlink" href="#rf-12-6a-critical-path-csv-export" title="Link to this heading"></a></h4>
+<dl class="simple">
+<dt><strong>Description</strong></dt><dd><p>Critical path tasks (is_critical=True / slack=0) exported to critical_path.csv.</p>
+</dd>
+<dt><strong>Intention</strong></dt><dd><p>Dedicated CSV allows managers to quickly review and share the project’s critical path without filtering.</p>
+</dd>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:L95-123 + simulate_project.py:L47-49</p>
+</dd>
+</dl>
+</section>
 <section id="rf-14-task-export-to-csv">
 <h4>RF-14: Task Export to CSV<a class="headerlink" href="#rf-14-task-export-to-csv" title="Link to this heading"></a></h4>
 <dl class="simple">
-<dt><strong>Description</strong></dt><dd><p>All final tasks exported to exported_tasks.csv.</p>
+<dt><strong>Description</strong></dt><dd><p>All final tasks exported to exported_tasks.csv including Is Critical and Slack columns.</p>
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Provides an auditable artifact importable by external tools (Excel, BI) of the final schedule state.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:L34-81</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:L40-92</p>
 </dd>
 </dl>
 </section>
 <section id="rf-14-1-fixed-csv-fields">
 <h4>RF-14.1: Fixed CSV Fields<a class="headerlink" href="#rf-14-1-fixed-csv-fields" title="Link to this heading"></a></h4>
 <dl class="simple">
-<dt><strong>Description</strong></dt><dd><p>Task ID, Part Number, Task Name, Task Type Description, Strategy, Duration (min), Start Date, End Date, Predecessors, Successors, Variant Name, Milestone ID.</p>
+<dt><strong>Description</strong></dt><dd><p>Task ID, Part Number, Task Name, Task Type Description, Strategy, Duration (min), Start Date, End Date, Predecessors, Successors, Variant Name, Milestone ID, Is Critical, Slack (min).</p>
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Minimum set to track each task and reconstruct the dependency graph.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:L47-58</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:L57-78</p>
 </dd>
 </dl>
 </section>
@@ -1331,7 +1343,7 @@
 </dd>
 <dt><strong>Example</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">Customization_color,</span> <span class="pre">Customization_length</span></code></p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:L40-43 + L69-72</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:L49-53 + L81-83</p>
 </dd>
 </dl>
 </section>
@@ -1342,7 +1354,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Consolidated tasks belong to multiple milestones - assigning a single one would be incorrect.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:L62-66</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:L74-78</p>
 </dd>
 </dl>
 </section>
@@ -1353,7 +1365,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Ambiguity-safe ISO format readable by humans and importable by pandas/Excel without extra config.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:L54-55</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/csv_export.py:L65-66</p>
 </dd>
 </dl>
 </section>
@@ -1364,7 +1376,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Mermaid diagrams are renderable in Markdown (GitHub, Notion, Obsidian) without extra tools.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/mermaid.py:L7-351</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/mermaid.py:L7-382</p>
 </dd>
 </dl>
 </section>
@@ -1375,7 +1387,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Granular view for detailed dependency analysis between individual tasks.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/mermaid.py:L19-64</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/mermaid.py:L30-64</p>
 </dd>
 </dl>
 </section>
@@ -1452,7 +1464,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>A single HTML file can be shared without needing a server, facilitating distribution.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L51-290</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L51-1354</p>
 </dd>
 </dl>
 </section>
@@ -1463,7 +1475,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Self-contained: works offline and in any browser without external API calls.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L110-192</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L302-309 + L966-976</p>
 </dd>
 </dl>
 </section>
@@ -1474,7 +1486,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Visually groups all instances of a task across different milestones into the same row.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L89-108</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L102-114</p>
 </dd>
 </dl>
 </section>
@@ -1485,7 +1497,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Immediate visual distinction of bars belonging to each product/deliverable.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:76-87</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L88-92</p>
 </dd>
 </dl>
 </section>
@@ -1496,7 +1508,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Generator function reusability for different projects without changing the source.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L51-60</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L52-60</p>
 </dd>
 </dl>
 </section>
@@ -1507,7 +1519,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Allows the user to save a filtered schedule snapshot without server file system access.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L636-643 (HTML buttons)</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L866-868 (HTML buttons)</p>
 </dd>
 </dl>
 </section>
@@ -1518,7 +1530,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>JSON preserves all structured metadata and is readable by any programming language.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L716-726 (JS exportJSON)</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L1292-1302</p>
 </dd>
 </dl>
 </section>
@@ -1529,7 +1541,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>CSV is importable directly by Excel, facilitating analysis by non-technical users.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L728-743 (JS exportCSV)</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L1304-1315</p>
 </dd>
 </dl>
 </section>
@@ -1540,7 +1552,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Avoids re-export browser processing - all data for export is already in each item object.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L181-191</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L186-198</p>
 </dd>
 </dl>
 </section>
@@ -1554,7 +1566,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Allows the manager to identify the point of diminishing returns in adding resources, optimizing cost vs. deadline.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/plot.py:L18-98</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/plot.py:L22-159</p>
 </dd>
 </dl>
 </section>
@@ -1576,7 +1588,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Avoid recreating the schedule from scratch in each iteration significantly reduces I/O and CPU time.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/plot.py:L38-43 + L56-65</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/plot.py:L46 + L63-70</p>
 </dd>
 </dl>
 </section>
@@ -1587,7 +1599,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>The loop runs N times - without suppression, the terminal would be flooded with repetitive output.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/plot.py:L57-65</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/plot.py:L62</p>
 </dd>
 </dl>
 </section>
@@ -1598,18 +1610,18 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Minutes are more accurate than days for comparing small differences between resource scenarios.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/plot.py:L69-73</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/plot.py:L75</p>
 </dd>
 </dl>
 </section>
 <section id="rf-15-5-exported-matplotlib-graph">
 <h4>RF-15.5: Exported Matplotlib Graph<a class="headerlink" href="#rf-15-5-exported-matplotlib-graph" title="Link to this heading"></a></h4>
 <dl class="simple">
-<dt><strong>Description</strong></dt><dd><p>resource_vs_duration.png with X-axis=resources, Y-axis=minutes, markers, and grid.</p>
+<dt><strong>Description</strong></dt><dd><p>resource_vs_duration.png with X-axis=resources, Y-axis=minutes, markers, dual-axis gain%, and grid.</p>
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Immediate visualization of the efficiency curve, faster to interpret than a table of numbers.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/plot.py:L79-93</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/plot.py:L85-159</p>
 </dd>
 </dl>
 </section>
@@ -1620,7 +1632,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Headless environments or minimal setups should not be blocked by an optional visualization dependency.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/plot.py:L95-98</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/plot.py:L15-20</p>
 </dd>
 </dl>
 </section>
@@ -1634,7 +1646,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>In projects with many milestones and types, the full view is dense - filters allow focusing on relevant subsets.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L745-755 (JS filterItems)</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L1206-1281</p>
 </dd>
 </dl>
 </section>
@@ -1645,7 +1657,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Allows comparing only selected milestones side-by-side on the same timeline.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L652-658 (HTML sidebar)</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L1225-1243</p>
 </dd>
 </dl>
 </section>
@@ -1656,7 +1668,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Allows focusing on only ‘release’ tasks to review delivery points, for example.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L661-668 (HTML sidebar)</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L1245-1263</p>
 </dd>
 </dl>
 </section>
@@ -1667,7 +1679,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>AND logic avoids displaying partially filtered items and maintains visual consistency.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L746-748 (JS)</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L1207-1222</p>
 </dd>
 </dl>
 </section>
@@ -1678,7 +1690,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Immediate user feedback on how many items are visible after applying filters.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L754-755 (JS)</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L987-988</p>
 </dd>
 </dl>
 </section>
@@ -1689,7 +1701,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Invisible dependencies make it hard to identify the critical path and impact of delays.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L113-197</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L157-171 + L976</p>
 </dd>
 </dl>
 </section>
@@ -1700,29 +1712,29 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>The critical path is the most actionable project info - must be immediately visible.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L152-158</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L157-164</p>
 </dd>
 </dl>
 </section>
 <section id="rf-19-2-gray-non-critical-arrows">
 <h4>RF-19.2: Gray Non-Critical Arrows<a class="headerlink" href="#rf-19-2-gray-non-critical-arrows" title="Link to this heading"></a></h4>
 <dl class="simple">
-<dt><strong>Description</strong></dt><dd><p>All other dependencies are gray (#6b728e).</p>
+<dt><strong>Description</strong></dt><dd><p>All other dependencies are gray.</p>
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Keeps the critical path highlighted while still providing full dependency context.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L160-165</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L166-171</p>
 </dd>
 </dl>
 </section>
 <section id="rf-19-3-non-critical-arrow-toggle">
 <h4>RF-19.3: Non-Critical Arrow Toggle<a class="headerlink" href="#rf-19-3-non-critical-arrow-toggle" title="Link to this heading"></a></h4>
 <dl class="simple">
-<dt><strong>Description</strong></dt><dd><p>‘Show Task Arrows’ checkbox in sidebar controls gray arrow visibility.</p>
+<dt><strong>Description</strong></dt><dd><p>‘showAllTaskArrows’ flag and state toggle controls gray arrow visibility.</p>
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>In dense projects, many arrows clutter the view - the toggle allows clearing it without losing the critical path.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L700-703 (JS toggle handler)</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L981</p>
 </dd>
 </dl>
 </section>
@@ -1733,7 +1745,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Without redrawing, arrows would stay in place while bars move with pan/zoom.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L875-885 (JS event listeners)</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L1139-1157</p>
 </dd>
 </dl>
 </section>
@@ -1744,7 +1756,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Bezier curve avoids bar overlap and is more readable than straight lines.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:820-850 (JS drawArrow)</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L157-171 (JS drawArrow)</p>
 </dd>
 </dl>
 </section>
@@ -1755,7 +1767,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Makes it immediate for the user why certain bars skip days, avoiding gap misinterpretation.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L199-219</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L206-226</p>
 </dd>
 </dl>
 </section>
@@ -1766,7 +1778,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Vis.js supports background items natively - the approach is idiomatic and performant.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L209-218</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L215-225</p>
 </dd>
 </dl>
 </section>
@@ -1777,73 +1789,73 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Separates data from presentation - color can be changed without modifying the Python generator.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L302-304 (CSS .holiday-bg)</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L222-224 (className: ‘holiday-bg’)</p>
 </dd>
 </dl>
 </section>
 <section id="rf-21-resource-histogram">
 <h4>RF-21: Resource Histogram<a class="headerlink" href="#rf-21-resource-histogram" title="Link to this heading"></a></h4>
 <dl class="simple">
-<dt><strong>Description</strong></dt><dd><p>Step chart below the timeline showing active tasks over time.</p>
+<dt><strong>Description</strong></dt><dd><p>5-minute frame bar chart below the timeline showing active task load over time via vis.Graph2d.</p>
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Allows visualizing allocation bottlenecks: peaks above the resource limit indicate potential conflict.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L247-266</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L254-300 + L1025-1081</p>
 </dd>
 </dl>
 </section>
-<section id="rf-21-1-1-1-events-per-task">
-<h4>RF-21.1: +1/-1 events per Task<a class="headerlink" href="#rf-21-1-1-1-events-per-task" title="Link to this heading"></a></h4>
+<section id="rf-21-1-5-minute-frame-sampling">
+<h4>RF-21.1: 5-minute Frame Sampling<a class="headerlink" href="#rf-21-1-5-minute-frame-sampling" title="Link to this heading"></a></h4>
 <dl class="simple">
-<dt><strong>Description</strong></dt><dd><p>init_date generates +1 and end_date generates -1 in the time series.</p>
+<dt><strong>Description</strong></dt><dd><p>Tasks are mapped to 5-minute frames</p>
 </dd>
-<dt><strong>Intention</strong></dt><dd><p>Efficient sweep-line model to calculate load without iterating over all timesteps.</p>
+<dt><strong>Intention</strong></dt><dd><p>overlap minutes are accumulated per frame.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L249-252</p>
+<dt><strong>Example</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">Fine-grained</span> <span class="pre">5-min</span> <span class="pre">resolution</span> <span class="pre">captures</span> <span class="pre">intra-day</span> <span class="pre">load</span> <span class="pre">spikes</span> <span class="pre">missed</span> <span class="pre">by</span> <span class="pre">event-only</span> <span class="pre">approaches.</span></code></p>
 </dd>
 </dl>
 </section>
-<section id="rf-21-2-sequential-event-processing">
-<h4>RF-21.2: Sequential Event Processing<a class="headerlink" href="#rf-21-2-sequential-event-processing" title="Link to this heading"></a></h4>
+<section id="rf-21-2-sequential-frame-processing">
+<h4>RF-21.2: Sequential Frame Processing<a class="headerlink" href="#rf-21-2-sequential-frame-processing" title="Link to this heading"></a></h4>
 <dl class="simple">
-<dt><strong>Description</strong></dt><dd><p>Events sorted and processed to accumulate current load.</p>
+<dt><strong>Description</strong></dt><dd><p>Frames sorted and accumulated into a resource_data JSON array.</p>
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Ordered processing ensures load never becomes negative or incorrect.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L253-257</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L293-300</p>
 </dd>
 </dl>
 </section>
-<section id="rf-21-3-double-points-for-step-chart">
-<h4>RF-21.3: Double Points for Step Chart<a class="headerlink" href="#rf-21-3-double-points-for-step-chart" title="Link to this heading"></a></h4>
+<section id="rf-21-3-vis-graph2d-bar-chart">
+<h4>RF-21.3: Vis.Graph2d Bar Chart<a class="headerlink" href="#rf-21-3-vis-graph2d-bar-chart" title="Link to this heading"></a></h4>
 <dl class="simple">
-<dt><strong>Description</strong></dt><dd><p>Two points (old and new value) emitted per event to force step visualization.</p>
+<dt><strong>Description</strong></dt><dd><p>resource_data rendered as Graph2d bar chart (style:’bar’) with 50px bar width.</p>
 </dd>
-<dt><strong>Intention</strong></dt><dd><p>Vis.js interpolates by default - the double point makes the curve a perfect step faithful to discrete allocation.</p>
+<dt><strong>Intention</strong></dt><dd><p>Bar chart is more readable than a line for discrete 5-min buckets.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L261-266</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L1025-1046</p>
 </dd>
 </dl>
 </section>
 <section id="rf-21-4-y-axis-label-with-resource-limit">
 <h4>RF-21.4: Y-axis Label with Resource Limit<a class="headerlink" href="#rf-21-4-y-axis-label-with-resource-limit" title="Link to this heading"></a></h4>
 <dl class="simple">
-<dt><strong>Description</strong></dt><dd><p>Y-axis displays ‘Active Tasks (limit: N)’ where N is total_resources.</p>
+<dt><strong>Description</strong></dt><dd><p>Overlay HTML div added with ‘Active Tasks (max: N)’ label.</p>
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Without the explicit limit, the user would need external knowledge to interpret the graph.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L797-799 (JS Graph2d options)</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L1080</p>
 </dd>
 </dl>
 </section>
-<section id="rf-21-5-resource-limit-reference-line">
-<h4>RF-21.5: Resource Limit Reference Line<a class="headerlink" href="#rf-21-5-resource-limit-reference-line" title="Link to this heading"></a></h4>
+<section id="rf-21-5-resource-alloc-graph">
+<h4>RF-21.5: Resource Alloc % Graph<a class="headerlink" href="#rf-21-5-resource-alloc-graph" title="Link to this heading"></a></h4>
 <dl class="simple">
-<dt><strong>Description</strong></dt><dd><p>Horizontal line at the total_resources value displayed in the graph.</p>
+<dt><strong>Description</strong></dt><dd><p>Second vis.Graph2d chart shows resource utilization as percentage of TOTAL_RESOURCES.</p>
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Immediate visual reference of where parallelism ceiling is exceeded.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L809-814 (JS setCustomTime)</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L1048-1068</p>
 </dd>
 </dl>
 </section>
@@ -1854,18 +1866,18 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Contextualizes the Gantt without opening other files - the viewer is self-sufficient.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L277-290</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L311-345 + L897-945</p>
 </dd>
 </dl>
 </section>
 <section id="rf-23-1-project-summary">
 <h4>RF-23.1: Project Summary<a class="headerlink" href="#rf-23-1-project-summary" title="Link to this heading"></a></h4>
 <dl class="simple">
-<dt><strong>Description</strong></dt><dd><p>Start, end, calendar duration, and resource count calculated during generation.</p>
+<dt><strong>Description</strong></dt><dd><p>Start, end, calendar duration, resource count and efficiency indices calculated during generation.</p>
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>High-level metrics a manager checks first upon opening the Gantt.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L277-285</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L311-345</p>
 </dd>
 </dl>
 </section>
@@ -1876,7 +1888,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Allows verifying what settings generated the displayed schedule without leaving the page.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L287-290</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L321-324</p>
 </dd>
 </dl>
 </section>
@@ -1886,11 +1898,11 @@
 <section id="rf-26-transformation-trace-log">
 <h4>RF-26: Transformation Trace Log<a class="headerlink" href="#rf-26-transformation-trace-log" title="Link to this heading"></a></h4>
 <dl class="simple">
-<dt><strong>Description</strong></dt><dd><p>The system must generate a JSON log with all graph mutations (zero-duration bridging and drawing consolidation).</p>
+<dt><strong>Description</strong></dt><dd><p>The system must generate a JSON log (transformation_log.json) with all graph mutations (zero-duration task removal and drawing consolidation).</p>
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Automatic graph mutations hinder auditing - the log provides full transparency on why dates changed.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L37-41 + L230-239 + L300-311</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L68-69 + L277-285 + L365-375 + simulate_project.py:L101-107</p>
 </dd>
 </dl>
 </section>
@@ -1947,25 +1959,25 @@
 </section>
 <section id="id1">
 <h3>Configuration<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
-<section id="rnf-02-centralized-config-via-config-py">
-<h4>RNF-02: Centralized Config via config.py<a class="headerlink" href="#rnf-02-centralized-config-via-config-py" title="Link to this heading"></a></h4>
+<section id="rnf-02-centralized-config-via-src-config-py">
+<h4>RNF-02: Centralized Config via src/config.py<a class="headerlink" href="#rnf-02-centralized-config-via-src-config-py" title="Link to this heading"></a></h4>
 <dl class="simple">
-<dt><strong>Description</strong></dt><dd><p>All paths and global parameters in config.py using pathlib.Path.</p>
+<dt><strong>Description</strong></dt><dd><p>All paths and global parameters in src/config.py using pathlib.Path (src/config.py is the active config used by all modules).</p>
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>A single point of change for adapting the project to a new directory structure.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>config.py:L1-21</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/config.py:L1-26</p>
 </dd>
 </dl>
 </section>
 <section id="rnf-02-1-file-derived-base-dir">
 <h4>RNF-02.1: __file__ Derived BASE_DIR<a class="headerlink" href="#rnf-02-1-file-derived-base-dir" title="Link to this heading"></a></h4>
 <dl class="simple">
-<dt><strong>Description</strong></dt><dd><p>BASE_DIR = Path(__file__).parent - all paths derive from it.</p>
+<dt><strong>Description</strong></dt><dd><p>BASE_DIR = Path(__file__).resolve().parent.parent - all paths derive from it.</p>
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Ensures operation independent of the Python process’s working directory.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>config.py:L8</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/config.py:L4</p>
 </dd>
 </dl>
 </section>
@@ -1976,7 +1988,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Zero-setup experience: the user does not need to create directories manually.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>simulate_project.py:L32-35</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>simulate_project.py:L34-37</p>
 </dd>
 </dl>
 </section>
@@ -1987,7 +1999,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>A single flag disables all prints without manually commenting each occurrence in the code.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>config.py:L21</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/config.py:L18</p>
 </dd>
 </dl>
 </section>
@@ -2001,7 +2013,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Existing projects do not need to migrate their project_config.json to continue working.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L24-26</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L30-32</p>
 </dd>
 </dl>
 </section>
@@ -2015,40 +2027,40 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Linear search alternative would be O(n) per event - for projects with hundreds of tasks, the difference is significant.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L60-70</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/engine.py:L93-104</p>
 </dd>
 </dl>
 </section>
 <section id="rnf-10-output-suppression-in-analysis-loop">
 <h4>RNF-10: Output Suppression in Analysis Loop<a class="headerlink" href="#rnf-10-output-suppression-in-analysis-loop" title="Link to this heading"></a></h4>
 <dl class="simple">
-<dt><strong>Description</strong></dt><dd><p>redirect_stdout(os.devnull) during plot_resource_vs_duration iterations.</p>
+<dt><strong>Description</strong></dt><dd><p>contextlib.redirect_stdout(io.StringIO()) during plot_resource_vs_duration iterations.</p>
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Without suppression, N runs × K prints = proportional noise that degrades terminal UX.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/plot.py:L57-65</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/plot.py:L62</p>
 </dd>
 </dl>
 </section>
-<section id="rnf-16-customization-csv-cache">
-<h4>RNF-16: Customization CSV Cache<a class="headerlink" href="#rnf-16-customization-csv-cache" title="Link to this heading"></a></h4>
+<section id="rnf-16-customization-dictionary-cache">
+<h4>RNF-16: Customization Dictionary Cache<a class="headerlink" href="#rnf-16-customization-dictionary-cache" title="Link to this heading"></a></h4>
 <dl class="simple">
-<dt><strong>Description</strong></dt><dd><p>Customization CSVs are loaded into memory DataFrames at the start instead of reading from disk per task.</p>
+<dt><strong>Description</strong></dt><dd><p>Customization CSVs are loaded into in-memory hash-map dictionaries (keyed by document_name or part_document_type) at boot instead of reading from disk per task.</p>
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>With dozens of milestones and hundreds of tasks, repeated disk reads would degrade performance (I/O burst).</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L55-64 + L142-156</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L89-106</p>
 </dd>
 </dl>
 </section>
-<section id="rnf-21-customization-lookup-cache">
-<h4>RNF-21: Customization Lookup Cache<a class="headerlink" href="#rnf-21-customization-lookup-cache" title="Link to this heading"></a></h4>
+<section id="rnf-21-customization-lookup-via-hash-map">
+<h4>RNF-21: Customization Lookup via Hash Map<a class="headerlink" href="#rnf-21-customization-lookup-via-hash-map" title="Link to this heading"></a></h4>
 <dl class="simple">
-<dt><strong>Description</strong></dt><dd><p>Load all customization CSVs into dictionaries (hash maps) in memory during boot.</p>
+<dt><strong>Description</strong></dt><dd><p>Customization CSVs are converted to dictionaries (hash maps) keyed by document_name/part_document_type</p>
 </dd>
-<dt><strong>Intention</strong></dt><dd><p>Optimize processing speed, especially for Sensitivity Analysis (RF-15)</p>
+<dt><strong>Intention</strong></dt><dd><p>O(1) lookup per task per customization.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py</p>
+<dt><strong>Example</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">Optimize</span> <span class="pre">processing</span> <span class="pre">speed,</span> <span class="pre">especially</span> <span class="pre">for</span> <span class="pre">Sensitivity</span> <span class="pre">Analysis</span> <span class="pre">(RF-15)</span> <span class="pre">which</span> <span class="pre">re-runs</span> <span class="pre">hundreds</span> <span class="pre">of</span> <span class="pre">times.</span></code></p>
 </dd>
 </dl>
 </section>
@@ -2062,7 +2074,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Facilitates distribution via email or storage in shared drives without infrastructure.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L291-300 (self-contained HTML)</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L1348-1354 (self-contained HTML write)</p>
 </dd>
 </dl>
 </section>
@@ -2076,7 +2088,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Zero build dependencies on frontend: the generated HTML is immediately functional.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L298-300 (CDN links)</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L354-356 (CDN links)</p>
 </dd>
 </dl>
 </section>
@@ -2101,7 +2113,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Side effects between runs would make results non-reproducible.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L16 (always new instance)</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L18 (always new instance)</p>
 </dd>
 </dl>
 </section>
@@ -2112,18 +2124,18 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>datetime.now() would produce different results per run, breaking idempotency.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L74-80</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L109-116</p>
 </dd>
 </dl>
 </section>
 <section id="rnf-22-business-time-validation">
 <h4>RNF-22: Business Time Validation<a class="headerlink" href="#rnf-22-business-time-validation" title="Link to this heading"></a></h4>
 <dl class="simple">
-<dt><strong>Description</strong></dt><dd><p>Validate if working_start &lt; working_end and if durations are non-negative, emitting clear errors.</p>
+<dt><strong>Description</strong></dt><dd><p>Validate if working_start &lt; working_end and if durations are non-negative, raising ValueError with clear messages.</p>
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Prevent incoherent calendar settings from causing infinite loops or impossible dates</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/core/time_calc.py</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/core/time_calc.py:L53-56</p>
 </dd>
 </dl>
 </section>
@@ -2137,7 +2149,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>CI/CD environments or headless servers should not fail due to a visualization dependency.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/plot.py:L11-16</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/plot.py:L15-20</p>
 </dd>
 </dl>
 </section>
@@ -2151,7 +2163,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Silent production, verbose development — without code modification between the two.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>config.py:L21 + (usage in all modules)</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/config.py:L18 + (usage in all modules)</p>
 </dd>
 </dl>
 </section>
@@ -2165,7 +2177,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>CSVs generated by Numbers/Excel frequently have formatting artifacts - the parser should not fail because of them.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/core/models.py:L38-49 + src/schedule/loader.py:L78-81</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/core/models.py:L70-82 + src/schedule/loader.py:L154-159</p>
 </dd>
 </dl>
 </section>
@@ -2181,7 +2193,7 @@
 </dd>
 <dt><strong>Example</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">electronic_equipment</span> <span class="pre">and</span> <span class="pre">door_position</span> <span class="pre">already</span> <span class="pre">listed</span> <span class="pre">with</span> <span class="pre">'nok'</span> <span class="pre">status</span></code></p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L55-67 + src/export/csv_export.py:L6-31</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/loader.py:L71-111 + src/export/csv_export.py:L7-37</p>
 </dd>
 </dl>
 </section>
@@ -2195,7 +2207,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Duplicate IDs would cause collisions in the task map and incorrect Gantt display.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L36 + L150-154</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L66 + L150-156</p>
 </dd>
 </dl>
 </section>
@@ -2206,18 +2218,18 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Outdated object references are the most common cause of silent bugs in mutable graphs.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L234-244 + L306-315</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/schedule/project.py:L304-315 + L403-412</p>
 </dd>
 </dl>
 </section>
-<section id="rnf-20-transformation-audit-log">
-<h4>RNF-20: Transformation Audit Log<a class="headerlink" href="#rnf-20-transformation-audit-log" title="Link to this heading"></a></h4>
+<section id="rnf-20-transformation-audit-log-text">
+<h4>RNF-20: Transformation Audit Log (Text)<a class="headerlink" href="#rnf-20-transformation-audit-log-text" title="Link to this heading"></a></h4>
 <dl class="simple">
-<dt><strong>Description</strong></dt><dd><p>The system must generate audit.log detailing zero-duration removals (RF-08) and consolidations (RF-13).</p>
+<dt><strong>Description</strong></dt><dd><p>The system generates audit.log (plain-text via Python logging) with INFO-level entries for each drawing consolidation and zero-duration task removal.</p>
 </dd>
-<dt><strong>Intention</strong></dt><dd><p>Allow auditing and debugging of how the original graph was transformed into the final schedule</p>
+<dt><strong>Intention</strong></dt><dd><p>Complements the JSON trace log (RF-26) with a timestamped, human-readable audit trail.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/core/logger.py</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/core/logger.py:L5-33 + src/schedule/project.py:L6 + L285 + L375</p>
 </dd>
 </dl>
 </section>
@@ -2227,11 +2239,11 @@
 <section id="rnf-15-html-dark-mode-visual-design">
 <h4>RNF-15: HTML Dark Mode Visual Design<a class="headerlink" href="#rnf-15-html-dark-mode-visual-design" title="Link to this heading"></a></h4>
 <dl class="simple">
-<dt><strong>Description</strong></dt><dd><p>Dark system design with Inter typography, subtle borders, hover transitions, and styled tooltips without external CSS.</p>
+<dt><strong>Description</strong></dt><dd><p>Dark system design with Inter typography, subtle borders, hover transitions, styled tooltips, and light/dark theme toggle without external CSS.</p>
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Professional interface increases tool adoption by project managers.</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L303-400 (CSS block)</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>src/export/gantt_interactive.py:L358-851 (CSS block)</p>
 </dd>
 </dl>
 </section>
@@ -2256,7 +2268,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Professionalize the deliverable and ensure technical documentation is always in sync with code</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>docs/conf.py + Makefile</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>docs/conf.py + docs/Makefile</p>
 </dd>
 </dl>
 </section>
@@ -2278,7 +2290,7 @@
 </dd>
 <dt><strong>Intention</strong></dt><dd><p>Reduce the learning curve for new Project Managers utilizing the tool</p>
 </dd>
-<dt><strong>Source Traceability</strong></dt><dd><p>README.md / docs/user_guide.md</p>
+<dt><strong>Source Traceability</strong></dt><dd><p>README.md + docs/user_guide.md</p>
 </dd>
 </dl>
 </section>
