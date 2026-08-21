@@ -15,182 +15,17 @@
       <script src="../../../_static/documentation_options.js?v=f2a433a1"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
       <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
-
-
 
 
 
 const initStyles = () => {
     const defaultStyle = document.createElement('style');
-    defaultStyle.textContent = `pre.mermaid {
-    /* Same as .mermaid-container > pre */
-    display: block;
-    width: 100%;
-}
-
-pre.mermaid > svg {
-    /* Same as .mermaid-container > pre > svg */
-    height: 500px;
-    width: 100%;
-    max-width: 100% !important;
-}`;
+    defaultStyle.textContent = "pre.mermaid {\n    /* Same as .mermaid-container > pre */\n    display: block;\n    width: 100%;\n}\n\npre.mermaid > svg {\n    /* Same as .mermaid-container > pre > svg */\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}";
     document.head.appendChild(defaultStyle);
 
     const fullscreenStyle = document.createElement('style');
-    fullscreenStyle.textContent = `.mermaid-container {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-}
-
-.mermaid-container > pre {
-    display: block;
-    width: 100%;
-}
-
-.mermaid-container > pre > svg {
-    height: 500px;
-    width: 100%;
-    max-width: 100% !important;
-}
-
-.mermaid-fullscreen-btn {
-    width: 28px;
-    height: 28px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.3);
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    font-size: 14px;
-    line-height: 1;
-    padding: 0;
-    color: #333;
-}
-
-.mermaid-fullscreen-btn:hover {
-    opacity: 100% !important;
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-    transform: scale(1.1);
-}
-
-.mermaid-fullscreen-btn.dark-theme {
-    background: rgba(50, 50, 50, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: #e0e0e0;
-}
-
-.mermaid-fullscreen-btn.dark-theme:hover {
-    background: rgba(60, 60, 60, 1);
-    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
-}
-
-.mermaid-fullscreen-modal {
-    display: none;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 95vw;
-    height: 100vh;
-    background: rgba(255, 255, 255, 0.98);
-    z-index: 9999;
-    padding: 20px;
-    overflow: auto;
-}
-
-.mermaid-fullscreen-modal.dark-theme {
-    background: rgba(0, 0, 0, 0.98);
-}
-
-.mermaid-fullscreen-modal.active {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen {
-    position: relative;
-    width: 95vw;
-    height: 90vh;
-    max-width: 95vw;
-    max-height: 90vh;
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    overflow: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen.dark-theme {
-    background: #1a1a1a;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-}
-
-.mermaid-container-fullscreen pre.mermaid {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen .mermaid svg {
-    height: 100% !important;
-    width: 100% !important;
-    cursor: grab;
-}
-
-.mermaid-fullscreen-close {
-    position: fixed !important;
-    top: 20px !important;
-    right: 20px !important;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 50%;
-    cursor: pointer;
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    transition: all 0.2s;
-    font-size: 24px;
-    line-height: 1;
-    color: #333;
-}
-
-.mermaid-fullscreen-close:hover {
-    background: white;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
-    transform: scale(1.1);
-}
-
-.mermaid-fullscreen-close.dark-theme {
-    background: rgba(50, 50, 50, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #e0e0e0;
-}
-
-.mermaid-fullscreen-close.dark-theme:hover {
-    background: rgba(60, 60, 60, 1);
-    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
-}
-
-.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
-    display: none !important;
-}`;
+    fullscreenStyle.textContent = ".mermaid-container {\n    position: relative;\n    display: flex;\n    flex-direction: row;\n    width: 100%;\n}\n\n.mermaid-container > pre {\n    display: block;\n    width: 100%;\n}\n\n.mermaid-container > pre > svg {\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}\n\n.mermaid-fullscreen-btn {\n    position: absolute;\n    width: 28px;\n    height: 28px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.3);\n    border-radius: 4px;\n    cursor: pointer;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    transition: all 0.2s;\n    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);\n    font-size: 14px;\n    line-height: 1;\n    padding: 0;\n    color: #333;\n}\n\n.mermaid-fullscreen-btn:hover {\n    opacity: 100% !important;\n    background: rgba(255, 255, 255, 1);\n    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-btn.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.3);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-btn.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal {\n    display: none;\n    position: fixed !important;\n    top: 0 !important;\n    left: 0 !important;\n    width: 95vw;\n    height: 100vh;\n    background: rgba(255, 255, 255, 0.98);\n    z-index: 9999;\n    padding: 20px;\n    overflow: auto;\n}\n\n.mermaid-fullscreen-modal.dark-theme {\n    background: rgba(0, 0, 0, 0.98);\n}\n\n.mermaid-fullscreen-modal.active {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen {\n    position: relative;\n    width: 95vw;\n    height: 90vh;\n    max-width: 95vw;\n    max-height: 90vh;\n    background: white;\n    border-radius: 8px;\n    padding: 20px;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);\n    overflow: auto;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen.dark-theme {\n    background: #1a1a1a;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);\n}\n\n.mermaid-container-fullscreen pre.mermaid {\n    width: 100%;\n    height: 100%;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen .mermaid svg {\n    height: 100% !important;\n    width: 100% !important;\n    cursor: grab;\n}\n\n.mermaid-fullscreen-close {\n    position: fixed !important;\n    top: 20px !important;\n    right: 20px !important;\n    width: 40px;\n    height: 40px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.2);\n    border-radius: 50%;\n    cursor: pointer;\n    z-index: 10000;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);\n    transition: all 0.2s;\n    font-size: 24px;\n    line-height: 1;\n    color: #333;\n}\n\n.mermaid-fullscreen-close:hover {\n    background: white;\n    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-close.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.2);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-close.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal .mermaid-fullscreen-btn {\n    display: none !important;\n}";
     document.head.appendChild(fullscreenStyle);
 }
 
@@ -235,6 +70,32 @@ let darkTheme = isDarkTheme();
 let modal = null;
 let modalContent = null;
 let previousScrollOffset = [window.scrollX, window.scrollY];
+let _lazyObserver = null;
+let _renderQueue = Promise.resolve();
+let closeModal = () => {};
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.classList.contains('active')) {
+        closeModal();
+    }
+});
+
+// Apply d3 zoom to each SVG. Idempotent: an SVG already wrapped is skipped,
+// so this is safe to call both for the initial batch and for diagrams that
+// render lazily once they become visible.
+const addZoomToSvgs = (svgs) => {
+    svgs.each(function() {
+        if (this.getAttribute('data-zoom-applied') === 'true') return;
+        var svg = d3.select(this);
+        svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+        var inner = svg.select("g");
+        var zoom = d3.zoom().on("zoom", function(event) {
+            inner.attr("transform", event.transform);
+        });
+        svg.call(zoom);
+        this.setAttribute('data-zoom-applied', 'true');
+    });
+};
 
 const runMermaid = async (rerun) => {
     console.log("Running mermaid diagrams, rerun =", rerun);
@@ -242,7 +103,15 @@ const runMermaid = async (rerun) => {
     let all_mermaids = document.querySelectorAll(".mermaid");
 
     if (rerun) {
+        // Disconnect any previous lazy rendering observer
+        if (_lazyObserver) {
+            _lazyObserver.disconnect();
+            _lazyObserver = null;
+        }
+
         all_mermaids.forEach((el) => {
+            el.removeAttribute('data-mermaid-deferred');
+            el.removeAttribute('data-mermaid-render-failed');
             if(!el.hasAttribute("data-original-code")) {
                 // store original code
                 // console.log(`Storing original code for first run: `, el.innerHTML);
@@ -259,42 +128,100 @@ const runMermaid = async (rerun) => {
                 el.setAttribute('data-original-code', el.innerHTML);
             }
         });
-        await mermaid.run();
+
+        // Separate visible and hidden elements. Mermaid's layout engine measures
+        // text dimensions via the DOM, which fails for elements hidden by a parent
+        // (e.g., Reveal.js non-active slides, sphinx-design unopened tabs),
+        // producing broken SVGs. Render visible elements now, defer hidden ones.
+        const visible = [];
+        const hidden = [];
+        all_mermaids.forEach((el) => {
+            // offsetParent is null for display:none ancestors.
+            // getClientRects().length > 0 catches position:fixed elements
+            // (which also have null offsetParent but are still visible).
+            if (el.offsetParent !== null || el.getClientRects().length > 0) {
+                visible.push(el);
+            } else {
+                hidden.push(el);
+                el.setAttribute('data-mermaid-deferred', 'true');
+            }
+        });
+
+        if (visible.length > 0) {
+            try {
+                await mermaid.run({ nodes: visible });
+            } catch (e) {
+                console.error("Mermaid rendering failed:", e);
+            }
+        }
+
+        // Lazily render hidden elements when they become visible.
+        // Uses a promise chain (_renderQueue) to serialize rendering,
+        // since IntersectionObserver may report multiple entries at once
+        // and mermaid.run() is not safe to call concurrently.
+        if (hidden.length > 0) {
+            if (typeof IntersectionObserver === 'undefined') {
+                console.warn("IntersectionObserver not available; hidden mermaid diagrams will not render.");
+            } else {
+                _renderQueue = Promise.resolve();
+                _lazyObserver = new IntersectionObserver((entries) => {
+                    for (const entry of entries) {
+                        if (entry.isIntersecting && entry.target.getAttribute("data-processed") !== "true") {
+                            _lazyObserver.unobserve(entry.target);
+                            const el = entry.target;
+                            _renderQueue = _renderQueue.then(async () => {
+                                try {
+                                    await mermaid.run({ nodes: [el] });
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    // Apply zoom to the now-rendered diagram, matching
+                                    // the decoration visible diagrams receive.
+                                    if (false) {
+                                        addZoomToSvgs(d3.selectAll("").select(function() {
+                                            return this.querySelector("svg");
+                                        }));
+                                    }
+                                } catch (e) {
+                                    console.error("Mermaid deferred rendering failed:", e);
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    el.setAttribute('data-mermaid-render-failed', 'true');
+                                }
+                            });
+                        }
+                    }
+                });
+                hidden.forEach((el) => _lazyObserver.observe(el));
+            }
+        }
     }
 
     all_mermaids = document.querySelectorAll(".mermaid");
-    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
+    // Exclude deferred (hidden) and render-failed elements from completion checks
+    const mermaids_active = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])");
+    const mermaids_processed = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])[data-processed='true']");
 
-    if ("False" === "True") {
-        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
+    if (false) {
+        const mermaids_to_add_zoom = 0 === -1 ? mermaids_active.length : 0;
         if(mermaids_to_add_zoom > 0) {
-            var svgs = d3.selectAll("");
-            if(all_mermaids.length !== mermaids_processed.length) {
+            var svgs = d3.selectAll("").select(function() {
+                return this.querySelector("svg");
+            });
+            // Wait until every active (visible) diagram has rendered. Deferred
+            // diagrams are excluded, so a fixed d3_node_count that counts a
+            // hidden diagram no longer loops forever waiting for its SVG.
+            if(mermaids_active.length !== mermaids_processed.length) {
                 setTimeout(() => runMermaid(false), 200);
                 return;
-            } else if(svgs.size() !== mermaids_to_add_zoom) {
-                setTimeout(() => runMermaid(false), 200);
-                return;
-            } else {
-                svgs.each(function() {
-                    var svg = d3.select(this);
-                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
-                    var inner = svg.select("g");
-                    var zoom = d3.zoom().on("zoom", function(event) {
-                        inner.attr("transform", event.transform);
-                    });
-                    svg.call(zoom);
-                });
             }
+            addZoomToSvgs(svgs);
         }
-    } else if(all_mermaids.length !== mermaids_processed.length) {
+    } else if(mermaids_active.length !== mermaids_processed.length) {
         // Wait for mermaid to process all diagrams
         setTimeout(() => runMermaid(false), 200);
         return;
     }
 
     // Stop here if not adding fullscreen capability
-    if ("True" !== "True") return;
+    if (!true) return;
 
     if (modal !== null ) {
         // Destroy existing modal
@@ -317,7 +244,7 @@ const runMermaid = async (rerun) => {
     modalContent = modal.querySelector('.mermaid-container-fullscreen');
     const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
 
-    const closeModal = () => {
+    closeModal = () => {
         modal.classList.remove('active');
         modalContent.innerHTML = '';
         document.body.style.overflow = ''
@@ -328,12 +255,6 @@ const runMermaid = async (rerun) => {
     modal.addEventListener('click', (e) => {
         if (e.target === modal) closeModal();
     });
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('active')) {
-            closeModal();
-        }
-    });
-
     document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
         if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
             mermaidDiv.closest('.mermaid-fullscreen-modal')) {
@@ -353,8 +274,8 @@ const runMermaid = async (rerun) => {
         const fullscreenBtn = document.createElement('button');
         fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
         fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
-        fullscreenBtn.textContent = '⛶';
-        fullscreenBtn.style.opacity = '50%';
+        fullscreenBtn.textContent = "\u26f6";
+        fullscreenBtn.style.opacity = "50%";
 
         // Calculate dynamic position based on diagram's margin and padding
         const diagramStyle = window.getComputedStyle(mermaidDiv);
@@ -366,7 +287,7 @@ const runMermaid = async (rerun) => {
         fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
 
         fullscreenBtn.addEventListener('click', () => {
-            previousScrollOffset = [window.scroll, window.scrollY];
+            previousScrollOffset = [window.scrollX, window.scrollY];
             const clone = mermaidDiv.cloneNode(true);
             modalContent.innerHTML = '';
             modalContent.appendChild(clone);
@@ -378,9 +299,9 @@ const runMermaid = async (rerun) => {
                 svg.style.width = '100%';
                 svg.style.height = 'auto';
                 svg.style.maxWidth = '100%';
-                svg.style.sdisplay = 'block';
+                svg.style.display = 'block';
 
-                if ("False" === "True") {
+                if (false) {
                     setTimeout(() => {
                         const g = svg.querySelector('g');
                         if (g) {
@@ -403,8 +324,11 @@ const runMermaid = async (rerun) => {
     });
 };
 
+
+
 const load = async () => {
     initStyles();
+
 
     await runMermaid(true);
 
@@ -414,10 +338,8 @@ const load = async () => {
             darkTheme = newDarkTheme;
             console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
             await mermaid.initialize(
-                {...JSON.parse(
-                    `{"startOnLoad": false}`
-                ),
-                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+                {...{"startOnLoad": false},
+                ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
                 }
             );
             await runMermaid(true);
@@ -442,10 +364,8 @@ const load = async () => {
 
 console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
 mermaid.initialize(
-    {...JSON.parse(
-        `{"startOnLoad": false}`
-    ),
-    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+    {...{"startOnLoad": false},
+    ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
     }
 );
 
@@ -506,14 +426,14 @@ window.runMermaid = runMermaid;</script>
            <div itemprop="articleBody">
              
   <h1>Source code for src.export.gantt_interactive</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">src/export/gantt_interactive.py</span>
 
 <span class="sd">Generates a self-contained interactive HTML Gantt chart from a list of Tasks.</span>
 <span class="sd">Uses Vis.js Timeline (loaded from CDN) — no extra Python dependencies.</span>
 
 <span class="sd">Layout:</span>
-<span class="sd">  - Rows  = unique task names  (e.g. &quot;core_door&quot;, &quot;ply_adjustable_shelf&quot;, …)</span>
+<span class="sd">  - Rows  = unique task names  (e.g. "core_door", "ply_adjustable_shelf", …)</span>
 <span class="sd">  - Bars  = individual tasks, colour-coded by milestone</span>
 <span class="sd">  - Sidebar panel 1: Milestone filter (toggle visibility per milestone colour)</span>
 <span class="sd">  - Sidebar panel 2: Task-type filter (part_model / part_list / release / drawing …)</span>
@@ -522,7 +442,7 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">  - Pan / zoom / fit-all / today</span>
 <span class="sd">  - Hover tooltip with full task detail</span>
 <span class="sd">  - Export to JSON and CSV from the browser</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
@@ -535,25 +455,25 @@ window.runMermaid = runMermaid;</script>
 
 <span class="c1"># Distinct colours for up to 12 milestones; cycles beyond that</span>
 <span class="n">_MILESTONE_PALETTE</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;#4C8BF5&quot;</span><span class="p">,</span> <span class="s2">&quot;#E8453C&quot;</span><span class="p">,</span> <span class="s2">&quot;#F4B942&quot;</span><span class="p">,</span> <span class="s2">&quot;#3DA65A&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;#9B59B6&quot;</span><span class="p">,</span> <span class="s2">&quot;#E67E22&quot;</span><span class="p">,</span> <span class="s2">&quot;#1ABC9C&quot;</span><span class="p">,</span> <span class="s2">&quot;#E91E8C&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;#00BCD4&quot;</span><span class="p">,</span> <span class="s2">&quot;#8BC34A&quot;</span><span class="p">,</span> <span class="s2">&quot;#FF5722&quot;</span><span class="p">,</span> <span class="s2">&quot;#607D8B&quot;</span><span class="p">,</span>
+    <span class="s2">"#4C8BF5"</span><span class="p">,</span> <span class="s2">"#E8453C"</span><span class="p">,</span> <span class="s2">"#F4B942"</span><span class="p">,</span> <span class="s2">"#3DA65A"</span><span class="p">,</span>
+    <span class="s2">"#9B59B6"</span><span class="p">,</span> <span class="s2">"#E67E22"</span><span class="p">,</span> <span class="s2">"#1ABC9C"</span><span class="p">,</span> <span class="s2">"#E91E8C"</span><span class="p">,</span>
+    <span class="s2">"#00BCD4"</span><span class="p">,</span> <span class="s2">"#8BC34A"</span><span class="p">,</span> <span class="s2">"#FF5722"</span><span class="p">,</span> <span class="s2">"#607D8B"</span><span class="p">,</span>
 <span class="p">]</span>
 
 <span class="c1"># Colours for task types</span>
 <span class="n">_TYPE_PALETTE</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;part_model&quot;</span><span class="p">:</span> <span class="s2">&quot;#4C8BF5&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;part_list&quot;</span><span class="p">:</span>  <span class="s2">&quot;#F4B942&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;release&quot;</span><span class="p">:</span>    <span class="s2">&quot;#3DA65A&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;drawing&quot;</span><span class="p">:</span>    <span class="s2">&quot;#90A4AE&quot;</span><span class="p">,</span>
+    <span class="s2">"part_model"</span><span class="p">:</span> <span class="s2">"#4C8BF5"</span><span class="p">,</span>
+    <span class="s2">"part_list"</span><span class="p">:</span>  <span class="s2">"#F4B942"</span><span class="p">,</span>
+    <span class="s2">"release"</span><span class="p">:</span>    <span class="s2">"#3DA65A"</span><span class="p">,</span>
+    <span class="s2">"drawing"</span><span class="p">:</span>    <span class="s2">"#90A4AE"</span><span class="p">,</span>
 <span class="p">}</span>
-<span class="n">_TYPE_FALLBACK</span> <span class="o">=</span> <span class="s2">&quot;#9B59B6&quot;</span>
+<span class="n">_TYPE_FALLBACK</span> <span class="o">=</span> <span class="s2">"#9B59B6"</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_hex_to_rgba</span><span class="p">(</span><span class="n">hex_color</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.85</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="n">h</span> <span class="o">=</span> <span class="n">hex_color</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">)</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">hex_color</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">'#'</span><span class="p">)</span>
     <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="mi">16</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">],</span> <span class="mi">16</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;rgba(</span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">g</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">b</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">alpha</span><span class="si">}</span><span class="s2">)&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"rgba(</span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">g</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">b</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">alpha</span><span class="si">}</span><span class="s2">)"</span>
 
 
 <span class="c1"># [Req: RF-17, RF-17.4] — Entry point: title and project_start_date are configurable per-project</span>
@@ -562,14 +482,14 @@ window.runMermaid = runMermaid;</script>
 <span class="k">def</span><span class="w"> </span><span class="nf">export_interactive_gantt</span><span class="p">(</span>
     <span class="n">tasks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Task</span><span class="p">],</span>
     <span class="n">output_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
-    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Chrono Tailoring — Interactive Gantt Chart&quot;</span><span class="p">,</span>
+    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"Chrono Tailoring — Interactive Gantt Chart"</span><span class="p">,</span>
     <span class="n">milestone_name_map</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">total_resources</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">project_requirements_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">holidays</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="n">date</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">show_task_arrows</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialises tasks to JSON and writes a self-contained Vis.js HTML Gantt.</span>
+<span class="w">    </span><span class="sd">"""Serialises tasks to JSON and writes a self-contained Vis.js HTML Gantt.</span>
 
 <span class="sd">    Rows  = unique task names (swim-lanes).</span>
 <span class="sd">    Items = individual task instances, coloured by milestone.</span>
@@ -577,20 +497,20 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">    Args:</span>
 <span class="sd">        tasks (List[Task]): Flat list of Task objects with init_date / end_date set.</span>
 <span class="sd">        output_path (Path): Where to write the .html file.</span>
-<span class="sd">        title (str, optional): Browser title / header text. Defaults to &quot;Chrono Tailoring — Interactive Gantt Chart&quot;.</span>
+<span class="sd">        title (str, optional): Browser title / header text. Defaults to "Chrono Tailoring — Interactive Gantt Chart".</span>
 <span class="sd">        milestone_name_map (Optional[Dict[Any, str]], optional): Mapping of milestone IDs to names. Defaults to None.</span>
 <span class="sd">        total_resources (int, optional): The total number of parallel resources applied. Defaults to 1.</span>
 <span class="sd">        project_requirements_path (Optional[Path], optional): Path to requirements for the info sidebar. Defaults to None.</span>
 <span class="sd">        holidays (Optional[Set[date]], optional): Dates to format differently. Defaults to None.</span>
 <span class="sd">        show_task_arrows (bool, optional): Auto-enable standard dependency arrows on load. Defaults to False.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">milestone_name_map</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">milestone_name_map</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="c1"># ── 1. Milestone colours ─────────────────────────────────────────────────────</span>
     <span class="n">milestone_ids</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
-        <span class="n">mid</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">&#39;milestone_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">mid</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">'milestone_id'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">mid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">mid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">milestone_ids</span><span class="p">:</span>
             <span class="n">milestone_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mid</span><span class="p">)</span>
     <span class="n">milestone_ids</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
@@ -599,17 +519,17 @@ window.runMermaid = runMermaid;</script>
     <span class="n">milestone_color</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">mid</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">milestone_ids</span><span class="p">):</span>
         <span class="n">milestone_color</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span> <span class="o">=</span> <span class="n">_MILESTONE_PALETTE</span><span class="p">[</span><span class="n">i</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">_MILESTONE_PALETTE</span><span class="p">)]</span>
-    <span class="n">default_color</span> <span class="o">=</span> <span class="s2">&quot;#90A4AE&quot;</span>   <span class="c1"># for tasks with no milestone</span>
+    <span class="n">default_color</span> <span class="o">=</span> <span class="s2">"#90A4AE"</span>   <span class="c1"># for tasks with no milestone</span>
 
     <span class="c1"># ── 2. Groups = unique task names ────────────────────────────────────────────</span>
     <span class="c1"># Format names to `BasePart - Description`</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">format_task_name</span><span class="p">(</span><span class="n">t</span><span class="p">:</span> <span class="n">Task</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">base_part</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">part_number</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;Consolidated Drawing&quot;</span><span class="p">):</span>
-            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_part</span><span class="si">}</span><span class="s2"> - Consolidated drawing&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">base_part</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">base_part</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">part_number</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"Consolidated Drawing"</span><span class="p">):</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">base_part</span><span class="si">}</span><span class="s2"> - Consolidated drawing"</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">base_part</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
 
-    <span class="c1"># [Req: RF-17.2] — Swim-lanes = unique task names formatted as &#39;BasePart - Name&#39;, sorted alphabetically</span>
+    <span class="c1"># [Req: RF-17.2] — Swim-lanes = unique task names formatted as 'BasePart - Name', sorted alphabetically</span>
     <span class="n">seen_names</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">init_date</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">t</span><span class="o">.</span><span class="n">end_date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -621,7 +541,7 @@ window.runMermaid = runMermaid;</script>
     <span class="c1"># Keep insertion order (chronological by first appearance), then sort alpha</span>
     <span class="n">seen_names</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
 
-    <span class="n">groups</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">}</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">seen_names</span><span class="p">]</span>
+    <span class="n">groups</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">"id"</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">"content"</span><span class="p">:</span> <span class="n">name</span><span class="p">}</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">seen_names</span><span class="p">]</span>
 
     <span class="c1"># ── 3. Items ─────────────────────────────────────────────────────────────────</span>
     <span class="n">items</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
@@ -634,77 +554,77 @@ window.runMermaid = runMermaid;</script>
         <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">init_date</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">task</span><span class="o">.</span><span class="n">end_date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">continue</span>
 
-        <span class="n">mid</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">&#39;milestone_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">mid</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">'milestone_id'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">color</span> <span class="o">=</span> <span class="n">milestone_color</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mid</span><span class="p">,</span> <span class="n">default_color</span><span class="p">)</span>
         <span class="n">bg</span> <span class="o">=</span> <span class="n">_hex_to_rgba</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="mf">0.85</span><span class="p">)</span>
         <span class="n">border</span> <span class="o">=</span> <span class="n">color</span>
 
-        <span class="n">preds</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">task</span><span class="o">.</span><span class="n">predecessors</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;—&quot;</span>
-        <span class="n">succs</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">&#39;successors_tasks&#39;</span><span class="p">,</span> <span class="p">[])</span>
-        <span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;—&quot;</span>
+        <span class="n">preds</span> <span class="o">=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">task</span><span class="o">.</span><span class="n">predecessors</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">"—"</span>
+        <span class="n">succs</span> <span class="o">=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">'successors_tasks'</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="p">)</span> <span class="ow">or</span> <span class="s2">"—"</span>
         <span class="n">duration_h</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">duration_minutes</span> <span class="o">/</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
-        <span class="n">milestone_label</span> <span class="o">=</span> <span class="n">milestone_name_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mid</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Milestone </span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">mid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;—&quot;</span>
+        <span class="n">milestone_label</span> <span class="o">=</span> <span class="n">milestone_name_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mid</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"Milestone </span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="k">if</span> <span class="n">mid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">"—"</span>
         <span class="n">task_type_desc</span>  <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">description</span>
 
         <span class="n">tooltip</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;&lt;div class=&#39;tt&#39;&gt;&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;&lt;b&gt;#</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> — </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&lt;/b&gt;&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;&lt;div class=&#39;tt-row&#39;&gt;Milestone: &lt;span&gt;</span><span class="si">{</span><span class="n">milestone_label</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;&lt;div class=&#39;tt-row&#39;&gt;Type: &lt;span&gt;</span><span class="si">{</span><span class="n">task_type_desc</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;&lt;div class=&#39;tt-row&#39;&gt;Part: &lt;span&gt;</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">part_number</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;&lt;div class=&#39;tt-row&#39;&gt;Duration: &lt;span&gt;</span><span class="si">{</span><span class="n">duration_h</span><span class="si">}</span><span class="s2"> h&lt;/span&gt;&lt;/div&gt;&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;&lt;div class=&#39;tt-row&#39;&gt;Start: &lt;span&gt;</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">init_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;&lt;div class=&#39;tt-row&#39;&gt;End: &lt;span&gt;</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;&lt;div class=&#39;tt-row&#39;&gt;Predecessors: &lt;span&gt;</span><span class="si">{</span><span class="n">preds</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;&lt;div class=&#39;tt-row&#39;&gt;Successors: &lt;span&gt;</span><span class="si">{</span><span class="n">succs</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;&lt;/div&gt;&quot;</span>
+            <span class="sa">f</span><span class="s2">"&lt;div class='tt'&gt;"</span>
+            <span class="sa">f</span><span class="s2">"&lt;b&gt;#</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> — </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&lt;/b&gt;"</span>
+            <span class="sa">f</span><span class="s2">"&lt;div class='tt-row'&gt;Milestone: &lt;span&gt;</span><span class="si">{</span><span class="n">milestone_label</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;"</span>
+            <span class="sa">f</span><span class="s2">"&lt;div class='tt-row'&gt;Type: &lt;span&gt;</span><span class="si">{</span><span class="n">task_type_desc</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;"</span>
+            <span class="sa">f</span><span class="s2">"&lt;div class='tt-row'&gt;Part: &lt;span&gt;</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">part_number</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;"</span>
+            <span class="sa">f</span><span class="s2">"&lt;div class='tt-row'&gt;Duration: &lt;span&gt;</span><span class="si">{</span><span class="n">duration_h</span><span class="si">}</span><span class="s2"> h&lt;/span&gt;&lt;/div&gt;"</span>
+            <span class="sa">f</span><span class="s2">"&lt;div class='tt-row'&gt;Start: &lt;span&gt;</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">init_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M'</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;"</span>
+            <span class="sa">f</span><span class="s2">"&lt;div class='tt-row'&gt;End: &lt;span&gt;</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M'</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;"</span>
+            <span class="sa">f</span><span class="s2">"&lt;div class='tt-row'&gt;Predecessors: &lt;span&gt;</span><span class="si">{</span><span class="n">preds</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;"</span>
+            <span class="sa">f</span><span class="s2">"&lt;div class='tt-row'&gt;Successors: &lt;span&gt;</span><span class="si">{</span><span class="n">succs</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;"</span>
+            <span class="sa">f</span><span class="s2">"&lt;/div&gt;"</span>
         <span class="p">)</span>
 
         <span class="n">fname</span> <span class="o">=</span> <span class="n">format_task_name</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
         
         <span class="c1"># [Req: RF-19.1] — Build critical path links (both endpoints is_critical=True)</span>
-        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">&#39;is_critical&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">succ</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">&#39;successors_tasks&#39;</span><span class="p">,</span> <span class="p">[]):</span>
-                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">succ</span><span class="p">,</span> <span class="s1">&#39;is_critical&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">'is_critical'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">succ</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">'successors_tasks'</span><span class="p">,</span> <span class="p">[]):</span>
+                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">succ</span><span class="p">,</span> <span class="s1">'is_critical'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
                     <span class="n">critical_links</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
-                        <span class="s2">&quot;from&quot;</span><span class="p">:</span> <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-                        <span class="s2">&quot;to&quot;</span><span class="p">:</span> <span class="n">succ</span><span class="o">.</span><span class="n">id</span>
+                        <span class="s2">"from"</span><span class="p">:</span> <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                        <span class="s2">"to"</span><span class="p">:</span> <span class="n">succ</span><span class="o">.</span><span class="n">id</span>
                     <span class="p">})</span>
         
         <span class="c1"># [Req: RF-19.2] — All task links; non-critical ones rendered grey and togglable</span>
-        <span class="k">for</span> <span class="n">succ</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">&#39;successors_tasks&#39;</span><span class="p">,</span> <span class="p">[]):</span>
+        <span class="k">for</span> <span class="n">succ</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">'successors_tasks'</span><span class="p">,</span> <span class="p">[]):</span>
             <span class="n">task_links</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
-                <span class="s2">&quot;from&quot;</span><span class="p">:</span> <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-                <span class="s2">&quot;to&quot;</span><span class="p">:</span> <span class="n">succ</span><span class="o">.</span><span class="n">id</span>
+                <span class="s2">"from"</span><span class="p">:</span> <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="s2">"to"</span><span class="p">:</span> <span class="n">succ</span><span class="o">.</span><span class="n">id</span>
             <span class="p">})</span>
 
         <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
-            <span class="s2">&quot;id&quot;</span><span class="p">:</span>      <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-            <span class="s2">&quot;group&quot;</span><span class="p">:</span>   <span class="n">fname</span><span class="p">,</span>          <span class="c1"># row = formatted task name</span>
-            <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>      <span class="c1"># compact bar label</span>
-            <span class="s2">&quot;start&quot;</span><span class="p">:</span>   <span class="n">task</span><span class="o">.</span><span class="n">init_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S&#39;</span><span class="p">),</span>
-            <span class="s2">&quot;end&quot;</span><span class="p">:</span>     <span class="n">task</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S&#39;</span><span class="p">),</span>
-            <span class="s2">&quot;title&quot;</span><span class="p">:</span>   <span class="n">tooltip</span><span class="p">,</span>
-            <span class="s2">&quot;style&quot;</span><span class="p">:</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;background-color:</span><span class="si">{</span><span class="n">bg</span><span class="si">}</span><span class="s2">;&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;border-color:</span><span class="si">{</span><span class="n">border</span><span class="si">}</span><span class="s2">;&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;color:#fff;&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;border-radius:4px;&quot;</span>
+            <span class="s2">"id"</span><span class="p">:</span>      <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="s2">"group"</span><span class="p">:</span>   <span class="n">fname</span><span class="p">,</span>          <span class="c1"># row = formatted task name</span>
+            <span class="s2">"content"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"#</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>      <span class="c1"># compact bar label</span>
+            <span class="s2">"start"</span><span class="p">:</span>   <span class="n">task</span><span class="o">.</span><span class="n">init_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S'</span><span class="p">),</span>
+            <span class="s2">"end"</span><span class="p">:</span>     <span class="n">task</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S'</span><span class="p">),</span>
+            <span class="s2">"title"</span><span class="p">:</span>   <span class="n">tooltip</span><span class="p">,</span>
+            <span class="s2">"style"</span><span class="p">:</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"background-color:</span><span class="si">{</span><span class="n">bg</span><span class="si">}</span><span class="s2">;"</span>
+                <span class="sa">f</span><span class="s2">"border-color:</span><span class="si">{</span><span class="n">border</span><span class="si">}</span><span class="s2">;"</span>
+                <span class="sa">f</span><span class="s2">"color:#fff;"</span>
+                <span class="sa">f</span><span class="s2">"border-radius:4px;"</span>
             <span class="p">),</span>
             <span class="c1"># [Req: RF-22.3] — Metadata fields embedded per-item for browser-side export</span>
-            <span class="s2">&quot;_task_id&quot;</span><span class="p">:</span>    <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-            <span class="s2">&quot;_name&quot;</span><span class="p">:</span>       <span class="n">fname</span><span class="p">,</span>
-            <span class="s2">&quot;_milestone&quot;</span><span class="p">:</span>  <span class="n">milestone_label</span><span class="p">,</span>
-            <span class="s2">&quot;_milestone_id&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">mid</span><span class="p">)</span> <span class="k">if</span> <span class="n">mid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;_type&quot;</span><span class="p">:</span>       <span class="n">task_type_desc</span><span class="p">,</span>
-            <span class="s2">&quot;_part&quot;</span><span class="p">:</span>       <span class="n">task</span><span class="o">.</span><span class="n">part_number</span><span class="p">,</span>
-            <span class="s2">&quot;_duration_h&quot;</span><span class="p">:</span> <span class="n">duration_h</span><span class="p">,</span>
-            <span class="s2">&quot;_start&quot;</span><span class="p">:</span>      <span class="n">task</span><span class="o">.</span><span class="n">init_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M&#39;</span><span class="p">),</span>
-            <span class="s2">&quot;_end&quot;</span><span class="p">:</span>        <span class="n">task</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M&#39;</span><span class="p">),</span>
-            <span class="s2">&quot;_preds&quot;</span><span class="p">:</span>      <span class="n">preds</span><span class="p">,</span>
-            <span class="s2">&quot;_succs&quot;</span><span class="p">:</span>      <span class="n">succs</span><span class="p">,</span>
+            <span class="s2">"_task_id"</span><span class="p">:</span>    <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="s2">"_name"</span><span class="p">:</span>       <span class="n">fname</span><span class="p">,</span>
+            <span class="s2">"_milestone"</span><span class="p">:</span>  <span class="n">milestone_label</span><span class="p">,</span>
+            <span class="s2">"_milestone_id"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">mid</span><span class="p">)</span> <span class="k">if</span> <span class="n">mid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">""</span><span class="p">,</span>
+            <span class="s2">"_type"</span><span class="p">:</span>       <span class="n">task_type_desc</span><span class="p">,</span>
+            <span class="s2">"_part"</span><span class="p">:</span>       <span class="n">task</span><span class="o">.</span><span class="n">part_number</span><span class="p">,</span>
+            <span class="s2">"_duration_h"</span><span class="p">:</span> <span class="n">duration_h</span><span class="p">,</span>
+            <span class="s2">"_start"</span><span class="p">:</span>      <span class="n">task</span><span class="o">.</span><span class="n">init_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M'</span><span class="p">),</span>
+            <span class="s2">"_end"</span><span class="p">:</span>        <span class="n">task</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M'</span><span class="p">),</span>
+            <span class="s2">"_preds"</span><span class="p">:</span>      <span class="n">preds</span><span class="p">,</span>
+            <span class="s2">"_succs"</span><span class="p">:</span>      <span class="n">succs</span><span class="p">,</span>
         <span class="p">})</span>
         
     <span class="c1"># Combine critical_links and task_links based on the flag</span>
@@ -726,11 +646,11 @@ window.runMermaid = runMermaid;</script>
         <span class="k">while</span> <span class="n">current_date</span> <span class="o">&lt;=</span> <span class="n">end_date</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">current_date</span><span class="o">.</span><span class="n">weekday</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="mi">5</span> <span class="ow">or</span> <span class="n">current_date</span> <span class="ow">in</span> <span class="n">h_set</span><span class="p">:</span>
                 <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
-                    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;bg_</span><span class="si">{</span><span class="n">bg_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="n">current_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T00:00:00&#39;</span><span class="p">),</span>
-                    <span class="s2">&quot;end&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">current_date</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T00:00:00&#39;</span><span class="p">),</span>
-                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;background&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;className&quot;</span><span class="p">:</span> <span class="s2">&quot;holiday-bg&quot;</span>
+                    <span class="s2">"id"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"bg_</span><span class="si">{</span><span class="n">bg_idx</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                    <span class="s2">"start"</span><span class="p">:</span> <span class="n">current_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1">T00:00:00'</span><span class="p">),</span>
+                    <span class="s2">"end"</span><span class="p">:</span> <span class="p">(</span><span class="n">current_date</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1">T00:00:00'</span><span class="p">),</span>
+                    <span class="s2">"type"</span><span class="p">:</span> <span class="s2">"background"</span><span class="p">,</span>
+                    <span class="s2">"className"</span><span class="p">:</span> <span class="s2">"holiday-bg"</span>
                 <span class="p">})</span>
                 <span class="n">bg_idx</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="n">current_date</span> <span class="o">+=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -738,19 +658,19 @@ window.runMermaid = runMermaid;</script>
     <span class="c1"># Build milestone meta list for sidebar (id → {name, color})</span>
     <span class="n">milestone_meta</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">mid</span> <span class="ow">in</span> <span class="n">milestone_ids</span><span class="p">:</span>
-        <span class="n">label</span> <span class="o">=</span> <span class="n">milestone_name_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mid</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Milestone </span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">milestone_name_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mid</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"Milestone </span><span class="si">{</span><span class="n">mid</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="n">milestone_meta</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
-            <span class="s2">&quot;id&quot;</span><span class="p">:</span>    <span class="nb">str</span><span class="p">(</span><span class="n">mid</span><span class="p">),</span>
-            <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="n">label</span><span class="p">,</span>
-            <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="n">milestone_color</span><span class="p">[</span><span class="n">mid</span><span class="p">],</span>
+            <span class="s2">"id"</span><span class="p">:</span>    <span class="nb">str</span><span class="p">(</span><span class="n">mid</span><span class="p">),</span>
+            <span class="s2">"label"</span><span class="p">:</span> <span class="n">label</span><span class="p">,</span>
+            <span class="s2">"color"</span><span class="p">:</span> <span class="n">milestone_color</span><span class="p">[</span><span class="n">mid</span><span class="p">],</span>
         <span class="p">})</span>
-    <span class="c1"># Add &quot;no milestone&quot; entry if any task has no milestone</span>
-    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">&#39;milestone_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span>
+    <span class="c1"># Add "no milestone" entry if any task has no milestone</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">'milestone_id'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span>
            <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">init_date</span> <span class="ow">and</span> <span class="n">t</span><span class="o">.</span><span class="n">end_date</span><span class="p">):</span>
         <span class="n">milestone_meta</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
-            <span class="s2">&quot;id&quot;</span><span class="p">:</span>    <span class="s2">&quot;__none__&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;No Milestone&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="n">default_color</span><span class="p">,</span>
+            <span class="s2">"id"</span><span class="p">:</span>    <span class="s2">"__none__"</span><span class="p">,</span>
+            <span class="s2">"label"</span><span class="p">:</span> <span class="s2">"No Milestone"</span><span class="p">,</span>
+            <span class="s2">"color"</span><span class="p">:</span> <span class="n">default_color</span><span class="p">,</span>
         <span class="p">})</span>
 
     <span class="c1"># Collect unique task types</span>
@@ -761,7 +681,7 @@ window.runMermaid = runMermaid;</script>
             <span class="n">task_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">td</span><span class="p">)</span>
     <span class="n">task_types</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
 
-    <span class="n">valid_tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">init_date</span> <span class="ow">and</span> <span class="n">t</span><span class="o">.</span><span class="n">end_date</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">&#39;duration_minutes&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="s1">&#39;strategy&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="s1">&#39;consolidated&#39;</span><span class="p">]</span>
+    <span class="n">valid_tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">init_date</span> <span class="ow">and</span> <span class="n">t</span><span class="o">.</span><span class="n">end_date</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">'duration_minutes'</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="s1">'strategy'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="s1">'consolidated'</span><span class="p">]</span>
     <span class="n">resource_data</span> <span class="o">=</span> <span class="p">[]</span>
     
     <span class="k">if</span> <span class="n">valid_tasks</span><span class="p">:</span>
@@ -805,8 +725,8 @@ window.runMermaid = runMermaid;</script>
                 <span class="n">avg_load</span> <span class="o">=</span> <span class="n">frames</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="mf">5.0</span>
                 <span class="n">f_start</span> <span class="o">=</span> <span class="n">start_ts</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">5</span> <span class="o">*</span> <span class="n">i</span><span class="p">)</span>
                 <span class="n">resource_data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
-                    <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">f_start</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S&#39;</span><span class="p">),</span>
-                    <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">avg_load</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+                    <span class="s2">"x"</span><span class="p">:</span> <span class="n">f_start</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S'</span><span class="p">),</span>
+                    <span class="s2">"y"</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">avg_load</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
                 <span class="p">})</span>
         
     <span class="n">items_json</span>          <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">items</span><span class="p">,</span>          <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -823,18 +743,18 @@ window.runMermaid = runMermaid;</script>
         <span class="n">p_start</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">init_date</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">init_date</span><span class="p">)</span>
         <span class="n">p_end</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">end_date</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">end_date</span><span class="p">)</span>
         <span class="n">p_dur_days</span> <span class="o">=</span> <span class="p">(</span><span class="n">p_end</span> <span class="o">-</span> <span class="n">p_start</span><span class="p">)</span><span class="o">.</span><span class="n">days</span>
-        <span class="n">p_start_str</span> <span class="o">=</span> <span class="n">p_start</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1"> %b %Y&#39;</span><span class="p">)</span>
-        <span class="n">p_end_str</span> <span class="o">=</span> <span class="n">p_end</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1"> %b %Y&#39;</span><span class="p">)</span>
+        <span class="n">p_start_str</span> <span class="o">=</span> <span class="n">p_start</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'</span><span class="si">%d</span><span class="s1"> %b %Y'</span><span class="p">)</span>
+        <span class="n">p_end_str</span> <span class="o">=</span> <span class="n">p_end</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'</span><span class="si">%d</span><span class="s1"> %b %Y'</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">p_start_str</span><span class="p">,</span> <span class="n">p_end_str</span><span class="p">,</span> <span class="n">p_dur_days</span> <span class="o">=</span> <span class="s2">&quot;N/A&quot;</span><span class="p">,</span> <span class="s2">&quot;N/A&quot;</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="n">p_start_str</span><span class="p">,</span> <span class="n">p_end_str</span><span class="p">,</span> <span class="n">p_dur_days</span> <span class="o">=</span> <span class="s2">"N/A"</span><span class="p">,</span> <span class="s2">"N/A"</span><span class="p">,</span> <span class="mi">0</span>
         
     <span class="c1"># [Req: RF-23.2] — Raw project_config.json embedded verbatim for context</span>
-    <span class="n">req_text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">req_text</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="k">if</span> <span class="n">project_requirements_path</span> <span class="ow">and</span> <span class="n">project_requirements_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="n">req_text</span> <span class="o">=</span> <span class="n">project_requirements_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+        <span class="n">req_text</span> <span class="o">=</span> <span class="n">project_requirements_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="s1">'utf-8'</span><span class="p">)</span>
     <span class="c1"># Calculate Efficiency Index</span>
-    <span class="n">actual_work_minutes</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">&#39;duration_minutes&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">&#39;duration_minutes&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">core_work_minutes</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">&#39;duration_minutes&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">&#39;duration_minutes&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="s1">&#39;strategy&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="s1">&#39;consolidated&#39;</span><span class="p">)</span>
+    <span class="n">actual_work_minutes</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">'duration_minutes'</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">'duration_minutes'</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">core_work_minutes</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">'duration_minutes'</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">'duration_minutes'</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="s1">'strategy'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="s1">'consolidated'</span><span class="p">)</span>
     <span class="n">total_capacity_minutes</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">if</span> <span class="n">tasks</span><span class="p">:</span>
         <span class="n">all_starts</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">init_date</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">init_date</span><span class="p">]</span>
@@ -855,15 +775,15 @@ window.runMermaid = runMermaid;</script>
     <span class="n">core_efficiency_index</span> <span class="o">=</span> <span class="n">core_work_minutes</span> <span class="o">/</span> <span class="n">total_capacity_minutes</span> <span class="k">if</span> <span class="n">total_capacity_minutes</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
 
     <span class="c1"># ── 4. Render HTML ────────────────────────────────────────────────────────────</span>
-    <span class="n">html</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;&lt;!DOCTYPE html&gt;</span>
-<span class="s2">&lt;html lang=&quot;en&quot;&gt;</span>
+    <span class="n">html</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"""&lt;!DOCTYPE html&gt;</span>
+<span class="s2">&lt;html lang="en"&gt;</span>
 <span class="s2">&lt;head&gt;</span>
-<span class="s2">  &lt;meta charset=&quot;UTF-8&quot; /&gt;</span>
-<span class="s2">  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot; /&gt;</span>
+<span class="s2">  &lt;meta charset="UTF-8" /&gt;</span>
+<span class="s2">  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0" /&gt;</span>
 <span class="s2">  &lt;title&gt;</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">&lt;/title&gt;</span>
-<span class="s2">  &lt;link href=&quot;https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap&quot; rel=&quot;stylesheet&quot;/&gt;</span>
-<span class="s2">  &lt;link href=&quot;https://unpkg.com/vis-timeline@7.7.3/dist/vis-timeline-graph2d.min.css&quot; rel=&quot;stylesheet&quot;/&gt;</span>
-<span class="s2">  &lt;script src=&quot;https://unpkg.com/vis-timeline@7.7.3/dist/vis-timeline-graph2d.min.js&quot;&gt;&lt;/script&gt;</span>
+<span class="s2">  &lt;link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/&gt;</span>
+<span class="s2">  &lt;link href="https://unpkg.com/vis-timeline@7.7.3/dist/vis-timeline-graph2d.min.css" rel="stylesheet"/&gt;</span>
+<span class="s2">  &lt;script src="https://unpkg.com/vis-timeline@7.7.3/dist/vis-timeline-graph2d.min.js"&gt;&lt;/script&gt;</span>
 
 <span class="s2">  &lt;style&gt;</span>
 <span class="s2">    *, *::before, *::after </span><span class="se">{{</span><span class="s2"> box-sizing: border-box; margin: 0; padding: 0; </span><span class="se">}}</span>
@@ -880,7 +800,7 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">      --radius:    10px;</span>
 <span class="s2">    </span><span class="se">}}</span>
 
-<span class="s2">    [data-theme=&quot;light&quot;] </span><span class="se">{{</span>
+<span class="s2">    [data-theme="light"] </span><span class="se">{{</span>
 <span class="s2">      --bg:        #f0f2f8;</span>
 <span class="s2">      --surface:   #ffffff;</span>
 <span class="s2">      --surface2:  #e8eaf2;</span>
@@ -890,60 +810,60 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">      --text:      #1a1f36;</span>
 <span class="s2">      --muted:     #7880a0;</span>
 <span class="s2">    </span><span class="se">}}</span>
-<span class="s2">    [data-theme=&quot;light&quot;] body </span><span class="se">{{</span>
+<span class="s2">    [data-theme="light"] body </span><span class="se">{{</span>
 <span class="s2">      background: var(--bg);</span>
 <span class="s2">    </span><span class="se">}}</span>
-<span class="s2">    [data-theme=&quot;light&quot;] header </span><span class="se">{{</span>
+<span class="s2">    [data-theme="light"] header </span><span class="se">{{</span>
 <span class="s2">      background: linear-gradient(90deg, #e4e8f8 0%, #f0f2f8 60%) !important;</span>
 <span class="s2">    </span><span class="se">}}</span>
-<span class="s2">    [data-theme=&quot;light&quot;] .vis-panel.vis-center </span><span class="se">{{</span>
+<span class="s2">    [data-theme="light"] .vis-panel.vis-center </span><span class="se">{{</span>
 <span class="s2">      background: #f5f7fc !important;</span>
 <span class="s2">    </span><span class="se">}}</span>
-<span class="s2">    [data-theme=&quot;light&quot;] .vis-panel.vis-left </span><span class="se">{{</span>
+<span class="s2">    [data-theme="light"] .vis-panel.vis-left </span><span class="se">{{</span>
 <span class="s2">      background: var(--surface) !important;</span>
 <span class="s2">    </span><span class="se">}}</span>
-<span class="s2">    [data-theme=&quot;light&quot;] .vis-time-axis .vis-grid.vis-minor </span><span class="se">{{</span>
+<span class="s2">    [data-theme="light"] .vis-time-axis .vis-grid.vis-minor </span><span class="se">{{</span>
 <span class="s2">      border-color: #e4e8f4 !important;</span>
 <span class="s2">    </span><span class="se">}}</span>
-<span class="s2">    [data-theme=&quot;light&quot;] .vis-time-axis .vis-grid.vis-major </span><span class="se">{{</span>
+<span class="s2">    [data-theme="light"] .vis-time-axis .vis-grid.vis-major </span><span class="se">{{</span>
 <span class="s2">      border-color: var(--border) !important;</span>
 <span class="s2">    </span><span class="se">}}</span>
-<span class="s2">    [data-theme=&quot;light&quot;] #resourceGraph,</span>
-<span class="s2">    [data-theme=&quot;light&quot;] #allocationGraph </span><span class="se">{{</span>
+<span class="s2">    [data-theme="light"] #resourceGraph,</span>
+<span class="s2">    [data-theme="light"] #allocationGraph </span><span class="se">{{</span>
 <span class="s2">      background: #f0f2f8 !important;</span>
 <span class="s2">    </span><span class="se">}}</span>
-<span class="s2">    [data-theme=&quot;light&quot;] .vis-tooltip </span><span class="se">{{</span>
+<span class="s2">    [data-theme="light"] .vis-tooltip </span><span class="se">{{</span>
 <span class="s2">      background: #ffffff !important;</span>
 <span class="s2">      border-color: var(--border) !important;</span>
 <span class="s2">      color: var(--text) !important;</span>
 <span class="s2">    </span><span class="se">}}</span>
-<span class="s2">    [data-theme=&quot;light&quot;] .vis-time-axis .vis-text </span><span class="se">{{</span>
+<span class="s2">    [data-theme="light"] .vis-time-axis .vis-text </span><span class="se">{{</span>
 <span class="s2">      color: var(--muted) !important;</span>
 <span class="s2">    </span><span class="se">}}</span>
-<span class="s2">    [data-theme=&quot;light&quot;] .vis-label </span><span class="se">{{</span>
+<span class="s2">    [data-theme="light"] .vis-label </span><span class="se">{{</span>
 <span class="s2">      color: var(--text) !important;</span>
 <span class="s2">    </span><span class="se">}}</span>
-<span class="s2">    [data-theme=&quot;light&quot;] #gantt </span><span class="se">{{</span>
+<span class="s2">    [data-theme="light"] #gantt </span><span class="se">{{</span>
 <span class="s2">      background: #f5f7fc;</span>
 <span class="s2">    </span><span class="se">}}</span>
-<span class="s2">    [data-theme=&quot;light&quot;] aside </span><span class="se">{{</span>
+<span class="s2">    [data-theme="light"] aside </span><span class="se">{{</span>
 <span class="s2">      background: #ffffff !important;</span>
 <span class="s2">      border-right-color: var(--border) !important;</span>
 <span class="s2">    </span><span class="se">}}</span>
-<span class="s2">    [data-theme=&quot;light&quot;] .sidebar-scroll </span><span class="se">{{</span>
+<span class="s2">    [data-theme="light"] .sidebar-scroll </span><span class="se">{{</span>
 <span class="s2">      background: #ffffff;</span>
 <span class="s2">    </span><span class="se">}}</span>
-<span class="s2">    [data-theme=&quot;light&quot;] .summary-box </span><span class="se">{{</span>
+<span class="s2">    [data-theme="light"] .summary-box </span><span class="se">{{</span>
 <span class="s2">      background: #f0f2f8;</span>
 <span class="s2">    </span><span class="se">}}</span>
-<span class="s2">    [data-theme=&quot;light&quot;] .req-box </span><span class="se">{{</span>
+<span class="s2">    [data-theme="light"] .req-box </span><span class="se">{{</span>
 <span class="s2">      background: #e8eaf2;</span>
 <span class="s2">      color: #5a6280;</span>
 <span class="s2">    </span><span class="se">}}</span>
-<span class="s2">    [data-theme=&quot;light&quot;] .section-label </span><span class="se">{{</span>
+<span class="s2">    [data-theme="light"] .section-label </span><span class="se">{{</span>
 <span class="s2">      color: #7880a0;</span>
 <span class="s2">    </span><span class="se">}}</span>
-<span class="s2">    [data-theme=&quot;light&quot;] .section-sep </span><span class="se">{{</span>
+<span class="s2">    [data-theme="light"] .section-sep </span><span class="se">{{</span>
 <span class="s2">      border-color: #d0d5e8;</span>
 <span class="s2">    </span><span class="se">}}</span>
 
@@ -967,7 +887,7 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">    </span><span class="se">}}</span>
 
 <span class="s2">    body </span><span class="se">{{</span>
-<span class="s2">      font-family: &#39;Inter&#39;, &#39;Segoe UI&#39;, system-ui, sans-serif;</span>
+<span class="s2">      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;</span>
 <span class="s2">      background: var(--bg);</span>
 <span class="s2">      color: var(--text);</span>
 <span class="s2">      display: flex;</span>
@@ -1329,7 +1249,7 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">      z-index: 100; pointer-events: none;</span>
 <span class="s2">    </span><span class="se">}}</span>
 <span class="s2">    .info-tooltip-content::after </span><span class="se">{{</span>
-<span class="s2">      content: &#39;&#39;; position: absolute; top: 100%; left: 50%;</span>
+<span class="s2">      content: ''; position: absolute; top: 100%; left: 50%;</span>
 <span class="s2">      transform: translateX(-50%); border-width: 5px; border-style: solid;</span>
 <span class="s2">      border-color: #2e3555 transparent transparent transparent;</span>
 <span class="s2">    </span><span class="se">}}</span>
@@ -1363,121 +1283,121 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">&lt;body&gt;</span>
 
 <span class="s2">&lt;header&gt;</span>
-<span class="s2">  &lt;div class=&quot;logo-mark&quot;&gt;📅&lt;/div&gt;</span>
+<span class="s2">  &lt;div class="logo-mark"&gt;📅&lt;/div&gt;</span>
 <span class="s2">  &lt;h1&gt;</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">&lt;/h1&gt;</span>
-<span class="s2">  &lt;div class=&quot;header-right&quot;&gt;</span>
-<span class="s2">    &lt;div class=&quot;toolbar&quot;&gt;</span>
-<span class="s2">      &lt;button class=&quot;btn btn-accent&quot; onclick=&quot;fitAll()&quot;&gt;⊞ Fit All&lt;/button&gt;</span>
-<span class="s2">      &lt;button class=&quot;btn&quot; onclick=&quot;zoomIn()&quot;&gt;＋ Zoom In&lt;/button&gt;</span>
-<span class="s2">      &lt;button class=&quot;btn&quot; onclick=&quot;zoomOut()&quot;&gt;－ Zoom Out&lt;/button&gt;</span>
-<span class="s2">      &lt;button class=&quot;btn&quot; onclick=&quot;goToday()&quot;&gt;◎ Today&lt;/button&gt;</span>
-<span class="s2">      &lt;button class=&quot;btn&quot; onclick=&quot;toggleSort()&quot;&gt;↕ Sort Rows&lt;/button&gt;</span>
-<span class="s2">      &lt;div class=&quot;divider&quot;&gt;&lt;/div&gt;</span>
-<span class="s2">      &lt;button class=&quot;btn btn-export&quot; onclick=&quot;exportJSON()&quot;&gt;⬇ JSON&lt;/button&gt;</span>
-<span class="s2">      &lt;button class=&quot;btn btn-export&quot; onclick=&quot;exportCSV()&quot;&gt;⬇ CSV&lt;/button&gt;</span>
-<span class="s2">      &lt;div class=&quot;divider&quot;&gt;&lt;/div&gt;</span>
-<span class="s2">      &lt;button id=&quot;themeToggle&quot; onclick=&quot;toggleTheme()&quot;&gt;🌙 Dark&lt;/button&gt;</span>
+<span class="s2">  &lt;div class="header-right"&gt;</span>
+<span class="s2">    &lt;div class="toolbar"&gt;</span>
+<span class="s2">      &lt;button class="btn btn-accent" onclick="fitAll()"&gt;⊞ Fit All&lt;/button&gt;</span>
+<span class="s2">      &lt;button class="btn" onclick="zoomIn()"&gt;＋ Zoom In&lt;/button&gt;</span>
+<span class="s2">      &lt;button class="btn" onclick="zoomOut()"&gt;－ Zoom Out&lt;/button&gt;</span>
+<span class="s2">      &lt;button class="btn" onclick="goToday()"&gt;◎ Today&lt;/button&gt;</span>
+<span class="s2">      &lt;button class="btn" onclick="toggleSort()"&gt;↕ Sort Rows&lt;/button&gt;</span>
+<span class="s2">      &lt;div class="divider"&gt;&lt;/div&gt;</span>
+<span class="s2">      &lt;button class="btn btn-export" onclick="exportJSON()"&gt;⬇ JSON&lt;/button&gt;</span>
+<span class="s2">      &lt;button class="btn btn-export" onclick="exportCSV()"&gt;⬇ CSV&lt;/button&gt;</span>
+<span class="s2">      &lt;div class="divider"&gt;&lt;/div&gt;</span>
+<span class="s2">      &lt;button id="themeToggle" onclick="toggleTheme()"&gt;🌙 Dark&lt;/button&gt;</span>
 <span class="s2">    &lt;/div&gt;</span>
-<span class="s2">    &lt;div class=&quot;badge&quot; id=&quot;taskCount&quot;&gt;&lt;/div&gt;</span>
+<span class="s2">    &lt;div class="badge" id="taskCount"&gt;&lt;/div&gt;</span>
 <span class="s2">  &lt;/div&gt;</span>
 <span class="s2">&lt;/header&gt;</span>
 
-<span class="s2">&lt;div class=&quot;main&quot;&gt;</span>
-<span class="s2">  &lt;aside class=&quot;sidebar&quot;&gt;</span>
+<span class="s2">&lt;div class="main"&gt;</span>
+<span class="s2">  &lt;aside class="sidebar"&gt;</span>
 
 <span class="s2">    &lt;!-- Milestone filter --&gt;</span>
-<span class="s2">    &lt;div class=&quot;panel-header&quot;&gt;</span>
+<span class="s2">    &lt;div class="panel-header"&gt;</span>
 <span class="s2">      &lt;h2&gt;Milestones&lt;/h2&gt;</span>
-<span class="s2">      &lt;div class=&quot;panel-toggle-row&quot;&gt;</span>
-<span class="s2">        &lt;button class=&quot;btn&quot; onclick=&quot;toggleGroup(&#39;milestone&#39;, true)&quot;&gt;✓&lt;/button&gt;</span>
-<span class="s2">        &lt;button class=&quot;btn&quot; onclick=&quot;toggleGroup(&#39;milestone&#39;, false)&quot;&gt;✕&lt;/button&gt;</span>
+<span class="s2">      &lt;div class="panel-toggle-row"&gt;</span>
+<span class="s2">        &lt;button class="btn" onclick="toggleGroup('milestone', true)"&gt;✓&lt;/button&gt;</span>
+<span class="s2">        &lt;button class="btn" onclick="toggleGroup('milestone', false)"&gt;✕&lt;/button&gt;</span>
 <span class="s2">      &lt;/div&gt;</span>
 <span class="s2">    &lt;/div&gt;</span>
 
 <span class="s2">    &lt;!-- Task-type filter --&gt;</span>
-<span class="s2">    &lt;div class=&quot;panel-header&quot; style=&quot;border-top: 1px solid var(--border);&quot;&gt;</span>
+<span class="s2">    &lt;div class="panel-header" style="border-top: 1px solid var(--border);"&gt;</span>
 <span class="s2">      &lt;h2&gt;Task Types&lt;/h2&gt;</span>
-<span class="s2">      &lt;div class=&quot;panel-toggle-row&quot;&gt;</span>
-<span class="s2">        &lt;button class=&quot;btn&quot; onclick=&quot;toggleGroup(&#39;type&#39;, true)&quot;&gt;✓&lt;/button&gt;</span>
-<span class="s2">        &lt;button class=&quot;btn&quot; onclick=&quot;toggleGroup(&#39;type&#39;, false)&quot;&gt;✕&lt;/button&gt;</span>
+<span class="s2">      &lt;div class="panel-toggle-row"&gt;</span>
+<span class="s2">        &lt;button class="btn" onclick="toggleGroup('type', true)"&gt;✓&lt;/button&gt;</span>
+<span class="s2">        &lt;button class="btn" onclick="toggleGroup('type', false)"&gt;✕&lt;/button&gt;</span>
 <span class="s2">      &lt;/div&gt;</span>
 <span class="s2">    &lt;/div&gt;</span>
 
-<span class="s2">    &lt;div class=&quot;sidebar-scroll&quot;&gt;</span>
+<span class="s2">    &lt;div class="sidebar-scroll"&gt;</span>
 <span class="s2">      &lt;div&gt;</span>
-<span class="s2">          &lt;div class=&quot;section-label&quot;&gt;Project Summary&lt;/div&gt;</span>
-<span class="s2">          &lt;div class=&quot;summary-box&quot;&gt;</span>
-<span class="s2">            &lt;div class=&quot;summary-row&quot;&gt;&lt;span class=&quot;summary-key&quot;&gt;Start&lt;/span&gt;&lt;span class=&quot;summary-val&quot;&gt;</span><span class="si">{</span><span class="n">p_start_str</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;</span>
-<span class="s2">            &lt;div class=&quot;summary-row&quot;&gt;&lt;span class=&quot;summary-key&quot;&gt;End&lt;/span&gt;&lt;span class=&quot;summary-val&quot;&gt;</span><span class="si">{</span><span class="n">p_end_str</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;</span>
-<span class="s2">            &lt;div class=&quot;summary-row&quot;&gt;&lt;span class=&quot;summary-key&quot;&gt;Duration&lt;/span&gt;&lt;span class=&quot;summary-val&quot;&gt;</span><span class="si">{</span><span class="n">p_dur_days</span><span class="si">}</span><span class="s2"> days&lt;/span&gt;&lt;/div&gt;</span>
-<span class="s2">            &lt;div class=&quot;summary-row&quot; style=&quot;margin-bottom: 6px;&quot;&gt;&lt;span class=&quot;summary-key&quot;&gt;Resources&lt;/span&gt;&lt;span class=&quot;summary-val&quot;&gt;</span><span class="si">{</span><span class="n">total_resources</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;</span>
+<span class="s2">          &lt;div class="section-label"&gt;Project Summary&lt;/div&gt;</span>
+<span class="s2">          &lt;div class="summary-box"&gt;</span>
+<span class="s2">            &lt;div class="summary-row"&gt;&lt;span class="summary-key"&gt;Start&lt;/span&gt;&lt;span class="summary-val"&gt;</span><span class="si">{</span><span class="n">p_start_str</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;</span>
+<span class="s2">            &lt;div class="summary-row"&gt;&lt;span class="summary-key"&gt;End&lt;/span&gt;&lt;span class="summary-val"&gt;</span><span class="si">{</span><span class="n">p_end_str</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;</span>
+<span class="s2">            &lt;div class="summary-row"&gt;&lt;span class="summary-key"&gt;Duration&lt;/span&gt;&lt;span class="summary-val"&gt;</span><span class="si">{</span><span class="n">p_dur_days</span><span class="si">}</span><span class="s2"> days&lt;/span&gt;&lt;/div&gt;</span>
+<span class="s2">            &lt;div class="summary-row" style="margin-bottom: 6px;"&gt;&lt;span class="summary-key"&gt;Resources&lt;/span&gt;&lt;span class="summary-val"&gt;</span><span class="si">{</span><span class="n">total_resources</span><span class="si">}</span><span class="s2">&lt;/span&gt;&lt;/div&gt;</span>
 <span class="s2">            </span>
-<span class="s2">            &lt;div class=&quot;summary-row&quot; style=&quot;border-top: 1px dashed var(--border); padding-top: 6px; overflow:visible;&quot;&gt;</span>
-<span class="s2">                &lt;span class=&quot;summary-key info-tooltip-wrap&quot;&gt;</span>
+<span class="s2">            &lt;div class="summary-row" style="border-top: 1px dashed var(--border); padding-top: 6px; overflow:visible;"&gt;</span>
+<span class="s2">                &lt;span class="summary-key info-tooltip-wrap"&gt;</span>
 <span class="s2">                   Gross Eff.</span>
-<span class="s2">                   &lt;div class=&quot;info-tooltip-content&quot;&gt;</span>
+<span class="s2">                   &lt;div class="info-tooltip-content"&gt;</span>
 <span class="s2">                     &lt;b&gt;Gross Efficiency&lt;/b&gt;&lt;br&gt;Includes 100% of all estimated tasks, including consolidated drawing blocks running in the background. Reflects total systemic density.</span>
 <span class="s2">                   &lt;/div&gt;</span>
 <span class="s2">                &lt;/span&gt;</span>
-<span class="s2">                &lt;span class=&quot;summary-val&quot; style=&quot;color: </span><span class="se">{{</span><span class="s2"> &#39;#a0ffcb&#39; if efficiency_index &gt;= 0.8 else &#39;#ffcc00&#39; if efficiency_index &gt;= 0.5 else &#39;#ff6b6b&#39; </span><span class="se">}}</span><span class="s2">&quot;&gt;</span><span class="si">{</span><span class="n">efficiency_index</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&lt;/span&gt;</span>
+<span class="s2">                &lt;span class="summary-val" style="color: </span><span class="se">{{</span><span class="s2"> '#a0ffcb' if efficiency_index &gt;= 0.8 else '#ffcc00' if efficiency_index &gt;= 0.5 else '#ff6b6b' </span><span class="se">}}</span><span class="s2">"&gt;</span><span class="si">{</span><span class="n">efficiency_index</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&lt;/span&gt;</span>
 <span class="s2">            &lt;/div&gt;</span>
-<span class="s2">            &lt;div class=&quot;summary-row&quot; style=&quot;overflow:visible;&quot;&gt;</span>
-<span class="s2">                &lt;span class=&quot;summary-key info-tooltip-wrap&quot;&gt;</span>
+<span class="s2">            &lt;div class="summary-row" style="overflow:visible;"&gt;</span>
+<span class="s2">                &lt;span class="summary-key info-tooltip-wrap"&gt;</span>
 <span class="s2">                   Core Eff.</span>
-<span class="s2">                   &lt;div class=&quot;info-tooltip-content&quot;&gt;</span>
+<span class="s2">                   &lt;div class="info-tooltip-content"&gt;</span>
 <span class="s2">                     &lt;b&gt;Core Efficiency&lt;/b&gt;&lt;br&gt;Excludes consolidated drawings. This matches the visual idleness on the charts and reveals actual capacity gaps when engineers are blocked.</span>
 <span class="s2">                   &lt;/div&gt;</span>
 <span class="s2">                &lt;/span&gt;</span>
-<span class="s2">                &lt;span class=&quot;summary-val&quot; style=&quot;color: </span><span class="se">{{</span><span class="s2"> &#39;#a0ffcb&#39; if core_efficiency_index &gt;= 0.8 else &#39;#ffcc00&#39; if core_efficiency_index &gt;= 0.5 else &#39;#ff6b6b&#39; </span><span class="se">}}</span><span class="s2">&quot;&gt;</span><span class="si">{</span><span class="n">core_efficiency_index</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&lt;/span&gt;</span>
+<span class="s2">                &lt;span class="summary-val" style="color: </span><span class="se">{{</span><span class="s2"> '#a0ffcb' if core_efficiency_index &gt;= 0.8 else '#ffcc00' if core_efficiency_index &gt;= 0.5 else '#ff6b6b' </span><span class="se">}}</span><span class="s2">"&gt;</span><span class="si">{</span><span class="n">core_efficiency_index</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&lt;/span&gt;</span>
 <span class="s2">            &lt;/div&gt;</span>
 <span class="s2">          &lt;/div&gt;</span>
 <span class="s2">      &lt;/div&gt;</span>
 <span class="s2">      </span>
-<span class="s2">      &lt;hr class=&quot;section-sep&quot;/&gt;</span>
+<span class="s2">      &lt;hr class="section-sep"/&gt;</span>
 
 <span class="s2">      &lt;div&gt;</span>
-<span class="s2">          &lt;div class=&quot;section-label&quot;&gt;Milestones&lt;/div&gt;</span>
-<span class="s2">          &lt;div id=&quot;legendMilestone&quot;&gt;&lt;/div&gt;</span>
+<span class="s2">          &lt;div class="section-label"&gt;Milestones&lt;/div&gt;</span>
+<span class="s2">          &lt;div id="legendMilestone"&gt;&lt;/div&gt;</span>
 <span class="s2">      &lt;/div&gt;</span>
 
-<span class="s2">      &lt;hr class=&quot;section-sep&quot;/&gt;</span>
+<span class="s2">      &lt;hr class="section-sep"/&gt;</span>
 
 <span class="s2">      &lt;div&gt;</span>
-<span class="s2">          &lt;div class=&quot;section-label&quot;&gt;Task Types&lt;/div&gt;</span>
-<span class="s2">          &lt;div id=&quot;legendType&quot;&gt;&lt;/div&gt;</span>
+<span class="s2">          &lt;div class="section-label"&gt;Task Types&lt;/div&gt;</span>
+<span class="s2">          &lt;div id="legendType"&gt;&lt;/div&gt;</span>
 <span class="s2">      &lt;/div&gt;</span>
 <span class="s2">      </span>
 
 <span class="s2">      </span>
 <span class="s2">      &lt;div&gt;</span>
-<span class="s2">          &lt;div class=&quot;section-label&quot;&gt;Requirements&lt;/div&gt;</span>
-<span class="s2">          &lt;div class=&quot;req-box&quot;&gt;</span><span class="si">{</span><span class="n">req_text</span><span class="si">}</span><span class="s2">&lt;/div&gt;</span>
+<span class="s2">          &lt;div class="section-label"&gt;Requirements&lt;/div&gt;</span>
+<span class="s2">          &lt;div class="req-box"&gt;</span><span class="si">{</span><span class="n">req_text</span><span class="si">}</span><span class="s2">&lt;/div&gt;</span>
 <span class="s2">      &lt;/div&gt;</span>
 <span class="s2">      </span>
 
 <span class="s2">    &lt;/div&gt;</span>
 <span class="s2">  &lt;/aside&gt;</span>
 
-<span class="s2">  &lt;div class=&quot;main-content&quot;&gt;</span>
-<span class="s2">    &lt;div id=&quot;gantt&quot;&gt;&lt;/div&gt;</span>
-<span class="s2">    &lt;div class=&quot;graph-wrapper&quot;&gt;</span>
-<span class="s2">       &lt;div id=&quot;resourceGraph&quot;&gt;&lt;/div&gt;</span>
+<span class="s2">  &lt;div class="main-content"&gt;</span>
+<span class="s2">    &lt;div id="gantt"&gt;&lt;/div&gt;</span>
+<span class="s2">    &lt;div class="graph-wrapper"&gt;</span>
+<span class="s2">       &lt;div id="resourceGraph"&gt;&lt;/div&gt;</span>
 <span class="s2">    &lt;/div&gt;</span>
-<span class="s2">    &lt;div class=&quot;graph-wrapper&quot;&gt;</span>
-<span class="s2">       &lt;div id=&quot;allocationGraph&quot;&gt;&lt;/div&gt;</span>
+<span class="s2">    &lt;div class="graph-wrapper"&gt;</span>
+<span class="s2">       &lt;div id="allocationGraph"&gt;&lt;/div&gt;</span>
 <span class="s2">    &lt;/div&gt;</span>
 <span class="s2">  &lt;/div&gt;</span>
 <span class="s2">&lt;/div&gt;</span>
 
-<span class="s2">&lt;div id=&quot;toast&quot;&gt;&lt;/div&gt;</span>
-<span class="s2">&lt;div id=&quot;sync-label&quot;&gt;&lt;/div&gt;</span>
+<span class="s2">&lt;div id="toast"&gt;&lt;/div&gt;</span>
+<span class="s2">&lt;div id="sync-label"&gt;&lt;/div&gt;</span>
 
 <span class="s2">&lt;script&gt;</span>
 <span class="s2">  // ── Injected data ────────────────────────────────────────────────────────────</span>
 <span class="s2">  const ALL_ITEMS      = </span><span class="si">{</span><span class="n">items_json</span><span class="si">}</span><span class="s2">;</span>
 <span class="s2">  const ALL_GROUPS     = </span><span class="si">{</span><span class="n">groups_json</span><span class="si">}</span><span class="s2">;</span>
 <span class="s2">  const MILESTONE_META = </span><span class="si">{</span><span class="n">milestone_meta_json</span><span class="si">}</span><span class="s2">;   // [</span><span class="se">{{</span><span class="s2">id, label, color</span><span class="se">}}</span><span class="s2">, …]</span>
-<span class="s2">  const TASK_TYPES     = </span><span class="si">{</span><span class="n">task_types_json</span><span class="si">}</span><span class="s2">;        // [&#39;part_model&#39;, &#39;part_list&#39;, …]</span>
+<span class="s2">  const TASK_TYPES     = </span><span class="si">{</span><span class="n">task_types_json</span><span class="si">}</span><span class="s2">;        // ['part_model', 'part_list', …]</span>
 <span class="s2">  const TYPE_PALETTE   = </span><span class="si">{</span><span class="n">type_palette_json</span><span class="si">}</span><span class="s2">;</span>
 
 <span class="s2">  const RESOURCE_DATA  = </span><span class="si">{</span><span class="n">resource_data_json</span><span class="si">}</span><span class="s2">;</span>
@@ -1494,39 +1414,39 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">  const dataset = new vis.DataSet(ALL_ITEMS);</span>
 <span class="s2">  const groups  = new vis.DataSet(ALL_GROUPS);</span>
 
-<span class="s2">  document.getElementById(&#39;taskCount&#39;).textContent =</span>
+<span class="s2">  document.getElementById('taskCount').textContent =</span>
 <span class="s2">    `$</span><span class="se">{{</span><span class="s2">ALL_ITEMS.length</span><span class="se">}}</span><span class="s2"> tasks · $</span><span class="se">{{</span><span class="s2">ALL_GROUPS.length</span><span class="se">}}</span><span class="s2"> rows`;</span>
 
-<span class="s2">  const AXIS_WIDTH = &#39;225px&#39;;</span>
+<span class="s2">  const AXIS_WIDTH = '225px';</span>
 
 <span class="s2">  const timelineOptions = </span><span class="se">{{</span>
-<span class="s2">      height:       &#39;100%&#39;,</span>
-<span class="s2">      orientation:  </span><span class="se">{{</span><span class="s2"> axis: &#39;top&#39; </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">      height:       '100%',</span>
+<span class="s2">      orientation:  </span><span class="se">{{</span><span class="s2"> axis: 'top' </span><span class="se">}}</span><span class="s2">,</span>
 <span class="s2">      stack:        true,</span>
 <span class="s2">      stackSubgroups: true,</span>
 <span class="s2">      moveable:     true,</span>
 <span class="s2">      zoomable:     true,</span>
 <span class="s2">      selectable:   true,</span>
 <span class="s2">      multiselect:  false,</span>
-<span class="s2">      tooltip:      </span><span class="se">{{</span><span class="s2"> followMouse: true, overflowMethod: &#39;flip&#39; </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">      tooltip:      </span><span class="se">{{</span><span class="s2"> followMouse: true, overflowMethod: 'flip' </span><span class="se">}}</span><span class="s2">,</span>
 <span class="s2">      zoomMin: 1000 * 60 * 60,</span>
 <span class="s2">      zoomMax: 1000 * 60 * 60 * 24 * 365 * 2,</span>
 <span class="s2">      margin: </span><span class="se">{{</span><span class="s2"> item: </span><span class="se">{{</span><span class="s2"> horizontal: 2, vertical: 4 </span><span class="se">}}</span><span class="s2">, axis: 6 </span><span class="se">}}</span><span class="s2">,</span>
 <span class="s2">      groupWidth: AXIS_WIDTH,</span>
 <span class="s2">      format: </span><span class="se">{{</span>
 <span class="s2">        minorLabels: </span><span class="se">{{</span>
-<span class="s2">          minute: &#39;HH:mm&#39;, hour: &#39;HH:mm&#39;,</span>
-<span class="s2">          day: &#39;D MMM&#39;, week: &#39;D MMM&#39;, month: &#39;MMM YYYY&#39;</span>
+<span class="s2">          minute: 'HH:mm', hour: 'HH:mm',</span>
+<span class="s2">          day: 'D MMM', week: 'D MMM', month: 'MMM YYYY'</span>
 <span class="s2">        </span><span class="se">}}</span><span class="s2">,</span>
 <span class="s2">        majorLabels: </span><span class="se">{{</span>
-<span class="s2">          hour: &#39;ddd D MMM&#39;, day: &#39;MMMM YYYY&#39;,</span>
-<span class="s2">          week: &#39;MMMM YYYY&#39;, month: &#39;YYYY&#39;</span>
+<span class="s2">          hour: 'ddd D MMM', day: 'MMMM YYYY',</span>
+<span class="s2">          week: 'MMMM YYYY', month: 'YYYY'</span>
 <span class="s2">        </span><span class="se">}}</span>
 <span class="s2">      </span><span class="se">}}</span><span class="s2">,</span>
 <span class="s2">  </span><span class="se">}}</span><span class="s2">;</span>
 
 <span class="s2">  const timeline = new vis.Timeline(</span>
-<span class="s2">    document.getElementById(&#39;gantt&#39;),</span>
+<span class="s2">    document.getElementById('gantt'),</span>
 <span class="s2">    dataset,</span>
 <span class="s2">    groups,</span>
 <span class="s2">    timelineOptions</span>
@@ -1534,9 +1454,9 @@ window.runMermaid = runMermaid;</script>
 
 <span class="s2">  const resDataset = new vis.DataSet(RESOURCE_DATA);</span>
 <span class="s2">  const resOptions = </span><span class="se">{{</span>
-<span class="s2">      height: &#39;100%&#39;,</span>
-<span class="s2">      style: &#39;bar&#39;,</span>
-<span class="s2">      barChart: </span><span class="se">{{</span><span class="s2"> width: 50, align: &#39;center&#39; </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">      height: '100%',</span>
+<span class="s2">      style: 'bar',</span>
+<span class="s2">      barChart: </span><span class="se">{{</span><span class="s2"> width: 50, align: 'center' </span><span class="se">}}</span><span class="s2">,</span>
 <span class="s2">      drawPoints: false,</span>
 <span class="s2">      dataAxis: </span><span class="se">{{</span>
 <span class="s2">        visible: true,</span>
@@ -1550,29 +1470,29 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">  </span><span class="se">}}</span><span class="s2">;</span>
 <span class="s2">  </span>
 <span class="s2">  const resourceGraph = new vis.Graph2d(</span>
-<span class="s2">      document.getElementById(&#39;resourceGraph&#39;),</span>
+<span class="s2">      document.getElementById('resourceGraph'),</span>
 <span class="s2">      resDataset,</span>
 <span class="s2">      resOptions</span>
 <span class="s2">  );</span>
 
 <span class="s2">  const allocDataset = new vis.DataSet(RESOURCE_DATA.map(d =&gt; (</span><span class="se">{{</span><span class="s2"> x: d.x, y: (d.y / TOTAL_RESOURCES) * 100 </span><span class="se">}}</span><span class="s2">)));</span>
 <span class="s2">  const allocOptions = </span><span class="se">{{</span>
-<span class="s2">      height: &#39;100%&#39;,</span>
-<span class="s2">      style: &#39;bar&#39;,</span>
-<span class="s2">      barChart: </span><span class="se">{{</span><span class="s2"> width: 50, align: &#39;center&#39; </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">      height: '100%',</span>
+<span class="s2">      style: 'bar',</span>
+<span class="s2">      barChart: </span><span class="se">{{</span><span class="s2"> width: 50, align: 'center' </span><span class="se">}}</span><span class="s2">,</span>
 <span class="s2">      drawPoints: false,</span>
 <span class="s2">      dataAxis: </span><span class="se">{{</span>
 <span class="s2">        visible: true,</span>
 <span class="s2">        width: AXIS_WIDTH,</span>
 <span class="s2">        left: </span><span class="se">{{</span>
-<span class="s2">            format: function (value) </span><span class="se">{{</span><span class="s2"> return Math.round(value) + &#39;%&#39;; </span><span class="se">}}</span>
+<span class="s2">            format: function (value) </span><span class="se">{{</span><span class="s2"> return Math.round(value) + '%'; </span><span class="se">}}</span>
 <span class="s2">        </span><span class="se">}}</span>
 <span class="s2">      </span><span class="se">}}</span><span class="s2">,</span>
 <span class="s2">      zoomMin: timelineOptions.zoomMin,</span>
 <span class="s2">      zoomMax: timelineOptions.zoomMax,</span>
 <span class="s2">  </span><span class="se">}}</span><span class="s2">;</span>
 <span class="s2">  const allocationGraph = new vis.Graph2d(</span>
-<span class="s2">      document.getElementById(&#39;allocationGraph&#39;),</span>
+<span class="s2">      document.getElementById('allocationGraph'),</span>
 <span class="s2">      allocDataset,</span>
 <span class="s2">      allocOptions</span>
 <span class="s2">  );</span>
@@ -1581,23 +1501,23 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">  function addAxisTitleOverlay(containerId, lines) </span><span class="se">{{</span>
 <span class="s2">    const wrap = document.getElementById(containerId);</span>
 <span class="s2">    if (!wrap) return;</span>
-<span class="s2">    wrap.style.position = &#39;relative&#39;;</span>
-<span class="s2">    const div = document.createElement(&#39;div&#39;);</span>
-<span class="s2">    div.className = &#39;chart-axis-label&#39;;</span>
-<span class="s2">    div.innerHTML = lines.join(&#39;&lt;br&gt;&#39;);</span>
+<span class="s2">    wrap.style.position = 'relative';</span>
+<span class="s2">    const div = document.createElement('div');</span>
+<span class="s2">    div.className = 'chart-axis-label';</span>
+<span class="s2">    div.innerHTML = lines.join('&lt;br&gt;');</span>
 <span class="s2">    wrap.appendChild(div);</span>
 <span class="s2">  </span><span class="se">}}</span>
-<span class="s2">  addAxisTitleOverlay(&#39;resourceGraph&#39;,   [&#39;Active Tasks&#39;, `(max: $</span><span class="se">{{</span><span class="s2">TOTAL_RESOURCES</span><span class="se">}}</span><span class="s2">)` ]);</span>
-<span class="s2">  addAxisTitleOverlay(&#39;allocationGraph&#39;, [&#39;Resource&#39;, &#39;Alloc. (%)&#39;]);</span>
+<span class="s2">  addAxisTitleOverlay('resourceGraph',   ['Active Tasks', `(max: $</span><span class="se">{{</span><span class="s2">TOTAL_RESOURCES</span><span class="se">}}</span><span class="s2">)` ]);</span>
+<span class="s2">  addAxisTitleOverlay('allocationGraph', ['Resource', 'Alloc. (%)']);</span>
 
 <span class="s2">  // ── Sync Cursor Initialization ──────────────────────────────────────────────</span>
-<span class="s2">  const SYNC_ID = &#39;sync-cursor&#39;;</span>
+<span class="s2">  const SYNC_ID = 'sync-cursor';</span>
 <span class="s2">  const now = new Date();</span>
 <span class="s2">  timeline.addCustomTime(now, SYNC_ID);</span>
 <span class="s2">  resourceGraph.addCustomTime(now, SYNC_ID);</span>
 <span class="s2">  allocationGraph.addCustomTime(now, SYNC_ID);</span>
 
-<span class="s2">  const syncLabel = document.getElementById(&#39;sync-label&#39;);</span>
+<span class="s2">  const syncLabel = document.getElementById('sync-label');</span>
 
 <span class="s2">  function getSnapInterval() </span><span class="se">{{</span>
 <span class="s2">    const win = timeline.getWindow();</span>
@@ -1620,46 +1540,46 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">    allocationGraph.setCustomTime(snappedTime, SYNC_ID);</span>
 
 <span class="s2">    // Update label</span>
-<span class="s2">    syncLabel.style.display = &#39;block&#39;;</span>
-<span class="s2">    syncLabel.style.left = event.pageX + &#39;px&#39;;</span>
-<span class="s2">    syncLabel.style.top  = event.pageY + &#39;px&#39;;</span>
+<span class="s2">    syncLabel.style.display = 'block';</span>
+<span class="s2">    syncLabel.style.left = event.pageX + 'px';</span>
+<span class="s2">    syncLabel.style.top  = event.pageY + 'px';</span>
 <span class="s2">    </span>
-<span class="s2">    const options = </span><span class="se">{{</span><span class="s2"> day: &#39;2-digit&#39;, month: &#39;short&#39;, hour: &#39;2-digit&#39;, minute: &#39;2-digit&#39; </span><span class="se">}}</span><span class="s2">;</span>
-<span class="s2">    syncLabel.textContent = snappedTime.toLocaleString(&#39;pt-BR&#39;, options).replace(&#39;,&#39;, &#39;&#39;);</span>
+<span class="s2">    const options = </span><span class="se">{{</span><span class="s2"> day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' </span><span class="se">}}</span><span class="s2">;</span>
+<span class="s2">    syncLabel.textContent = snappedTime.toLocaleString('pt-BR', options).replace(',', '');</span>
 
 <span class="s2">    // Set cursor to active</span>
-<span class="s2">    document.querySelectorAll(&#39;.vis-custom-time.sync-cursor&#39;).forEach(el =&gt; el.classList.add(&#39;active&#39;));</span>
+<span class="s2">    document.querySelectorAll('.vis-custom-time.sync-cursor').forEach(el =&gt; el.classList.add('active'));</span>
 <span class="s2">  </span><span class="se">}}</span>
 
 <span class="s2">  function hideSyncCursor() </span><span class="se">{{</span>
-<span class="s2">    syncLabel.style.display = &#39;none&#39;;</span>
-<span class="s2">    document.querySelectorAll(&#39;.vis-custom-time.sync-cursor&#39;).forEach(el =&gt; el.classList.remove(&#39;active&#39;));</span>
+<span class="s2">    syncLabel.style.display = 'none';</span>
+<span class="s2">    document.querySelectorAll('.vis-custom-time.sync-cursor').forEach(el =&gt; el.classList.remove('active'));</span>
 <span class="s2">  </span><span class="se">}}</span>
 
 <span class="s2">  // Event Listeners</span>
 <span class="s2">  [</span>
-<span class="s2">    </span><span class="se">{{</span><span class="s2"> el: document.getElementById(&#39;gantt&#39;), inst: timeline </span><span class="se">}}</span><span class="s2">,</span>
-<span class="s2">    </span><span class="se">{{</span><span class="s2"> el: document.getElementById(&#39;resourceGraph&#39;), inst: resourceGraph </span><span class="se">}}</span><span class="s2">,</span>
-<span class="s2">    </span><span class="se">{{</span><span class="s2"> el: document.getElementById(&#39;allocationGraph&#39;), inst: allocationGraph </span><span class="se">}}</span>
+<span class="s2">    </span><span class="se">{{</span><span class="s2"> el: document.getElementById('gantt'), inst: timeline </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">    </span><span class="se">{{</span><span class="s2"> el: document.getElementById('resourceGraph'), inst: resourceGraph </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">    </span><span class="se">{{</span><span class="s2"> el: document.getElementById('allocationGraph'), inst: allocationGraph </span><span class="se">}}</span>
 <span class="s2">  ].forEach(pair =&gt; </span><span class="se">{{</span>
-<span class="s2">    pair.el.addEventListener(&#39;mousemove&#39;, (e) =&gt; updateSyncCursor(e, pair.inst));</span>
-<span class="s2">    pair.el.addEventListener(&#39;mouseleave&#39;, hideSyncCursor);</span>
+<span class="s2">    pair.el.addEventListener('mousemove', (e) =&gt; updateSyncCursor(e, pair.inst));</span>
+<span class="s2">    pair.el.addEventListener('mouseleave', hideSyncCursor);</span>
 <span class="s2">  </span><span class="se">}}</span><span class="s2">);</span>
 
 <span class="s2">  // Sync range changes between timeline and graph</span>
-<span class="s2">  timeline.on(&#39;rangechange&#39;, function (properties) </span><span class="se">{{</span>
+<span class="s2">  timeline.on('rangechange', function (properties) </span><span class="se">{{</span>
 <span class="s2">      if (properties.byUser) </span><span class="se">{{</span>
 <span class="s2">          resourceGraph.setWindow(properties.start, properties.end, </span><span class="se">{{</span><span class="s2"> animation: false </span><span class="se">}}</span><span class="s2">);</span>
 <span class="s2">          allocationGraph.setWindow(properties.start, properties.end, </span><span class="se">{{</span><span class="s2"> animation: false </span><span class="se">}}</span><span class="s2">);</span>
 <span class="s2">      </span><span class="se">}}</span>
 <span class="s2">  </span><span class="se">}}</span><span class="s2">);</span>
-<span class="s2">  resourceGraph.on(&#39;rangechange&#39;, function (properties) </span><span class="se">{{</span>
+<span class="s2">  resourceGraph.on('rangechange', function (properties) </span><span class="se">{{</span>
 <span class="s2">      if (properties.byUser) </span><span class="se">{{</span>
 <span class="s2">          timeline.setWindow(properties.start, properties.end, </span><span class="se">{{</span><span class="s2"> animation: false </span><span class="se">}}</span><span class="s2">);</span>
 <span class="s2">          allocationGraph.setWindow(properties.start, properties.end, </span><span class="se">{{</span><span class="s2"> animation: false </span><span class="se">}}</span><span class="s2">);</span>
 <span class="s2">      </span><span class="se">}}</span>
 <span class="s2">  </span><span class="se">}}</span><span class="s2">);</span>
-<span class="s2">  allocationGraph.on(&#39;rangechange&#39;, function (properties) </span><span class="se">{{</span>
+<span class="s2">  allocationGraph.on('rangechange', function (properties) </span><span class="se">{{</span>
 <span class="s2">      if (properties.byUser) </span><span class="se">{{</span>
 <span class="s2">          timeline.setWindow(properties.start, properties.end, </span><span class="se">{{</span><span class="s2"> animation: false </span><span class="se">}}</span><span class="s2">);</span>
 <span class="s2">          resourceGraph.setWindow(properties.start, properties.end, </span><span class="se">{{</span><span class="s2"> animation: false </span><span class="se">}}</span><span class="s2">);</span>
@@ -1716,7 +1636,7 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">  // ── Re-apply all active filters and refresh dataset ───────────────────────────</span>
 <span class="s2">  function applyFilters() </span><span class="se">{{</span>
 <span class="s2">    const visible = ALL_ITEMS.filter(item =&gt; </span><span class="se">{{</span>
-<span class="s2">      const milestoneOk = !hiddenMilestones.has(item._milestone_id || &#39;__none__&#39;);</span>
+<span class="s2">      const milestoneOk = !hiddenMilestones.has(item._milestone_id || '__none__');</span>
 <span class="s2">      const typeOk      = !hiddenTypes.has(item._type);</span>
 <span class="s2">      return milestoneOk &amp;&amp; typeOk;</span>
 <span class="s2">    </span><span class="se">}}</span><span class="s2">);</span>
@@ -1733,15 +1653,15 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">  </span><span class="se">}}</span>
 
 <span class="s2">  // ── Sidebar: Milestones ───────────────────────────────────────────────────────</span>
-<span class="s2">  const legendMilestone = document.getElementById(&#39;legendMilestone&#39;);</span>
+<span class="s2">  const legendMilestone = document.getElementById('legendMilestone');</span>
 <span class="s2">  MILESTONE_META.forEach(m =&gt; </span><span class="se">{{</span>
-<span class="s2">    const label = document.createElement(&#39;label&#39;);</span>
-<span class="s2">    label.className = &#39;filter-item&#39;;</span>
+<span class="s2">    const label = document.createElement('label');</span>
+<span class="s2">    label.className = 'filter-item';</span>
 <span class="s2">    label.title = m.label;</span>
 <span class="s2">    label.innerHTML = `</span>
-<span class="s2">      &lt;input type=&quot;checkbox&quot; checked data-milestone=&quot;$</span><span class="se">{{</span><span class="s2">m.id</span><span class="se">}}</span><span class="s2">&quot; onchange=&quot;onMilestoneFilter(this)&quot;/&gt;</span>
-<span class="s2">      &lt;span class=&quot;filter-dot&quot; style=&quot;background:$</span><span class="se">{{</span><span class="s2">m.color</span><span class="se">}}</span><span class="s2">&quot;&gt;&lt;/span&gt;</span>
-<span class="s2">      &lt;span class=&quot;filter-label&quot;&gt;$</span><span class="se">{{</span><span class="s2">m.label</span><span class="se">}}</span><span class="s2">&lt;/span&gt;</span>
+<span class="s2">      &lt;input type="checkbox" checked data-milestone="$</span><span class="se">{{</span><span class="s2">m.id</span><span class="se">}}</span><span class="s2">" onchange="onMilestoneFilter(this)"/&gt;</span>
+<span class="s2">      &lt;span class="filter-dot" style="background:$</span><span class="se">{{</span><span class="s2">m.color</span><span class="se">}}</span><span class="s2">"&gt;&lt;/span&gt;</span>
+<span class="s2">      &lt;span class="filter-label"&gt;$</span><span class="se">{{</span><span class="s2">m.label</span><span class="se">}}</span><span class="s2">&lt;/span&gt;</span>
 <span class="s2">    `;</span>
 <span class="s2">    legendMilestone.appendChild(label);</span>
 <span class="s2">  </span><span class="se">}}</span><span class="s2">);</span>
@@ -1753,15 +1673,15 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">  </span><span class="se">}}</span>
 
 <span class="s2">  // ── Sidebar: Task Types ───────────────────────────────────────────────────────</span>
-<span class="s2">  const legendType = document.getElementById(&#39;legendType&#39;);</span>
+<span class="s2">  const legendType = document.getElementById('legendType');</span>
 <span class="s2">  TASK_TYPES.forEach(tp =&gt; </span><span class="se">{{</span>
-<span class="s2">    const color = TYPE_PALETTE[tp] || &#39;#9B59B6&#39;;</span>
-<span class="s2">    const label = document.createElement(&#39;label&#39;);</span>
-<span class="s2">    label.className = &#39;filter-item&#39;;</span>
+<span class="s2">    const color = TYPE_PALETTE[tp] || '#9B59B6';</span>
+<span class="s2">    const label = document.createElement('label');</span>
+<span class="s2">    label.className = 'filter-item';</span>
 <span class="s2">    label.innerHTML = `</span>
-<span class="s2">      &lt;input type=&quot;checkbox&quot; checked data-type=&quot;$</span><span class="se">{{</span><span class="s2">tp</span><span class="se">}}</span><span class="s2">&quot; onchange=&quot;onTypeFilter(this)&quot;/&gt;</span>
-<span class="s2">      &lt;span class=&quot;filter-dot&quot; style=&quot;background:$</span><span class="se">{{</span><span class="s2">color</span><span class="se">}}</span><span class="s2">;border-radius:50%&quot;&gt;&lt;/span&gt;</span>
-<span class="s2">      &lt;span class=&quot;filter-label&quot;&gt;$</span><span class="se">{{</span><span class="s2">tp</span><span class="se">}}</span><span class="s2">&lt;/span&gt;</span>
+<span class="s2">      &lt;input type="checkbox" checked data-type="$</span><span class="se">{{</span><span class="s2">tp</span><span class="se">}}</span><span class="s2">" onchange="onTypeFilter(this)"/&gt;</span>
+<span class="s2">      &lt;span class="filter-dot" style="background:$</span><span class="se">{{</span><span class="s2">color</span><span class="se">}}</span><span class="s2">;border-radius:50%"&gt;&lt;/span&gt;</span>
+<span class="s2">      &lt;span class="filter-label"&gt;$</span><span class="se">{{</span><span class="s2">tp</span><span class="se">}}</span><span class="s2">&lt;/span&gt;</span>
 <span class="s2">    `;</span>
 <span class="s2">    legendType.appendChild(label);</span>
 <span class="s2">  </span><span class="se">}}</span><span class="s2">);</span>
@@ -1774,12 +1694,12 @@ window.runMermaid = runMermaid;</script>
 
 <span class="s2">  // ── Toggle-all helpers ────────────────────────────────────────────────────────</span>
 <span class="s2">  function toggleGroup(kind, checked) </span><span class="se">{{</span>
-<span class="s2">    const selector = kind === &#39;milestone&#39;</span>
-<span class="s2">      ? &#39;#legendMilestone input&#39;</span>
-<span class="s2">      : &#39;#legendType input&#39;;</span>
+<span class="s2">    const selector = kind === 'milestone'</span>
+<span class="s2">      ? '#legendMilestone input'</span>
+<span class="s2">      : '#legendType input';</span>
 <span class="s2">    document.querySelectorAll(selector).forEach(cb =&gt; </span><span class="se">{{</span>
 <span class="s2">      cb.checked = checked;</span>
-<span class="s2">      if (kind === &#39;milestone&#39;) </span><span class="se">{{</span>
+<span class="s2">      if (kind === 'milestone') </span><span class="se">{{</span>
 <span class="s2">        if (checked) hiddenMilestones.delete(cb.dataset.milestone);</span>
 <span class="s2">        else         hiddenMilestones.add(cb.dataset.milestone);</span>
 <span class="s2">      </span><span class="se">}}</span><span class="s2"> else </span><span class="se">{{</span>
@@ -1793,10 +1713,10 @@ window.runMermaid = runMermaid;</script>
 
 <span class="s2">  // ── Export ───────────────────────────────────────────────────────────────────</span>
 <span class="s2">  function showToast(msg) </span><span class="se">{{</span>
-<span class="s2">    const t = document.getElementById(&#39;toast&#39;);</span>
+<span class="s2">    const t = document.getElementById('toast');</span>
 <span class="s2">    t.textContent = msg;</span>
-<span class="s2">    t.classList.add(&#39;show&#39;);</span>
-<span class="s2">    setTimeout(() =&gt; t.classList.remove(&#39;show&#39;), 2500);</span>
+<span class="s2">    t.classList.add('show');</span>
+<span class="s2">    setTimeout(() =&gt; t.classList.remove('show'), 2500);</span>
 <span class="s2">  </span><span class="se">}}</span>
 
 <span class="s2">  function exportJSON() </span><span class="se">{{</span>
@@ -1807,44 +1727,44 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">      start: item._start, end: item._end,</span>
 <span class="s2">      predecessors: item._preds, successors: item._succs,</span>
 <span class="s2">    </span><span class="se">}}</span><span class="s2">));</span>
-<span class="s2">    _download(new Blob([JSON.stringify(rows, null, 2)], </span><span class="se">{{</span><span class="s2">type: &#39;application/json&#39;</span><span class="se">}}</span><span class="s2">), &#39;gantt_tasks.json&#39;);</span>
-<span class="s2">    showToast(&#39;✓ JSON exported&#39;);</span>
+<span class="s2">    _download(new Blob([JSON.stringify(rows, null, 2)], </span><span class="se">{{</span><span class="s2">type: 'application/json'</span><span class="se">}}</span><span class="s2">), 'gantt_tasks.json');</span>
+<span class="s2">    showToast('✓ JSON exported');</span>
 <span class="s2">  </span><span class="se">}}</span>
 
 <span class="s2">  function exportCSV() </span><span class="se">{{</span>
-<span class="s2">    const cols = [&#39;id&#39;,&#39;name&#39;,&#39;milestone&#39;,&#39;type&#39;,&#39;part&#39;,&#39;duration_h&#39;,&#39;start&#39;,&#39;end&#39;,&#39;predecessors&#39;,&#39;successors&#39;];</span>
-<span class="s2">    const esc  = v =&gt; `&quot;$</span><span class="se">{{</span><span class="s2">String(v ?? &#39;&#39;).replace(/&quot;/g,&#39;&quot;&quot;&#39;)</span><span class="se">}}</span><span class="s2">&quot;`;</span>
-<span class="s2">    const rows = [cols.join(&#39;,&#39;)];</span>
+<span class="s2">    const cols = ['id','name','milestone','type','part','duration_h','start','end','predecessors','successors'];</span>
+<span class="s2">    const esc  = v =&gt; `"$</span><span class="se">{{</span><span class="s2">String(v ?? '').replace(/"/g,'""')</span><span class="se">}}</span><span class="s2">"`;</span>
+<span class="s2">    const rows = [cols.join(',')];</span>
 <span class="s2">    ALL_ITEMS.forEach(item =&gt; rows.push([</span>
 <span class="s2">      item._task_id, item._name, item._milestone, item._type,</span>
 <span class="s2">      item._part,    item._duration_h, item._start, item._end,</span>
 <span class="s2">      item._preds,   item._succs,</span>
-<span class="s2">    ].map(esc).join(&#39;,&#39;)));</span>
-<span class="s2">    _download(new Blob([rows.join(&#39;</span><span class="se">\\</span><span class="s2">n&#39;)], </span><span class="se">{{</span><span class="s2">type: &#39;text/csv&#39;</span><span class="se">}}</span><span class="s2">), &#39;gantt_tasks.csv&#39;);</span>
-<span class="s2">    showToast(&#39;✓ CSV exported&#39;);</span>
+<span class="s2">    ].map(esc).join(',')));</span>
+<span class="s2">    _download(new Blob([rows.join('</span><span class="se">\\</span><span class="s2">n')], </span><span class="se">{{</span><span class="s2">type: 'text/csv'</span><span class="se">}}</span><span class="s2">), 'gantt_tasks.csv');</span>
+<span class="s2">    showToast('✓ CSV exported');</span>
 <span class="s2">  </span><span class="se">}}</span>
 
 <span class="s2">  function _download(blob, filename) </span><span class="se">{{</span>
 <span class="s2">    const url = URL.createObjectURL(blob);</span>
-<span class="s2">    const a = Object.assign(document.createElement(&#39;a&#39;), </span><span class="se">{{</span><span class="s2">href:url, download:filename</span><span class="se">}}</span><span class="s2">);</span>
+<span class="s2">    const a = Object.assign(document.createElement('a'), </span><span class="se">{{</span><span class="s2">href:url, download:filename</span><span class="se">}}</span><span class="s2">);</span>
 <span class="s2">    document.body.appendChild(a); a.click();</span>
 <span class="s2">    document.body.removeChild(a); URL.revokeObjectURL(url);</span>
 <span class="s2">  </span><span class="se">}}</span>
 
 <span class="s2">  // ── Theme toggle ─────────────────────────────────────────────────────────────</span>
 <span class="s2">  function toggleTheme() </span><span class="se">{{</span>
-<span class="s2">    const isLight = document.documentElement.getAttribute(&#39;data-theme&#39;) === &#39;light&#39;;</span>
-<span class="s2">    const next = isLight ? &#39;dark&#39; : &#39;light&#39;;</span>
-<span class="s2">    document.documentElement.setAttribute(&#39;data-theme&#39;, next);</span>
-<span class="s2">    localStorage.setItem(&#39;chrono-theme&#39;, next);</span>
-<span class="s2">    document.getElementById(&#39;themeToggle&#39;).textContent = next === &#39;light&#39; ? &#39;🌙 Dark&#39; : &#39;☀️ Light&#39;;</span>
+<span class="s2">    const isLight = document.documentElement.getAttribute('data-theme') === 'light';</span>
+<span class="s2">    const next = isLight ? 'dark' : 'light';</span>
+<span class="s2">    document.documentElement.setAttribute('data-theme', next);</span>
+<span class="s2">    localStorage.setItem('chrono-theme', next);</span>
+<span class="s2">    document.getElementById('themeToggle').textContent = next === 'light' ? '🌙 Dark' : '☀️ Light';</span>
 <span class="s2">  </span><span class="se">}}</span>
 
 <span class="s2">  // Apply saved theme on load</span>
 <span class="s2">  (function() </span><span class="se">{{</span>
-<span class="s2">    const saved = localStorage.getItem(&#39;chrono-theme&#39;) || &#39;dark&#39;;</span>
-<span class="s2">    document.documentElement.setAttribute(&#39;data-theme&#39;, saved);</span>
-<span class="s2">    document.getElementById(&#39;themeToggle&#39;).textContent = saved === &#39;light&#39; ? &#39;🌙 Dark&#39; : &#39;☀️ Light&#39;;</span>
+<span class="s2">    const saved = localStorage.getItem('chrono-theme') || 'dark';</span>
+<span class="s2">    document.documentElement.setAttribute('data-theme', saved);</span>
+<span class="s2">    document.getElementById('themeToggle').textContent = saved === 'light' ? '🌙 Dark' : '☀️ Light';</span>
 <span class="s2">  </span><span class="se">}}</span><span class="s2">)();</span>
 
 <span class="s2">  setTimeout(() =&gt; </span><span class="se">{{</span>
@@ -1853,14 +1773,14 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">&lt;/script&gt;</span>
 <span class="s2">&lt;/body&gt;</span>
 <span class="s2">&lt;/html&gt;</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
     <span class="n">output_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
     <span class="n">output_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">output_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+    <span class="n">output_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Interactive Gantt saved to: </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">rel_path</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Interactive Gantt saved to: </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">rel_path</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span></div>
 
 </pre></div>
 

@@ -15,182 +15,17 @@
       <script src="../../../_static/documentation_options.js?v=f2a433a1"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
       <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
-
-
 
 
 
 const initStyles = () => {
     const defaultStyle = document.createElement('style');
-    defaultStyle.textContent = `pre.mermaid {
-    /* Same as .mermaid-container > pre */
-    display: block;
-    width: 100%;
-}
-
-pre.mermaid > svg {
-    /* Same as .mermaid-container > pre > svg */
-    height: 500px;
-    width: 100%;
-    max-width: 100% !important;
-}`;
+    defaultStyle.textContent = "pre.mermaid {\n    /* Same as .mermaid-container > pre */\n    display: block;\n    width: 100%;\n}\n\npre.mermaid > svg {\n    /* Same as .mermaid-container > pre > svg */\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}";
     document.head.appendChild(defaultStyle);
 
     const fullscreenStyle = document.createElement('style');
-    fullscreenStyle.textContent = `.mermaid-container {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-}
-
-.mermaid-container > pre {
-    display: block;
-    width: 100%;
-}
-
-.mermaid-container > pre > svg {
-    height: 500px;
-    width: 100%;
-    max-width: 100% !important;
-}
-
-.mermaid-fullscreen-btn {
-    width: 28px;
-    height: 28px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.3);
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    font-size: 14px;
-    line-height: 1;
-    padding: 0;
-    color: #333;
-}
-
-.mermaid-fullscreen-btn:hover {
-    opacity: 100% !important;
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-    transform: scale(1.1);
-}
-
-.mermaid-fullscreen-btn.dark-theme {
-    background: rgba(50, 50, 50, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: #e0e0e0;
-}
-
-.mermaid-fullscreen-btn.dark-theme:hover {
-    background: rgba(60, 60, 60, 1);
-    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
-}
-
-.mermaid-fullscreen-modal {
-    display: none;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 95vw;
-    height: 100vh;
-    background: rgba(255, 255, 255, 0.98);
-    z-index: 9999;
-    padding: 20px;
-    overflow: auto;
-}
-
-.mermaid-fullscreen-modal.dark-theme {
-    background: rgba(0, 0, 0, 0.98);
-}
-
-.mermaid-fullscreen-modal.active {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen {
-    position: relative;
-    width: 95vw;
-    height: 90vh;
-    max-width: 95vw;
-    max-height: 90vh;
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    overflow: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen.dark-theme {
-    background: #1a1a1a;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-}
-
-.mermaid-container-fullscreen pre.mermaid {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen .mermaid svg {
-    height: 100% !important;
-    width: 100% !important;
-    cursor: grab;
-}
-
-.mermaid-fullscreen-close {
-    position: fixed !important;
-    top: 20px !important;
-    right: 20px !important;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 50%;
-    cursor: pointer;
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    transition: all 0.2s;
-    font-size: 24px;
-    line-height: 1;
-    color: #333;
-}
-
-.mermaid-fullscreen-close:hover {
-    background: white;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
-    transform: scale(1.1);
-}
-
-.mermaid-fullscreen-close.dark-theme {
-    background: rgba(50, 50, 50, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #e0e0e0;
-}
-
-.mermaid-fullscreen-close.dark-theme:hover {
-    background: rgba(60, 60, 60, 1);
-    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
-}
-
-.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
-    display: none !important;
-}`;
+    fullscreenStyle.textContent = ".mermaid-container {\n    position: relative;\n    display: flex;\n    flex-direction: row;\n    width: 100%;\n}\n\n.mermaid-container > pre {\n    display: block;\n    width: 100%;\n}\n\n.mermaid-container > pre > svg {\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}\n\n.mermaid-fullscreen-btn {\n    position: absolute;\n    width: 28px;\n    height: 28px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.3);\n    border-radius: 4px;\n    cursor: pointer;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    transition: all 0.2s;\n    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);\n    font-size: 14px;\n    line-height: 1;\n    padding: 0;\n    color: #333;\n}\n\n.mermaid-fullscreen-btn:hover {\n    opacity: 100% !important;\n    background: rgba(255, 255, 255, 1);\n    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-btn.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.3);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-btn.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal {\n    display: none;\n    position: fixed !important;\n    top: 0 !important;\n    left: 0 !important;\n    width: 95vw;\n    height: 100vh;\n    background: rgba(255, 255, 255, 0.98);\n    z-index: 9999;\n    padding: 20px;\n    overflow: auto;\n}\n\n.mermaid-fullscreen-modal.dark-theme {\n    background: rgba(0, 0, 0, 0.98);\n}\n\n.mermaid-fullscreen-modal.active {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen {\n    position: relative;\n    width: 95vw;\n    height: 90vh;\n    max-width: 95vw;\n    max-height: 90vh;\n    background: white;\n    border-radius: 8px;\n    padding: 20px;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);\n    overflow: auto;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen.dark-theme {\n    background: #1a1a1a;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);\n}\n\n.mermaid-container-fullscreen pre.mermaid {\n    width: 100%;\n    height: 100%;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen .mermaid svg {\n    height: 100% !important;\n    width: 100% !important;\n    cursor: grab;\n}\n\n.mermaid-fullscreen-close {\n    position: fixed !important;\n    top: 20px !important;\n    right: 20px !important;\n    width: 40px;\n    height: 40px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.2);\n    border-radius: 50%;\n    cursor: pointer;\n    z-index: 10000;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);\n    transition: all 0.2s;\n    font-size: 24px;\n    line-height: 1;\n    color: #333;\n}\n\n.mermaid-fullscreen-close:hover {\n    background: white;\n    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-close.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.2);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-close.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal .mermaid-fullscreen-btn {\n    display: none !important;\n}";
     document.head.appendChild(fullscreenStyle);
 }
 
@@ -235,6 +70,32 @@ let darkTheme = isDarkTheme();
 let modal = null;
 let modalContent = null;
 let previousScrollOffset = [window.scrollX, window.scrollY];
+let _lazyObserver = null;
+let _renderQueue = Promise.resolve();
+let closeModal = () => {};
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.classList.contains('active')) {
+        closeModal();
+    }
+});
+
+// Apply d3 zoom to each SVG. Idempotent: an SVG already wrapped is skipped,
+// so this is safe to call both for the initial batch and for diagrams that
+// render lazily once they become visible.
+const addZoomToSvgs = (svgs) => {
+    svgs.each(function() {
+        if (this.getAttribute('data-zoom-applied') === 'true') return;
+        var svg = d3.select(this);
+        svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+        var inner = svg.select("g");
+        var zoom = d3.zoom().on("zoom", function(event) {
+            inner.attr("transform", event.transform);
+        });
+        svg.call(zoom);
+        this.setAttribute('data-zoom-applied', 'true');
+    });
+};
 
 const runMermaid = async (rerun) => {
     console.log("Running mermaid diagrams, rerun =", rerun);
@@ -242,7 +103,15 @@ const runMermaid = async (rerun) => {
     let all_mermaids = document.querySelectorAll(".mermaid");
 
     if (rerun) {
+        // Disconnect any previous lazy rendering observer
+        if (_lazyObserver) {
+            _lazyObserver.disconnect();
+            _lazyObserver = null;
+        }
+
         all_mermaids.forEach((el) => {
+            el.removeAttribute('data-mermaid-deferred');
+            el.removeAttribute('data-mermaid-render-failed');
             if(!el.hasAttribute("data-original-code")) {
                 // store original code
                 // console.log(`Storing original code for first run: `, el.innerHTML);
@@ -259,42 +128,100 @@ const runMermaid = async (rerun) => {
                 el.setAttribute('data-original-code', el.innerHTML);
             }
         });
-        await mermaid.run();
+
+        // Separate visible and hidden elements. Mermaid's layout engine measures
+        // text dimensions via the DOM, which fails for elements hidden by a parent
+        // (e.g., Reveal.js non-active slides, sphinx-design unopened tabs),
+        // producing broken SVGs. Render visible elements now, defer hidden ones.
+        const visible = [];
+        const hidden = [];
+        all_mermaids.forEach((el) => {
+            // offsetParent is null for display:none ancestors.
+            // getClientRects().length > 0 catches position:fixed elements
+            // (which also have null offsetParent but are still visible).
+            if (el.offsetParent !== null || el.getClientRects().length > 0) {
+                visible.push(el);
+            } else {
+                hidden.push(el);
+                el.setAttribute('data-mermaid-deferred', 'true');
+            }
+        });
+
+        if (visible.length > 0) {
+            try {
+                await mermaid.run({ nodes: visible });
+            } catch (e) {
+                console.error("Mermaid rendering failed:", e);
+            }
+        }
+
+        // Lazily render hidden elements when they become visible.
+        // Uses a promise chain (_renderQueue) to serialize rendering,
+        // since IntersectionObserver may report multiple entries at once
+        // and mermaid.run() is not safe to call concurrently.
+        if (hidden.length > 0) {
+            if (typeof IntersectionObserver === 'undefined') {
+                console.warn("IntersectionObserver not available; hidden mermaid diagrams will not render.");
+            } else {
+                _renderQueue = Promise.resolve();
+                _lazyObserver = new IntersectionObserver((entries) => {
+                    for (const entry of entries) {
+                        if (entry.isIntersecting && entry.target.getAttribute("data-processed") !== "true") {
+                            _lazyObserver.unobserve(entry.target);
+                            const el = entry.target;
+                            _renderQueue = _renderQueue.then(async () => {
+                                try {
+                                    await mermaid.run({ nodes: [el] });
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    // Apply zoom to the now-rendered diagram, matching
+                                    // the decoration visible diagrams receive.
+                                    if (false) {
+                                        addZoomToSvgs(d3.selectAll("").select(function() {
+                                            return this.querySelector("svg");
+                                        }));
+                                    }
+                                } catch (e) {
+                                    console.error("Mermaid deferred rendering failed:", e);
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    el.setAttribute('data-mermaid-render-failed', 'true');
+                                }
+                            });
+                        }
+                    }
+                });
+                hidden.forEach((el) => _lazyObserver.observe(el));
+            }
+        }
     }
 
     all_mermaids = document.querySelectorAll(".mermaid");
-    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
+    // Exclude deferred (hidden) and render-failed elements from completion checks
+    const mermaids_active = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])");
+    const mermaids_processed = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])[data-processed='true']");
 
-    if ("False" === "True") {
-        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
+    if (false) {
+        const mermaids_to_add_zoom = 0 === -1 ? mermaids_active.length : 0;
         if(mermaids_to_add_zoom > 0) {
-            var svgs = d3.selectAll("");
-            if(all_mermaids.length !== mermaids_processed.length) {
+            var svgs = d3.selectAll("").select(function() {
+                return this.querySelector("svg");
+            });
+            // Wait until every active (visible) diagram has rendered. Deferred
+            // diagrams are excluded, so a fixed d3_node_count that counts a
+            // hidden diagram no longer loops forever waiting for its SVG.
+            if(mermaids_active.length !== mermaids_processed.length) {
                 setTimeout(() => runMermaid(false), 200);
                 return;
-            } else if(svgs.size() !== mermaids_to_add_zoom) {
-                setTimeout(() => runMermaid(false), 200);
-                return;
-            } else {
-                svgs.each(function() {
-                    var svg = d3.select(this);
-                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
-                    var inner = svg.select("g");
-                    var zoom = d3.zoom().on("zoom", function(event) {
-                        inner.attr("transform", event.transform);
-                    });
-                    svg.call(zoom);
-                });
             }
+            addZoomToSvgs(svgs);
         }
-    } else if(all_mermaids.length !== mermaids_processed.length) {
+    } else if(mermaids_active.length !== mermaids_processed.length) {
         // Wait for mermaid to process all diagrams
         setTimeout(() => runMermaid(false), 200);
         return;
     }
 
     // Stop here if not adding fullscreen capability
-    if ("True" !== "True") return;
+    if (!true) return;
 
     if (modal !== null ) {
         // Destroy existing modal
@@ -317,7 +244,7 @@ const runMermaid = async (rerun) => {
     modalContent = modal.querySelector('.mermaid-container-fullscreen');
     const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
 
-    const closeModal = () => {
+    closeModal = () => {
         modal.classList.remove('active');
         modalContent.innerHTML = '';
         document.body.style.overflow = ''
@@ -328,12 +255,6 @@ const runMermaid = async (rerun) => {
     modal.addEventListener('click', (e) => {
         if (e.target === modal) closeModal();
     });
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('active')) {
-            closeModal();
-        }
-    });
-
     document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
         if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
             mermaidDiv.closest('.mermaid-fullscreen-modal')) {
@@ -353,8 +274,8 @@ const runMermaid = async (rerun) => {
         const fullscreenBtn = document.createElement('button');
         fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
         fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
-        fullscreenBtn.textContent = '⛶';
-        fullscreenBtn.style.opacity = '50%';
+        fullscreenBtn.textContent = "\u26f6";
+        fullscreenBtn.style.opacity = "50%";
 
         // Calculate dynamic position based on diagram's margin and padding
         const diagramStyle = window.getComputedStyle(mermaidDiv);
@@ -366,7 +287,7 @@ const runMermaid = async (rerun) => {
         fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
 
         fullscreenBtn.addEventListener('click', () => {
-            previousScrollOffset = [window.scroll, window.scrollY];
+            previousScrollOffset = [window.scrollX, window.scrollY];
             const clone = mermaidDiv.cloneNode(true);
             modalContent.innerHTML = '';
             modalContent.appendChild(clone);
@@ -378,9 +299,9 @@ const runMermaid = async (rerun) => {
                 svg.style.width = '100%';
                 svg.style.height = 'auto';
                 svg.style.maxWidth = '100%';
-                svg.style.sdisplay = 'block';
+                svg.style.display = 'block';
 
-                if ("False" === "True") {
+                if (false) {
                     setTimeout(() => {
                         const g = svg.querySelector('g');
                         if (g) {
@@ -403,8 +324,11 @@ const runMermaid = async (rerun) => {
     });
 };
 
+
+
 const load = async () => {
     initStyles();
+
 
     await runMermaid(true);
 
@@ -414,10 +338,8 @@ const load = async () => {
             darkTheme = newDarkTheme;
             console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
             await mermaid.initialize(
-                {...JSON.parse(
-                    `{"startOnLoad": false}`
-                ),
-                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+                {...{"startOnLoad": false},
+                ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
                 }
             );
             await runMermaid(true);
@@ -442,10 +364,8 @@ const load = async () => {
 
 console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
 mermaid.initialize(
-    {...JSON.parse(
-        `{"startOnLoad": false}`
-    ),
-    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+    {...{"startOnLoad": false},
+    ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
     }
 );
 
@@ -526,7 +446,7 @@ window.runMermaid = runMermaid;</script>
 <div class="viewcode-block" id="ProjectSchedule">
 <a class="viewcode-back" href="../../../index.html#src.schedule.project.ProjectSchedule">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ProjectSchedule</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Orchestrates full schedule computing: loads, customises, schedules and consolidates tasks.</span>
+<span class="w">    </span><span class="sd">"""Orchestrates full schedule computing: loads, customises, schedules and consolidates tasks.</span>
 <span class="sd">    </span>
 <span class="sd">    .. mermaid::</span>
 
@@ -551,7 +471,7 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">        tasks (List[Task]): The master flat list of instantiated tasks.</span>
 <span class="sd">        transformation_log (List[Dict[str, Any]]): Audit trailing for debugging structure transformations.</span>
 <span class="sd">        customization_types (List[CustomizationType]): Cached strategy overlays.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="n">project_requirements_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
@@ -568,8 +488,8 @@ window.runMermaid = runMermaid;</script>
 
         <span class="c1"># Read working hours from settings, fall back to defaults</span>
         <span class="c1"># [Req: RF-01.3, RF-09.1] — Working-hour window read from settings; falls back to 8-16</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">working_start_hour</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pr_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;working_start_hour&#39;</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">working_end_hour</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pr_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;working_end_hour&#39;</span><span class="p">,</span> <span class="mi">16</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">working_start_hour</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pr_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'working_start_hour'</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">working_end_hour</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pr_settings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'working_end_hour'</span><span class="p">,</span> <span class="mi">16</span><span class="p">))</span>
         
         <span class="bp">self</span><span class="o">.</span><span class="n">milestones</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ProjectMilestone</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Task</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -581,18 +501,18 @@ window.runMermaid = runMermaid;</script>
         <span class="c1"># [Req: RF-02] — Load the full task template from deliverable_structure.csv</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_raw_task_template</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Task</span><span class="p">]</span> <span class="o">=</span> <span class="n">load_raw_tasks_from_csv</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">TASK_CSV_PATH</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_task_template</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error: Could not load base task template from CSV. Exiting.&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"Error: Could not load base task template from CSV. Exiting."</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">milestone_template</span> <span class="o">=</span> <span class="n">ProjectMilestone</span><span class="p">(</span><span class="s2">&quot;TEMPLATE&quot;</span><span class="p">,</span> <span class="s2">&quot;MilestoneTemplate&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">milestone_template</span> <span class="o">=</span> <span class="n">ProjectMilestone</span><span class="p">(</span><span class="s2">"TEMPLATE"</span><span class="p">,</span> <span class="s2">"MilestoneTemplate"</span><span class="p">,</span> <span class="p">{})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">milestone_template</span><span class="o">.</span><span class="n">tasks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_task_template</span>
         
         <span class="c1"># Identify customizations</span>
         <span class="c1"># [Req: RF-05.4] — Collect all customisation names referenced across milestones and variants</span>
         <span class="n">global_applied_customization_names</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_requirements_data</span><span class="p">:</span>
-            <span class="n">milestone_id</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;milestone_id&quot;</span><span class="p">)</span>
-            <span class="n">milestone_name</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;milestone_name&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Milestone </span><span class="si">{</span><span class="n">milestone_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">milestone_id</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"milestone_id"</span><span class="p">)</span>
+            <span class="n">milestone_name</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"milestone_name"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"Milestone </span><span class="si">{</span><span class="n">milestone_id</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">milestone_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">continue</span>
 
@@ -602,12 +522,12 @@ window.runMermaid = runMermaid;</script>
             <span class="bp">self</span><span class="o">.</span><span class="n">milestones</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">milestone</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">milestone</span><span class="o">.</span><span class="n">tasks</span><span class="p">)</span>
             
-            <span class="k">if</span> <span class="s1">&#39;customizations&#39;</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">:</span>
-                <span class="n">global_applied_customization_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s1">&#39;customizations&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-            <span class="k">if</span> <span class="s1">&#39;extra_args&#39;</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;extra_args&#39;</span><span class="p">]:</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;customizations&#39;</span> <span class="ow">in</span> <span class="n">arg</span><span class="p">:</span>
-                        <span class="n">global_applied_customization_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">arg</span><span class="p">[</span><span class="s1">&#39;customizations&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">if</span> <span class="s1">'customizations'</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">:</span>
+                <span class="n">global_applied_customization_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s1">'customizations'</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">if</span> <span class="s1">'extra_args'</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">[</span><span class="s1">'extra_args'</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">'customizations'</span> <span class="ow">in</span> <span class="n">arg</span><span class="p">:</span>
+                        <span class="n">global_applied_customization_names</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">arg</span><span class="p">[</span><span class="s1">'customizations'</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">customization_types</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">CustomizationType</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">customization_overview_csv_path</span><span class="p">:</span>
@@ -620,10 +540,10 @@ window.runMermaid = runMermaid;</script>
         <span class="c1"># [Req: RF-01.3] — Start date priority: explicit arg &gt; settings &gt; config fallback</span>
         <span class="k">if</span> <span class="n">project_start_date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">start_date</span> <span class="o">=</span> <span class="n">project_start_date</span>
-        <span class="k">elif</span> <span class="s1">&#39;project_start_date&#39;</span> <span class="ow">in</span> <span class="n">pr_settings</span><span class="p">:</span>
-            <span class="n">start_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">pr_settings</span><span class="p">[</span><span class="s1">&#39;project_start_date&#39;</span><span class="p">],</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="s1">'project_start_date'</span> <span class="ow">in</span> <span class="n">pr_settings</span><span class="p">:</span>
+            <span class="n">start_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">pr_settings</span><span class="p">[</span><span class="s1">'project_start_date'</span><span class="p">],</span> <span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1">'</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">start_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">PROJECT_START_DATE_STR</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">start_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">PROJECT_START_DATE_STR</span><span class="p">,</span> <span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1">'</span><span class="p">)</span>
         
         <span class="c1"># Delegate heavy lifting to engine, passing working hours from settings</span>
         <span class="c1"># [Req: RF-10] — Delegate resource-constrained scheduling to the engine</span>
@@ -646,7 +566,7 @@ window.runMermaid = runMermaid;</script>
 
     <span class="c1"># [Req: RF-03, RF-03.1, RF-03.2, RF-03.3, RF-03.4, RF-03.5, RF-03.6, RF-04, RF-04.1, RF-04.4]</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_process_milestone_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">milestone_template</span><span class="p">:</span> <span class="n">ProjectMilestone</span><span class="p">,</span> <span class="n">milestone_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Task</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generates milestone-specific tasks by copying from a template, handling task duplication,</span>
+<span class="w">        </span><span class="sd">"""Generates milestone-specific tasks by copying from a template, handling task duplication,</span>
 <span class="sd">        and re-wiring dependencies.</span>
 
 <span class="sd">        Args:</span>
@@ -655,33 +575,33 @@ window.runMermaid = runMermaid;</script>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            List[Task]: Synthesized list of duplicated and wired task entities for this specific phase.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">required_part_numbers_for_variants</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
-        <span class="n">deliverable_structure</span> <span class="o">=</span> <span class="n">milestone_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;deliverable_structure&#39;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">deliverable_structure</span> <span class="o">=</span> <span class="n">milestone_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'deliverable_structure'</span><span class="p">,</span> <span class="p">[])</span>
         
         <span class="c1"># [Req: RF-03.1, RF-03.2] — Filter tasks by deliverable_structure if present; default = all non-milestone tasks</span>
         <span class="n">base_tasks_for_milestone</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Task</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">deliverable_structure</span><span class="p">:</span>
-            <span class="n">required_part_numbers_for_selection</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;70000&#39;</span><span class="p">}</span>
+            <span class="n">required_part_numbers_for_selection</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'70000'</span><span class="p">}</span>
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">deliverable_structure</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;part_number&#39;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">:</span>
-                    <span class="n">required_part_numbers_for_selection</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;part_number&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">'part_number'</span> <span class="ow">in</span> <span class="n">item</span><span class="p">:</span>
+                    <span class="n">required_part_numbers_for_selection</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s1">'part_number'</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                    <span class="n">required_part_numbers_for_selection</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="n">required_part_numbers_for_selection</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
             
             <span class="k">for</span> <span class="n">template_task</span> <span class="ow">in</span> <span class="n">milestone_template</span><span class="o">.</span><span class="n">tasks</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">template_task</span><span class="o">.</span><span class="n">part_number</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">required_part_numbers_for_selection</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">template_task</span><span class="o">.</span><span class="n">part_number</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">required_part_numbers_for_selection</span><span class="p">:</span>
                     <span class="n">base_tasks_for_milestone</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">template_task</span><span class="o">.</span><span class="n">clone</span><span class="p">())</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># [Req: RF-03.2] — No deliverable_structure: include everything except the milestone marker</span>
             <span class="k">for</span> <span class="n">template_task</span> <span class="ow">in</span> <span class="n">milestone_template</span><span class="o">.</span><span class="n">tasks</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">template_task</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">description</span> <span class="o">!=</span> <span class="s2">&quot;milestone&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">template_task</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">description</span> <span class="o">!=</span> <span class="s2">"milestone"</span><span class="p">:</span>
                     <span class="n">base_tasks_for_milestone</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">template_task</span><span class="o">.</span><span class="n">clone</span><span class="p">())</span>
 
-        <span class="n">milestone_template_task</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">milestone_template</span><span class="o">.</span><span class="n">tasks</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">description</span> <span class="o">==</span> <span class="s2">&quot;milestone&quot;</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">milestone_template_task</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">milestone_template</span><span class="o">.</span><span class="n">tasks</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">description</span> <span class="o">==</span> <span class="s2">"milestone"</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
         
         <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DEBUG </span><span class="si">{</span><span class="n">milestone_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;milestone_id&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">: base_tasks_len=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">base_tasks_for_milestone</span><span class="p">)</span><span class="si">}</span><span class="s2">, template_len=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">milestone_template</span><span class="o">.</span><span class="n">tasks</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"DEBUG </span><span class="si">{</span><span class="n">milestone_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'milestone_id'</span><span class="p">)</span><span class="si">}</span><span class="s2">: base_tasks_len=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">base_tasks_for_milestone</span><span class="p">)</span><span class="si">}</span><span class="s2">, template_len=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">milestone_template</span><span class="o">.</span><span class="n">tasks</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="c1"># [Req: RF-03.3] — Milestone marker task is always included regardless of selection filters</span>
         <span class="k">if</span> <span class="n">milestone_template_task</span><span class="p">:</span>
@@ -691,16 +611,16 @@ window.runMermaid = runMermaid;</script>
         <span class="c1"># Ensure milestone id gets assigned</span>
         <span class="c1"># [Req: RF-03.5] — Propagate milestone_id to every task for grouping in export/visualisation</span>
         <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">base_tasks_for_milestone</span><span class="p">:</span>
-             <span class="n">t</span><span class="o">.</span><span class="n">milestone_id</span> <span class="o">=</span> <span class="n">milestone_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;milestone_id&#39;</span><span class="p">)</span>
+             <span class="n">t</span><span class="o">.</span><span class="n">milestone_id</span> <span class="o">=</span> <span class="n">milestone_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'milestone_id'</span><span class="p">)</span>
 
 
         <span class="c1"># [Req: RF-04.1] — extra_args supports both str (part_number only) and dict (with customizations)</span>
-        <span class="n">extra_args</span> <span class="o">=</span> <span class="n">milestone_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;extra_args&#39;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">extra_args</span> <span class="o">=</span> <span class="n">milestone_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'extra_args'</span><span class="p">,</span> <span class="p">[])</span>
         <span class="k">for</span> <span class="n">arg_entry</span> <span class="ow">in</span> <span class="n">extra_args</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg_entry</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;part_number&#39;</span> <span class="ow">in</span> <span class="n">arg_entry</span><span class="p">:</span>
-                <span class="n">required_part_numbers_for_variants</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">arg_entry</span><span class="p">[</span><span class="s1">&#39;part_number&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg_entry</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">'part_number'</span> <span class="ow">in</span> <span class="n">arg_entry</span><span class="p">:</span>
+                <span class="n">required_part_numbers_for_variants</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">arg_entry</span><span class="p">[</span><span class="s1">'part_number'</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg_entry</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="n">required_part_numbers_for_variants</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">arg_entry</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">required_part_numbers_for_variants</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">arg_entry</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
         
         <span class="c1"># Add dynamic variation and ID mapping here</span>
         <span class="n">final_tasks_for_milestone</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Task</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -725,7 +645,7 @@ window.runMermaid = runMermaid;</script>
             <span class="n">task</span><span class="o">.</span><span class="n">predecessors</span> <span class="o">=</span> <span class="p">[]</span>
             
             <span class="n">new_successors_ids_for_task</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">original_successor_id</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">&#39;successors_ids&#39;</span><span class="p">,</span> <span class="p">[]):</span>
+            <span class="k">for</span> <span class="n">original_successor_id</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">'successors_ids'</span><span class="p">,</span> <span class="p">[]):</span>
                 <span class="k">if</span> <span class="n">original_successor_id</span> <span class="ow">in</span> <span class="n">original_id_to_new_ids_map</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">mapped_new_id</span> <span class="ow">in</span> <span class="n">original_id_to_new_ids_map</span><span class="p">[</span><span class="n">original_successor_id</span><span class="p">]:</span>
                         <span class="k">if</span> <span class="n">mapped_new_id</span> <span class="o">!=</span> <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
@@ -743,17 +663,17 @@ window.runMermaid = runMermaid;</script>
 
     <span class="c1"># [Req: RF-13, RF-13.1, RF-13.2, RF-13.3, RF-13.4, RF-13.5, RF-13.6, RF-13.7]</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_group_drawing_tasks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Simplifies logic to find drawings and compress them globally.</span>
+<span class="w">        </span><span class="sd">"""Simplifies logic to find drawings and compress them globally.</span>
 <span class="sd">        </span>
 <span class="sd">        Modifies `self.tasks` in place by replacing multiple variant drawings </span>
 <span class="sd">        with a single consolidated entity for efficiency.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">drawing_tasks_by_base_part_number</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Task</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="c1"># [Req: RF-13.1, RF-13.2] — Candidate drawings: type==&#39;drawing&#39; AND base part_number NOT starting with &#39;7&#39;</span>
+        <span class="c1"># [Req: RF-13.1, RF-13.2] — Candidate drawings: type=='drawing' AND base part_number NOT starting with '7'</span>
         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">description</span> <span class="o">==</span> <span class="s2">&quot;drawing&quot;</span><span class="p">:</span>
-                <span class="n">base_part_number</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">part_number</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">base_part_number</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;7&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">description</span> <span class="o">==</span> <span class="s2">"drawing"</span><span class="p">:</span>
+                <span class="n">base_part_number</span> <span class="o">=</span> <span class="n">task</span><span class="o">.</span><span class="n">part_number</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">base_part_number</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'7'</span><span class="p">):</span>
                     <span class="k">continue</span>  <span class="c1"># Do not consolidate 7XXXX milestone drawings</span>
                 <span class="k">if</span> <span class="n">base_part_number</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">drawing_tasks_by_base_part_number</span><span class="p">:</span>
                     <span class="n">drawing_tasks_by_base_part_number</span><span class="p">[</span><span class="n">base_part_number</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -773,8 +693,8 @@ window.runMermaid = runMermaid;</script>
                 <span class="n">consolidated_task</span> <span class="o">=</span> <span class="n">Task</span><span class="p">(</span>
                     <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_next_task_id</span><span class="p">,</span>
                     <span class="n">part_number</span><span class="o">=</span><span class="n">base_part_number</span><span class="p">,</span>
-                    <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Consolidated Drawing for </span><span class="si">{</span><span class="n">base_part_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                    <span class="n">task_type</span><span class="o">=</span><span class="n">TaskType</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;drawing&quot;</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;consolidated&quot;</span><span class="p">),</span>
+                    <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Consolidated Drawing for </span><span class="si">{</span><span class="n">base_part_number</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                    <span class="n">task_type</span><span class="o">=</span><span class="n">TaskType</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">"drawing"</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="s2">"consolidated"</span><span class="p">),</span>
                     <span class="n">duration_minutes</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">duration_minutes</span> <span class="k">for</span> <span class="n">dt</span> <span class="ow">in</span> <span class="n">drawing_tasks</span><span class="p">))</span>
                 <span class="p">)</span>
                 <span class="n">consolidated_task</span><span class="o">.</span><span class="n">init_date</span> <span class="o">=</span> <span class="n">earliest_init</span>
@@ -786,20 +706,20 @@ window.runMermaid = runMermaid;</script>
                     
                 <span class="c1"># [Req: RF-26] — Trace Log: Record drawing consolidation</span>
                 <span class="n">log_data</span> <span class="o">=</span> <span class="p">{</span>
-                    <span class="s2">&quot;event&quot;</span><span class="p">:</span> <span class="s2">&quot;drawing_consolidated&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;base_part&quot;</span><span class="p">:</span> <span class="n">base_part_number</span><span class="p">,</span>
-                    <span class="s2">&quot;consumed_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">dt</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">dt</span> <span class="ow">in</span> <span class="n">drawing_tasks</span><span class="p">],</span>
-                    <span class="s2">&quot;consolidated_id&quot;</span><span class="p">:</span> <span class="n">consolidated_task</span><span class="o">.</span><span class="n">id</span>
+                    <span class="s2">"event"</span><span class="p">:</span> <span class="s2">"drawing_consolidated"</span><span class="p">,</span>
+                    <span class="s2">"base_part"</span><span class="p">:</span> <span class="n">base_part_number</span><span class="p">,</span>
+                    <span class="s2">"consumed_ids"</span><span class="p">:</span> <span class="p">[</span><span class="n">dt</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">dt</span> <span class="ow">in</span> <span class="n">drawing_tasks</span><span class="p">],</span>
+                    <span class="s2">"consolidated_id"</span><span class="p">:</span> <span class="n">consolidated_task</span><span class="o">.</span><span class="n">id</span>
                 <span class="p">}</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">transformation_log</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">log_data</span><span class="p">)</span>
-                <span class="n">audit_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Drawing Consolidated: </span><span class="si">{</span><span class="n">log_data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">audit_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Drawing Consolidated: </span><span class="si">{</span><span class="n">log_data</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                 
                 <span class="n">consolidated_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">consolidated_task</span><span class="p">)</span>
 
         <span class="c1"># [Req: RF-13.5] — Phase 1: remap all successors_ids pointing to individual variants -&gt; consolidated ID</span>
         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">:</span>
             <span class="n">new_successors_ids_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">original_successor_id</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">&#39;successors_ids&#39;</span><span class="p">,</span> <span class="p">[]):</span>
+            <span class="k">for</span> <span class="n">original_successor_id</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">'successors_ids'</span><span class="p">,</span> <span class="p">[]):</span>
                 <span class="k">if</span> <span class="n">original_successor_id</span> <span class="ow">in</span> <span class="n">original_drawing_id_to_consolidated_id_map</span><span class="p">:</span>
                     <span class="n">new_successors_ids_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">original_drawing_id_to_consolidated_id_map</span><span class="p">[</span><span class="n">original_successor_id</span><span class="p">])</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -826,11 +746,11 @@ window.runMermaid = runMermaid;</script>
 
     <span class="c1"># [Req: RF-05, RF-05.1, RF-05.2, RF-06, RF-07, RF-07.1, RF-07.2, RF-07.3, RF-08, RF-08.1, RF-08.2, RF-08.3]</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_apply_customization_durations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">global_applied_customization_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Runs the customization adjustments for duration variables.</span>
+<span class="w">        </span><span class="sd">"""Runs the customization adjustments for duration variables.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            global_applied_customization_names (List[str]): Extracted subset of customizations active in the timeline.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">customization_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">ct</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">ct</span> <span class="k">for</span> <span class="n">ct</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">customization_types</span><span class="p">}</span>
         <span class="n">tasks_to_keep</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Task</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">removed_task_info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -846,8 +766,8 @@ window.runMermaid = runMermaid;</script>
                     <span class="n">current_customization_value</span> <span class="o">=</span> <span class="kc">None</span>
                     <span class="c1"># [Req: RF-05.1, RF-05.2] — Read value: variant-level override first, then milestone default</span>
                     <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_requirements_data</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="s1">&#39;customizations&#39;</span> <span class="ow">in</span> <span class="n">entry</span> <span class="ow">and</span> <span class="n">customization_name</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;customizations&#39;</span><span class="p">]:</span>
-                            <span class="n">current_customization_value</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;customizations&#39;</span><span class="p">][</span><span class="n">customization_name</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="s1">'customizations'</span> <span class="ow">in</span> <span class="n">entry</span> <span class="ow">and</span> <span class="n">customization_name</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">[</span><span class="s1">'customizations'</span><span class="p">]:</span>
+                            <span class="n">current_customization_value</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s1">'customizations'</span><span class="p">][</span><span class="n">customization_name</span><span class="p">]</span>
                             <span class="k">break</span>
                     
                     <span class="k">if</span> <span class="n">current_customization_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -868,21 +788,21 @@ window.runMermaid = runMermaid;</script>
                 <span class="n">max_custom_duration</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">applicable_durations</span><span class="p">)</span>  <span class="c1"># [Req: RF-07.2]</span>
                 <span class="k">if</span> <span class="n">max_custom_duration</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># [Req: RF-08.1] — Zero duration: task removed from schedule</span>
                     <span class="n">removed_task_info</span><span class="p">[</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-                        <span class="s1">&#39;predecessors&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">task</span><span class="o">.</span><span class="n">predecessors</span><span class="p">],</span>
-                        <span class="s1">&#39;successors&#39;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">&#39;successors_ids&#39;</span><span class="p">,</span> <span class="p">[])</span>
+                        <span class="s1">'predecessors'</span><span class="p">:</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">task</span><span class="o">.</span><span class="n">predecessors</span><span class="p">],</span>
+                        <span class="s1">'successors'</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">'successors_ids'</span><span class="p">,</span> <span class="p">[])</span>
                     <span class="p">}</span>
                     
                     <span class="c1"># [Req: RF-26] — Trace Log: Record task removal due to zero duration</span>
                     <span class="n">log_data</span> <span class="o">=</span> <span class="p">{</span>
-                        <span class="s2">&quot;event&quot;</span><span class="p">:</span> <span class="s2">&quot;task_removed&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;task_id&quot;</span><span class="p">:</span> <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-                        <span class="s2">&quot;part&quot;</span><span class="p">:</span> <span class="n">task</span><span class="o">.</span><span class="n">part_number</span><span class="p">,</span>
-                        <span class="s2">&quot;reason&quot;</span><span class="p">:</span> <span class="s2">&quot;duration=0&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;bridged_predecessors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">task</span><span class="o">.</span><span class="n">predecessors</span><span class="p">],</span>
-                        <span class="s2">&quot;bridged_successors&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">&#39;successors_ids&#39;</span><span class="p">,</span> <span class="p">[])</span>
+                        <span class="s2">"event"</span><span class="p">:</span> <span class="s2">"task_removed"</span><span class="p">,</span>
+                        <span class="s2">"task_id"</span><span class="p">:</span> <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                        <span class="s2">"part"</span><span class="p">:</span> <span class="n">task</span><span class="o">.</span><span class="n">part_number</span><span class="p">,</span>
+                        <span class="s2">"reason"</span><span class="p">:</span> <span class="s2">"duration=0"</span><span class="p">,</span>
+                        <span class="s2">"bridged_predecessors"</span><span class="p">:</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">task</span><span class="o">.</span><span class="n">predecessors</span><span class="p">],</span>
+                        <span class="s2">"bridged_successors"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">'successors_ids'</span><span class="p">,</span> <span class="p">[])</span>
                     <span class="p">}</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">transformation_log</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">log_data</span><span class="p">)</span>
-                    <span class="n">audit_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Task Removed: </span><span class="si">{</span><span class="n">log_data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">audit_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Task Removed: </span><span class="si">{</span><span class="n">log_data</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                     
                     <span class="k">continue</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -897,12 +817,12 @@ window.runMermaid = runMermaid;</script>
         <span class="c1"># [Req: RF-08.2] — Bridge successors_ids of predecessors over removed (zero-duration) tasks</span>
         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">:</span>
             <span class="n">new_successors_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">original_successor_id</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">&#39;successors_ids&#39;</span><span class="p">,</span> <span class="p">[]):</span>
+            <span class="k">for</span> <span class="n">original_successor_id</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">'successors_ids'</span><span class="p">,</span> <span class="p">[]):</span>
                 <span class="k">if</span> <span class="n">original_successor_id</span> <span class="ow">in</span> <span class="n">task_id_to_task_map</span><span class="p">:</span>
                     <span class="n">new_successors_ids</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">original_successor_id</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">original_successor_id</span> <span class="ow">in</span> <span class="n">removed_task_info</span><span class="p">:</span>
                     <span class="n">removed_succ_info</span> <span class="o">=</span> <span class="n">removed_task_info</span><span class="p">[</span><span class="n">original_successor_id</span><span class="p">]</span>
-                    <span class="k">for</span> <span class="n">indirect_successor_id</span> <span class="ow">in</span> <span class="n">removed_succ_info</span><span class="p">[</span><span class="s1">&#39;successors&#39;</span><span class="p">]:</span>
+                    <span class="k">for</span> <span class="n">indirect_successor_id</span> <span class="ow">in</span> <span class="n">removed_succ_info</span><span class="p">[</span><span class="s1">'successors'</span><span class="p">]:</span>
                         <span class="k">if</span> <span class="n">indirect_successor_id</span> <span class="ow">in</span> <span class="n">task_id_to_task_map</span><span class="p">:</span>
                             <span class="n">new_successors_ids</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">indirect_successor_id</span><span class="p">)</span>
             <span class="n">task</span><span class="o">.</span><span class="n">successors_ids</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">new_successors_ids</span><span class="p">))</span>
@@ -952,14 +872,14 @@ window.runMermaid = runMermaid;</script>
 
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">init_date_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_deliverable_init_date</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_deliverable_init_date</span><span class="p">()</span> <span class="k">else</span> <span class="s1">&#39;None&#39;</span>
-        <span class="n">end_date_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_deliverable_end_date</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_deliverable_end_date</span><span class="p">()</span> <span class="k">else</span> <span class="s1">&#39;None&#39;</span>
+        <span class="n">init_date_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_deliverable_init_date</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M'</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_deliverable_init_date</span><span class="p">()</span> <span class="k">else</span> <span class="s1">'None'</span>
+        <span class="n">end_date_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_deliverable_end_date</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M'</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_deliverable_end_date</span><span class="p">()</span> <span class="k">else</span> <span class="s1">'None'</span>
         <span class="n">total_duration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_total_duration</span><span class="p">()</span>
-        <span class="n">total_duration_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">total_duration</span><span class="p">)</span> <span class="k">if</span> <span class="n">total_duration</span> <span class="k">else</span> <span class="s1">&#39;None&#39;</span>
-        <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ProjectSchedule(num_tasks=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">)</span><span class="si">}</span><span class="s2">, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;num_resources=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_resources</span><span class="si">}</span><span class="s2">, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;earliest_init=&#39;</span><span class="si">{</span><span class="n">init_date_str</span><span class="si">}</span><span class="s2">&#39;, latest_end=&#39;</span><span class="si">{</span><span class="n">end_date_str</span><span class="si">}</span><span class="s2">&#39;, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;total_duration=&#39;</span><span class="si">{</span><span class="n">total_duration_str</span><span class="si">}</span><span class="s2">&#39;)&quot;</span><span class="p">)</span></div>
+        <span class="n">total_duration_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">total_duration</span><span class="p">)</span> <span class="k">if</span> <span class="n">total_duration</span> <span class="k">else</span> <span class="s1">'None'</span>
+        <span class="k">return</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"ProjectSchedule(num_tasks=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">)</span><span class="si">}</span><span class="s2">, "</span>
+                <span class="sa">f</span><span class="s2">"num_resources=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_resources</span><span class="si">}</span><span class="s2">, "</span>
+                <span class="sa">f</span><span class="s2">"earliest_init='</span><span class="si">{</span><span class="n">init_date_str</span><span class="si">}</span><span class="s2">', latest_end='</span><span class="si">{</span><span class="n">end_date_str</span><span class="si">}</span><span class="s2">', "</span>
+                <span class="sa">f</span><span class="s2">"total_duration='</span><span class="si">{</span><span class="n">total_duration_str</span><span class="si">}</span><span class="s2">')"</span><span class="p">)</span></div>
 
 </pre></div>
 
