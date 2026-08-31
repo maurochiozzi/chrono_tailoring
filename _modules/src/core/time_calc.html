@@ -488,21 +488,20 @@ window.runMermaid = runMermaid;</script>
     <span class="k">if</span> <span class="n">duration_minutes</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Duration cannot be negative (got </span><span class="si">{</span><span class="n">duration_minutes</span><span class="si">}</span><span class="s2"> minutes)."</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">duration_minutes</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># [Req: RF-09.7] — Zero-duration tasks (milestones) return immediately</span>
-        <span class="k">return</span> <span class="n">current_time</span>
-
     <span class="c1"># Fast-forward start to a valid working slot</span>
     <span class="k">if</span> <span class="n">current_time</span><span class="o">.</span><span class="n">hour</span> <span class="o">&lt;</span> <span class="n">working_start_hour</span><span class="p">:</span>  <span class="c1"># [Req: RF-09.2] — Advance pre-shift time to shift start</span>
         <span class="n">current_time</span> <span class="o">=</span> <span class="n">current_time</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
             <span class="n">hour</span><span class="o">=</span><span class="n">working_start_hour</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">microsecond</span><span class="o">=</span><span class="mi">0</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="n">current_time</span><span class="o">.</span><span class="n">hour</span> <span class="o">&gt;=</span> <span class="n">working_end_hour</span><span class="p">:</span>  <span class="c1"># [Req: RF-09.3] — Roll over to next day if past end of shift</span>
-        <span class="n">current_time</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">current_time</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-                <span class="n">hour</span><span class="o">=</span><span class="n">working_start_hour</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">microsecond</span><span class="o">=</span><span class="mi">0</span>
+        <span class="c1"># Only roll over exactly at end_hour if we are actually doing work, or if it's strictly past end_hour</span>
+        <span class="k">if</span> <span class="n">current_time</span><span class="o">.</span><span class="n">hour</span> <span class="o">&gt;</span> <span class="n">working_end_hour</span> <span class="ow">or</span> <span class="p">(</span><span class="n">current_time</span><span class="o">.</span><span class="n">hour</span> <span class="o">==</span> <span class="n">working_end_hour</span> <span class="ow">and</span> <span class="n">duration_minutes</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">current_time</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">current_time</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                    <span class="n">hour</span><span class="o">=</span><span class="n">working_start_hour</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">microsecond</span><span class="o">=</span><span class="mi">0</span>
+                <span class="p">)</span>
+                <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
             <span class="p">)</span>
-            <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="p">)</span>
 
     <span class="c1"># [Req: RF-09.4, RF-09.5] — Skip weekends and holidays before starting the duration countdown</span>
     <span class="k">while</span> <span class="ow">not</span> <span class="n">is_working_day</span><span class="p">(</span><span class="n">current_time</span><span class="o">.</span><span class="n">date</span><span class="p">(),</span> <span class="n">holidays</span><span class="p">):</span>
@@ -510,6 +509,9 @@ window.runMermaid = runMermaid;</script>
         <span class="n">current_time</span> <span class="o">=</span> <span class="n">current_time</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
             <span class="n">hour</span><span class="o">=</span><span class="n">working_start_hour</span><span class="p">,</span> <span class="n">minute</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">second</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">microsecond</span><span class="o">=</span><span class="mi">0</span>
         <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">duration_minutes</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># [Req: RF-09.7] — Zero-duration tasks (milestones) return immediately</span>
+        <span class="k">return</span> <span class="n">current_time</span>
 
     <span class="n">end_time</span> <span class="o">=</span> <span class="n">current_time</span>
     <span class="c1"># [Req: RF-09.6] — Distribute duration progressively: consume today's remaining minutes first, then full days</span>

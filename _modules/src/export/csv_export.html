@@ -504,8 +504,8 @@ window.runMermaid = runMermaid;</script>
                 <span class="s1">'Slack (min)'</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">'slack'</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
             <span class="p">}</span>
             
-            <span class="c1"># [Req: RF-14.3] — Consolidated drawing tasks span multiple milestones; leave Milestone ID blank</span>
-            <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">strategy</span> <span class="o">==</span> <span class="s2">"consolidated"</span><span class="p">:</span>
+            <span class="c1"># [Req: RF-14.3] — Merged drawing tasks span multiple milestones; leave Milestone ID blank</span>
+            <span class="k">if</span> <span class="n">task</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">strategy</span> <span class="o">==</span> <span class="s2">"merged"</span><span class="p">:</span>
                 <span class="n">row</span><span class="p">[</span><span class="s1">'Milestone ID'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">''</span> 
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">row</span><span class="p">[</span><span class="s1">'Milestone ID'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">'milestone_id'</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>

@@ -439,7 +439,7 @@ window.runMermaid = runMermaid;</script>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        description (str): The main classification of the task (e.g., 'release', 'drawing').</span>
-<span class="sd">        strategy (Optional[str]): Used when a specific processing logic overrides standard behaviour (e.g., 'consolidated').</span>
+<span class="sd">        strategy (Optional[str]): Used when a specific processing logic overrides standard behaviour (e.g., 'merged').</span>
 <span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">description</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">strategy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
@@ -501,6 +501,9 @@ window.runMermaid = runMermaid;</script>
         <span class="bp">self</span><span class="o">.</span><span class="n">variant_name</span> <span class="o">=</span> <span class="n">variant_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">variant_customizations</span> <span class="o">=</span> <span class="n">variant_customizations</span> <span class="k">if</span> <span class="n">variant_customizations</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">milestone_id</span> <span class="o">=</span> <span class="n">milestone_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resource_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>   <span class="c1"># set by the scheduling engine</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slack</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_critical</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 
 
     <span class="c1"># [Req: RF-02.3, RNF-11] — Tolerates NaN, floats and non-numeric values in the successors field</span>
@@ -550,6 +553,7 @@ window.runMermaid = runMermaid;</script>
         <span class="p">)</span>
         <span class="c1"># explicitly maintain old dependency pointers for cloning</span>
         <span class="n">new_task</span><span class="o">.</span><span class="n">successors_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">successors_ids</span><span class="p">)</span>
+        <span class="n">new_task</span><span class="o">.</span><span class="n">resource_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource_id</span>
         <span class="k">return</span> <span class="n">new_task</span></div>
 
 

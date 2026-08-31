@@ -525,8 +525,8 @@ window.runMermaid = runMermaid;</script>
     <span class="c1"># Format names to `BasePart - Description`</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">format_task_name</span><span class="p">(</span><span class="n">t</span><span class="p">:</span> <span class="n">Task</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">base_part</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">part_number</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"Consolidated Drawing"</span><span class="p">):</span>
-            <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">base_part</span><span class="si">}</span><span class="s2"> - Consolidated drawing"</span>
+        <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"Merged Drawing"</span><span class="p">):</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">base_part</span><span class="si">}</span><span class="s2"> - Merged drawing"</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">base_part</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="c1"># [Req: RF-17.2] — Swim-lanes = unique task names formatted as 'BasePart - Name', sorted alphabetically</span>
@@ -602,7 +602,7 @@ window.runMermaid = runMermaid;</script>
 
         <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
             <span class="s2">"id"</span><span class="p">:</span>      <span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-            <span class="s2">"group"</span><span class="p">:</span>   <span class="n">fname</span><span class="p">,</span>          <span class="c1"># row = formatted task name</span>
+            <span class="s2">"group"</span><span class="p">:</span>   <span class="n">fname</span><span class="p">,</span>          <span class="c1"># row = formatted task name (default: by part)</span>
             <span class="s2">"content"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"#</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>      <span class="c1"># compact bar label</span>
             <span class="s2">"start"</span><span class="p">:</span>   <span class="n">task</span><span class="o">.</span><span class="n">init_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S'</span><span class="p">),</span>
             <span class="s2">"end"</span><span class="p">:</span>     <span class="n">task</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S'</span><span class="p">),</span>
@@ -625,6 +625,12 @@ window.runMermaid = runMermaid;</script>
             <span class="s2">"_end"</span><span class="p">:</span>        <span class="n">task</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M'</span><span class="p">),</span>
             <span class="s2">"_preds"</span><span class="p">:</span>      <span class="n">preds</span><span class="p">,</span>
             <span class="s2">"_succs"</span><span class="p">:</span>      <span class="n">succs</span><span class="p">,</span>
+            <span class="s2">"_resource"</span><span class="p">:</span>   <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">'resource_id'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="c1"># Group keys for the four display modes</span>
+            <span class="s2">"_group_part"</span><span class="p">:</span>      <span class="n">fname</span><span class="p">,</span>
+            <span class="s2">"_group_milestone"</span><span class="p">:</span> <span class="n">milestone_label</span><span class="p">,</span>
+            <span class="s2">"_group_task"</span><span class="p">:</span>      <span class="sa">f</span><span class="s2">"#</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> — </span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="s2">"_group_resource"</span><span class="p">:</span>  <span class="sa">f</span><span class="s2">"Resource </span><span class="si">{</span><span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span><span class="w"> </span><span class="s1">'resource_id'</span><span class="p">,</span><span class="w"> </span><span class="kc">None</span><span class="p">)</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
         <span class="p">})</span>
         
     <span class="c1"># Combine critical_links and task_links based on the flag</span>
@@ -681,7 +687,7 @@ window.runMermaid = runMermaid;</script>
             <span class="n">task_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">td</span><span class="p">)</span>
     <span class="n">task_types</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
 
-    <span class="n">valid_tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">init_date</span> <span class="ow">and</span> <span class="n">t</span><span class="o">.</span><span class="n">end_date</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">'duration_minutes'</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="s1">'strategy'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="s1">'consolidated'</span><span class="p">]</span>
+    <span class="n">valid_tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">init_date</span> <span class="ow">and</span> <span class="n">t</span><span class="o">.</span><span class="n">end_date</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">'duration_minutes'</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="s1">'strategy'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="s1">'merged'</span><span class="p">]</span>
     <span class="n">resource_data</span> <span class="o">=</span> <span class="p">[]</span>
     
     <span class="k">if</span> <span class="n">valid_tasks</span><span class="p">:</span>
@@ -754,7 +760,7 @@ window.runMermaid = runMermaid;</script>
         <span class="n">req_text</span> <span class="o">=</span> <span class="n">project_requirements_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="s1">'utf-8'</span><span class="p">)</span>
     <span class="c1"># Calculate Efficiency Index</span>
     <span class="n">actual_work_minutes</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">'duration_minutes'</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">'duration_minutes'</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">core_work_minutes</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">'duration_minutes'</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">'duration_minutes'</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="s1">'strategy'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="s1">'consolidated'</span><span class="p">)</span>
+    <span class="n">core_work_minutes</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">'duration_minutes'</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">'duration_minutes'</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="s1">'strategy'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="s1">'merged'</span><span class="p">)</span>
     <span class="n">total_capacity_minutes</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">if</span> <span class="n">tasks</span><span class="p">:</span>
         <span class="n">all_starts</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">init_date</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">init_date</span><span class="p">]</span>
@@ -784,6 +790,7 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">  &lt;link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/&gt;</span>
 <span class="s2">  &lt;link href="https://unpkg.com/vis-timeline@7.7.3/dist/vis-timeline-graph2d.min.css" rel="stylesheet"/&gt;</span>
 <span class="s2">  &lt;script src="https://unpkg.com/vis-timeline@7.7.3/dist/vis-timeline-graph2d.min.js"&gt;&lt;/script&gt;</span>
+<span class="s2">  &lt;script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"&gt;&lt;/script&gt;</span>
 
 <span class="s2">  &lt;style&gt;</span>
 <span class="s2">    *, *::before, *::after </span><span class="se">{{</span><span class="s2"> box-sizing: border-box; margin: 0; padding: 0; </span><span class="se">}}</span>
@@ -983,6 +990,33 @@ window.runMermaid = runMermaid;</script>
 
 <span class="s2">    .divider </span><span class="se">{{</span><span class="s2"> width: 1px; height: 20px; background: var(--border); margin: 0 3px; </span><span class="se">}}</span>
 
+<span class="s2">    .btn.active </span><span class="se">{{</span>
+<span class="s2">      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);</span>
+<span class="s2">      border-color: transparent;</span>
+<span class="s2">      color: #fff;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .btn.active:hover </span><span class="se">{{</span>
+<span class="s2">      background: linear-gradient(135deg, #5f9cf6 0%, #9271ff 100%);</span>
+<span class="s2">      border-color: transparent;</span>
+<span class="s2">    </span><span class="se">}}</span>
+
+<span class="s2">    .search-input </span><span class="se">{{</span>
+<span class="s2">      background: var(--surface2);</span>
+<span class="s2">      color: var(--text);</span>
+<span class="s2">      border: 1px solid var(--border);</span>
+<span class="s2">      border-radius: var(--radius);</span>
+<span class="s2">      padding: 5px 12px;</span>
+<span class="s2">      font-size: 0.75rem;</span>
+<span class="s2">      font-family: inherit;</span>
+<span class="s2">      width: 150px;</span>
+<span class="s2">      transition: width 0.2s, border-color 0.15s;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .search-input:focus </span><span class="se">{{</span>
+<span class="s2">      outline: none;</span>
+<span class="s2">      border-color: var(--accent);</span>
+<span class="s2">      width: 200px;</span>
+<span class="s2">    </span><span class="se">}}</span>
+
 <span class="s2">    /* ── Layout ──────────────────────────────────────────────────────────────── */</span>
 <span class="s2">    .main </span><span class="se">{{</span><span class="s2"> display: flex; flex: 1; overflow: hidden; </span><span class="se">}}</span>
 
@@ -1110,6 +1144,32 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">      white-space: nowrap;</span>
 <span class="s2">    </span><span class="se">}}</span>
 
+<span class="s2">    /* ── Tab Bar ─────────────────────────────────────────────────────────────── */</span>
+<span class="s2">    .tab-bar </span><span class="se">{{</span>
+<span class="s2">      display: flex;</span>
+<span class="s2">      align-items: center;</span>
+<span class="s2">      height: 38px;</span>
+<span class="s2">      flex-shrink: 0;</span>
+<span class="s2">      background: var(--surface);</span>
+<span class="s2">      border-bottom: 1px solid var(--border);</span>
+<span class="s2">      padding: 0 16px;</span>
+<span class="s2">      gap: 0;</span>
+<span class="s2">      z-index: 5;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .tab-btn </span><span class="se">{{</span>
+<span class="s2">      display: flex; align-items: center; gap: 6px;</span>
+<span class="s2">      padding: 0 18px; height: 100%;</span>
+<span class="s2">      font-size: 0.78rem; font-weight: 500; font-family: inherit;</span>
+<span class="s2">      color: var(--muted); background: none; border: none;</span>
+<span class="s2">      border-bottom: 2px solid transparent; cursor: pointer;</span>
+<span class="s2">      transition: color 0.15s, border-color 0.15s; white-space: nowrap;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .tab-btn:hover </span><span class="se">{{</span><span class="s2"> color: var(--text); </span><span class="se">}}</span>
+<span class="s2">    .tab-btn.active </span><span class="se">{{</span><span class="s2"> color: var(--accent); border-bottom-color: var(--accent); </span><span class="se">}}</span>
+<span class="s2">    .tab-spacer </span><span class="se">{{</span><span class="s2"> flex: 1; </span><span class="se">}}</span>
+<span class="s2">    .flow-toolbar </span><span class="se">{{</span><span class="s2"> display: none; align-items: center; gap: 6px; </span><span class="se">}}</span>
+<span class="s2">    .flow-toolbar.visible </span><span class="se">{{</span><span class="s2"> display: flex; </span><span class="se">}}</span>
+
 <span class="s2">    /* ── Timeline ────────────────────────────────────────────────────────────── */</span>
 <span class="s2">    .main-content </span><span class="se">{{</span>
 <span class="s2">      flex: 1;</span>
@@ -1119,8 +1179,11 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">      background: #0d0f1a;</span>
 <span class="s2">      position: relative;</span>
 <span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    #ganttView </span><span class="se">{{</span><span class="s2"> flex: 1; display: flex; flex-direction: column; overflow: hidden; </span><span class="se">}}</span>
 <span class="s2">    #gantt </span><span class="se">{{</span><span class="s2"> flex: 1; overflow: hidden; </span><span class="se">}}</span>
 <span class="s2">    #resourceGraph, #allocationGraph </span><span class="se">{{</span><span class="s2"> height: 160px; border-top: 1px solid var(--border); background: var(--bg); flex-shrink: 0; </span><span class="se">}}</span>
+<span class="s2">    #flowView </span><span class="se">{{</span><span class="s2"> flex: 1; display: none; flex-direction: column; overflow: hidden; background: #080a12; </span><span class="se">}}</span>
+<span class="s2">    #flowCanvas </span><span class="se">{{</span><span class="s2"> flex: 1; width: 100%; height: 100%; </span><span class="se">}}</span>
 
 
 <span class="s2">    /* ── Vis.js overrides ────────────────────────────────────────────────────── */</span>
@@ -1291,7 +1354,19 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">      &lt;button class="btn" onclick="zoomIn()"&gt;＋ Zoom In&lt;/button&gt;</span>
 <span class="s2">      &lt;button class="btn" onclick="zoomOut()"&gt;－ Zoom Out&lt;/button&gt;</span>
 <span class="s2">      &lt;button class="btn" onclick="goToday()"&gt;◎ Today&lt;/button&gt;</span>
-<span class="s2">      &lt;button class="btn" onclick="toggleSort()"&gt;↕ Sort Rows&lt;/button&gt;</span>
+<span class="s2">      &lt;div class="divider"&gt;&lt;/div&gt;</span>
+<span class="s2">      &lt;span style="font-size:0.65rem;color:var(--muted);white-space:nowrap"&gt;Group:&lt;/span&gt;</span>
+<span class="s2">      &lt;button id="grpPart"      class="btn active"  onclick="setGroupMode('part')"&gt;Part&lt;/button&gt;</span>
+<span class="s2">      &lt;button id="grpMilestone" class="btn"         onclick="setGroupMode('milestone')"&gt;Milestone&lt;/button&gt;</span>
+<span class="s2">      &lt;button id="grpResource"  class="btn"         onclick="setGroupMode('resource')"&gt;Resource&lt;/button&gt;</span>
+<span class="s2">      &lt;button id="grpTask"      class="btn"         onclick="setGroupMode('task')"&gt;Task&lt;/button&gt;</span>
+<span class="s2">      &lt;div class="divider"&gt;&lt;/div&gt;</span>
+<span class="s2">      &lt;span style="font-size:0.65rem;color:var(--muted);white-space:nowrap"&gt;Sort:&lt;/span&gt;</span>
+<span class="s2">      &lt;button id="sortAlphaBtn" class="btn active"  onclick="setSortMode('alpha')"&gt;A→Z&lt;/button&gt;</span>
+<span class="s2">      &lt;button id="sortDateBtn"  class="btn"         onclick="setSortMode('date')"&gt;Date&lt;/button&gt;</span>
+<span class="s2">      &lt;div class="divider"&gt;&lt;/div&gt;</span>
+<span class="s2">      &lt;input type="text" id="searchInput" list="partNumbers" placeholder="Search Part Number..." onchange="searchPart()" class="search-input" /&gt;</span>
+<span class="s2">      &lt;datalist id="partNumbers"&gt;&lt;/datalist&gt;</span>
 <span class="s2">      &lt;div class="divider"&gt;&lt;/div&gt;</span>
 <span class="s2">      &lt;button class="btn btn-export" onclick="exportJSON()"&gt;⬇ JSON&lt;/button&gt;</span>
 <span class="s2">      &lt;button class="btn btn-export" onclick="exportCSV()"&gt;⬇ CSV&lt;/button&gt;</span>
@@ -1336,7 +1411,7 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">                &lt;span class="summary-key info-tooltip-wrap"&gt;</span>
 <span class="s2">                   Gross Eff.</span>
 <span class="s2">                   &lt;div class="info-tooltip-content"&gt;</span>
-<span class="s2">                     &lt;b&gt;Gross Efficiency&lt;/b&gt;&lt;br&gt;Includes 100% of all estimated tasks, including consolidated drawing blocks running in the background. Reflects total systemic density.</span>
+<span class="s2">                     &lt;b&gt;Gross Efficiency&lt;/b&gt;&lt;br&gt;Includes 100% of all estimated tasks, including merged drawing blocks running in the background. Reflects total systemic density.</span>
 <span class="s2">                   &lt;/div&gt;</span>
 <span class="s2">                &lt;/span&gt;</span>
 <span class="s2">                &lt;span class="summary-val" style="color: </span><span class="se">{{</span><span class="s2"> '#a0ffcb' if efficiency_index &gt;= 0.8 else '#ffcc00' if efficiency_index &gt;= 0.5 else '#ff6b6b' </span><span class="se">}}</span><span class="s2">"&gt;</span><span class="si">{</span><span class="n">efficiency_index</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&lt;/span&gt;</span>
@@ -1345,7 +1420,7 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">                &lt;span class="summary-key info-tooltip-wrap"&gt;</span>
 <span class="s2">                   Core Eff.</span>
 <span class="s2">                   &lt;div class="info-tooltip-content"&gt;</span>
-<span class="s2">                     &lt;b&gt;Core Efficiency&lt;/b&gt;&lt;br&gt;Excludes consolidated drawings. This matches the visual idleness on the charts and reveals actual capacity gaps when engineers are blocked.</span>
+<span class="s2">                     &lt;b&gt;Core Efficiency&lt;/b&gt;&lt;br&gt;Excludes merged drawings. This matches the visual idleness on the charts and reveals actual capacity gaps when engineers are blocked.</span>
 <span class="s2">                   &lt;/div&gt;</span>
 <span class="s2">                &lt;/span&gt;</span>
 <span class="s2">                &lt;span class="summary-val" style="color: </span><span class="se">{{</span><span class="s2"> '#a0ffcb' if core_efficiency_index &gt;= 0.8 else '#ffcc00' if core_efficiency_index &gt;= 0.5 else '#ff6b6b' </span><span class="se">}}</span><span class="s2">"&gt;</span><span class="si">{</span><span class="n">core_efficiency_index</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&lt;/span&gt;</span>
@@ -1379,12 +1454,30 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">  &lt;/aside&gt;</span>
 
 <span class="s2">  &lt;div class="main-content"&gt;</span>
-<span class="s2">    &lt;div id="gantt"&gt;&lt;/div&gt;</span>
-<span class="s2">    &lt;div class="graph-wrapper"&gt;</span>
-<span class="s2">       &lt;div id="resourceGraph"&gt;&lt;/div&gt;</span>
+<span class="s2">    &lt;!-- ── Tab bar ── --&gt;</span>
+<span class="s2">    &lt;div class="tab-bar"&gt;</span>
+<span class="s2">      &lt;button id="tabGantt" class="tab-btn active" onclick="switchTab('gantt')"&gt;📅 Gantt&lt;/button&gt;</span>
+<span class="s2">      &lt;button id="tabFlow"  class="tab-btn"        onclick="switchTab('flow')"&gt;🔀 Flow&lt;/button&gt;</span>
+<span class="s2">      &lt;div class="tab-spacer"&gt;&lt;/div&gt;</span>
+<span class="s2">      &lt;div id="flowToolbar" class="flow-toolbar"&gt;</span>
+<span class="s2">        &lt;button class="btn btn-accent" onclick="flowFit()"&gt;&amp;#x229E; Fit&lt;/button&gt;</span>
+<span class="s2">      &lt;/div&gt;</span>
 <span class="s2">    &lt;/div&gt;</span>
-<span class="s2">    &lt;div class="graph-wrapper"&gt;</span>
-<span class="s2">       &lt;div id="allocationGraph"&gt;&lt;/div&gt;</span>
+
+<span class="s2">    &lt;!-- ── Gantt view ── --&gt;</span>
+<span class="s2">    &lt;div id="ganttView"&gt;</span>
+<span class="s2">      &lt;div id="gantt"&gt;&lt;/div&gt;</span>
+<span class="s2">      &lt;div class="graph-wrapper"&gt;</span>
+<span class="s2">         &lt;div id="resourceGraph"&gt;&lt;/div&gt;</span>
+<span class="s2">      &lt;/div&gt;</span>
+<span class="s2">      &lt;div class="graph-wrapper"&gt;</span>
+<span class="s2">         &lt;div id="allocationGraph"&gt;&lt;/div&gt;</span>
+<span class="s2">      &lt;/div&gt;</span>
+<span class="s2">    &lt;/div&gt;</span>
+
+<span class="s2">    &lt;!-- ── Flow view ── --&gt;</span>
+<span class="s2">    &lt;div id="flowView"&gt;</span>
+<span class="s2">      &lt;div id="flowCanvas"&gt;&lt;/div&gt;</span>
 <span class="s2">    &lt;/div&gt;</span>
 <span class="s2">  &lt;/div&gt;</span>
 <span class="s2">&lt;/div&gt;</span>
@@ -1614,22 +1707,65 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">    </span><span class="se">}}</span><span class="s2">, 50);</span>
 <span class="s2">  </span><span class="se">}}</span>
 <span class="s2">  </span>
-<span class="s2">  let sortAlpha = false;</span>
-<span class="s2">  function toggleSort() </span><span class="se">{{</span>
-<span class="s2">    sortAlpha = !sortAlpha;</span>
-<span class="s2">    let gArray = Object.values(groups.get());</span>
-<span class="s2">    if (sortAlpha) </span><span class="se">{{</span>
-<span class="s2">        gArray.sort((a,b) =&gt; a.content.localeCompare(b.content));</span>
+<span class="s2">  // ── Group &amp; Sort mode ────────────────────────────────────────────────────────</span>
+<span class="s2">  let currentGroupMode = 'part';  // 'part' | 'milestone' | 'resource' | 'task'</span>
+<span class="s2">  let currentSortMode  = 'alpha'; // 'alpha' | 'date'</span>
+
+<span class="s2">  function _groupKeyForItem(item) </span><span class="se">{{</span>
+<span class="s2">    if (currentGroupMode === 'milestone') return item._group_milestone || item._group_part;</span>
+<span class="s2">    if (currentGroupMode === 'resource')  return item._group_resource  || item._group_part;</span>
+<span class="s2">    if (currentGroupMode === 'task')      return item._group_task      || item._group_part;</span>
+<span class="s2">    return item._group_part;</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  function _buildGroups(sortedItems) </span><span class="se">{{</span>
+<span class="s2">    const seen = new Map(); // key → earliest start (for date sort)</span>
+<span class="s2">    sortedItems.forEach(item =&gt; </span><span class="se">{{</span>
+<span class="s2">      if (item._task_id === undefined) return; // skip background items</span>
+<span class="s2">      const key = _groupKeyForItem(item);</span>
+<span class="s2">      if (!seen.has(key)) seen.set(key, item.start);</span>
+<span class="s2">    </span><span class="se">}}</span><span class="s2">);</span>
+
+<span class="s2">    let entries = [...seen.entries()];</span>
+<span class="s2">    if (currentSortMode === 'alpha') </span><span class="se">{{</span>
+<span class="s2">      entries.sort((a, b) =&gt; a[0].localeCompare(b[0]));</span>
 <span class="s2">    </span><span class="se">}}</span><span class="s2"> else </span><span class="se">{{</span>
-<span class="s2">        // Recover original chronological order from ALL_GROUPS</span>
-<span class="s2">        let orderMap = new Map();</span>
-<span class="s2">        ALL_GROUPS.forEach((g, idx) =&gt; orderMap.set(g.id, idx));</span>
-<span class="s2">        gArray.sort((a,b) =&gt; (orderMap.get(a.id) || 0) - (orderMap.get(b.id) || 0));</span>
+<span class="s2">      entries.sort((a, b) =&gt; new Date(a[1]) - new Date(b[1]));</span>
 <span class="s2">    </span><span class="se">}}</span>
-<span class="s2">    // Apply order</span>
+<span class="s2">    return entries.map(([key]) =&gt; (</span><span class="se">{{</span><span class="s2"> id: key, content: key </span><span class="se">}}</span><span class="s2">));</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  function _applyGroupMode() </span><span class="se">{{</span>
+<span class="s2">    // Only operate on items currently visible in the dataset (respects active filters)</span>
+<span class="s2">    const currentIds = new Set(dataset.getIds());</span>
+<span class="s2">    const visibleItems = ALL_ITEMS.filter(i =&gt; i._task_id !== undefined &amp;&amp; currentIds.has(i.id));</span>
+<span class="s2">    const newGroups = _buildGroups(visibleItems);</span>
+
+<span class="s2">    // Update only the group field of currently visible items</span>
+<span class="s2">    const updates = visibleItems.map(item =&gt; (</span><span class="se">{{</span>
+<span class="s2">      id: item.id,</span>
+<span class="s2">      group: _groupKeyForItem(item)</span>
+<span class="s2">    </span><span class="se">}}</span><span class="s2">));</span>
+
 <span class="s2">    groups.clear();</span>
-<span class="s2">    groups.add(gArray);</span>
-<span class="s2">    groups.add(gArray);</span>
+<span class="s2">    groups.add(newGroups);</span>
+<span class="s2">    dataset.update(updates);</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  function setGroupMode(mode) </span><span class="se">{{</span>
+<span class="s2">    currentGroupMode = mode;</span>
+<span class="s2">    document.getElementById('grpPart').classList.toggle('active', mode === 'part');</span>
+<span class="s2">    document.getElementById('grpMilestone').classList.toggle('active', mode === 'milestone');</span>
+<span class="s2">    document.getElementById('grpResource').classList.toggle('active', mode === 'resource');</span>
+<span class="s2">    document.getElementById('grpTask').classList.toggle('active', mode === 'task');</span>
+<span class="s2">    _applyGroupMode();</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  function setSortMode(mode) </span><span class="se">{{</span>
+<span class="s2">    currentSortMode = mode;</span>
+<span class="s2">    document.getElementById('sortAlphaBtn').classList.toggle('active', mode === 'alpha');</span>
+<span class="s2">    document.getElementById('sortDateBtn').classList.toggle('active', mode === 'date');</span>
+<span class="s2">    _applyGroupMode();</span>
 <span class="s2">  </span><span class="se">}}</span>
 
 <span class="s2">  // ── Re-apply all active filters and refresh dataset ───────────────────────────</span>
@@ -1639,16 +1775,20 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">      const typeOk      = !hiddenTypes.has(item._type);</span>
 <span class="s2">      return milestoneOk &amp;&amp; typeOk;</span>
 <span class="s2">    </span><span class="se">}}</span><span class="s2">);</span>
-<span class="s2">    dataset.clear();</span>
-<span class="s2">    dataset.add(visible);</span>
 
-<span class="s2">    // Hide/show row labels for rows that have no visible items</span>
-<span class="s2">    const visibleNames = new Set(visible.map(i =&gt; i.group));</span>
-<span class="s2">    ALL_GROUPS.forEach(g =&gt; </span><span class="se">{{</span>
-<span class="s2">      groups.update(</span><span class="se">{{</span><span class="s2"> id: g.id, visible: visibleNames.has(g.id) </span><span class="se">}}</span><span class="s2">);</span>
+<span class="s2">    // Re-apply current group key so items land in the right row</span>
+<span class="s2">    const withGroup = visible.map(item =&gt; </span><span class="se">{{</span>
+<span class="s2">      if (item._task_id === undefined) return item; // leave background items alone</span>
+<span class="s2">      return Object.assign(</span><span class="se">{{}}</span><span class="s2">, item, </span><span class="se">{{</span><span class="s2"> group: _groupKeyForItem(item) </span><span class="se">}}</span><span class="s2">);</span>
 <span class="s2">    </span><span class="se">}}</span><span class="s2">);</span>
-<span class="s2">    </span>
-<span class="s2">    // Hide/show row labels for rows that have no visible items</span>
+
+<span class="s2">    dataset.clear();</span>
+<span class="s2">    dataset.add(withGroup);</span>
+
+<span class="s2">    // Rebuild groups from currently visible task items</span>
+<span class="s2">    const newGroups = _buildGroups(withGroup);</span>
+<span class="s2">    groups.clear();</span>
+<span class="s2">    groups.add(newGroups);</span>
 <span class="s2">  </span><span class="se">}}</span>
 
 <span class="s2">  // ── Sidebar: Milestones ───────────────────────────────────────────────────────</span>
@@ -1709,6 +1849,29 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">    applyFilters();</span>
 <span class="s2">  </span><span class="se">}}</span>
 <span class="s2">  </span>
+<span class="s2">  // ── Search Part ──────────────────────────────────────────────────────────────</span>
+<span class="s2">  const datalist = document.getElementById('partNumbers');</span>
+<span class="s2">  const uniqueParts = [...new Set(ALL_ITEMS.filter(i =&gt; i._part).map(i =&gt; i._part))].sort();</span>
+<span class="s2">  uniqueParts.forEach(part =&gt; </span><span class="se">{{</span>
+<span class="s2">    const option = document.createElement('option');</span>
+<span class="s2">    option.value = part;</span>
+<span class="s2">    datalist.appendChild(option);</span>
+<span class="s2">  </span><span class="se">}}</span><span class="s2">);</span>
+
+<span class="s2">  function searchPart() </span><span class="se">{{</span>
+<span class="s2">    const query = document.getElementById('searchInput').value.toLowerCase().trim();</span>
+<span class="s2">    if (!query) </span><span class="se">{{</span>
+<span class="s2">      timeline.setSelection([]);</span>
+<span class="s2">      return;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    const matchedItems = ALL_ITEMS.filter(item =&gt; item._part &amp;&amp; String(item._part).toLowerCase().includes(query));</span>
+<span class="s2">    if (matchedItems.length &gt; 0) </span><span class="se">{{</span>
+<span class="s2">      const ids = matchedItems.map(i =&gt; i.id || i._task_id).filter(id =&gt; id);</span>
+<span class="s2">      timeline.setSelection(ids, </span><span class="se">{{</span><span class="s2">focus: true, animation: </span><span class="se">{{</span><span class="s2">duration: 500, easingFunction: 'easeInOutQuad'</span><span class="se">}}}}</span><span class="s2">);</span>
+<span class="s2">    </span><span class="se">}}</span><span class="s2"> else </span><span class="se">{{</span>
+<span class="s2">      timeline.setSelection([]);</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">  </span><span class="se">}}</span>
 
 <span class="s2">  // ── Export ───────────────────────────────────────────────────────────────────</span>
 <span class="s2">  function showToast(msg) </span><span class="se">{{</span>
@@ -1723,7 +1886,8 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">    const rows = tasks.map(item =&gt; (</span><span class="se">{{</span>
 <span class="s2">      id: item._task_id, name: item._name,</span>
 <span class="s2">      milestone: item._milestone, type: item._type,</span>
-<span class="s2">      part: item._part, duration_h: item._duration_h,</span>
+<span class="s2">      part: item._part, resource: item._resource,</span>
+<span class="s2">      duration_h: item._duration_h,</span>
 <span class="s2">      start: item._start, end: item._end,</span>
 <span class="s2">      predecessors: item._preds === '—' ? '' : item._preds,</span>
 <span class="s2">      successors: item._succs === '—' ? '' : item._succs,</span>
@@ -1734,7 +1898,7 @@ window.runMermaid = runMermaid;</script>
 
 <span class="s2">  function exportCSV() </span><span class="se">{{</span>
 <span class="s2">    const tasks = ALL_ITEMS.filter(item =&gt; item._task_id !== undefined);</span>
-<span class="s2">    const cols = ['id','name','milestone','type','part','duration_h','start','end','predecessors','successors'];</span>
+<span class="s2">    const cols = ['id','name','milestone','type','part','resource','duration_h','start','end','predecessors','successors'];</span>
 <span class="s2">    const esc  = v =&gt; String(v ?? '');</span>
 <span class="s2">    const rows = [cols.join(',')];</span>
 <span class="s2">    tasks.forEach(item =&gt; </span><span class="se">{{</span>
@@ -1742,7 +1906,7 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">      let succs = (item._succs &amp;&amp; item._succs !== '—') ? String(item._succs).replace(/, /g, ';').replace(/,/g, ';') : '';</span>
 <span class="s2">      rows.push([</span>
 <span class="s2">        item._task_id, item._name, item._milestone, item._type,</span>
-<span class="s2">        item._part,    item._duration_h, item._start, item._end,</span>
+<span class="s2">        item._part,    item._resource, item._duration_h, item._start, item._end,</span>
 <span class="s2">        preds, succs,</span>
 <span class="s2">      ].map(esc).join(','));</span>
 <span class="s2">    </span><span class="se">}}</span><span class="s2">);</span>
@@ -1776,6 +1940,135 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">  setTimeout(() =&gt; </span><span class="se">{{</span>
 <span class="s2">    timeline.fit();</span>
 <span class="s2">  </span><span class="se">}}</span><span class="s2">, 150);</span>
+
+<span class="s2">  // ── Tab switching ─────────────────────────────────────────────────────────────</span>
+<span class="s2">  let networkInstance = null;</span>
+
+<span class="s2">  function switchTab(tab) </span><span class="se">{{</span>
+<span class="s2">    const isGantt = tab === 'gantt';</span>
+<span class="s2">    document.getElementById('ganttView').style.display  = isGantt ? 'flex' : 'none';</span>
+<span class="s2">    document.getElementById('flowView').style.display   = isGantt ? 'none' : 'flex';</span>
+<span class="s2">    document.getElementById('tabGantt').classList.toggle('active', isGantt);</span>
+<span class="s2">    document.getElementById('tabFlow').classList.toggle('active', !isGantt);</span>
+<span class="s2">    document.getElementById('flowToolbar').classList.toggle('visible', !isGantt);</span>
+<span class="s2">    if (!isGantt) </span><span class="se">{{</span>
+<span class="s2">      setTimeout(() =&gt; initFlowChart(), 80);</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  // ── Flow chart helpers ────────────────────────────────────────────────────────</span>
+<span class="s2">  function _hex2rgba(hex, a) </span><span class="se">{{</span>
+<span class="s2">    const r = parseInt(hex.slice(1,3),16);</span>
+<span class="s2">    const g = parseInt(hex.slice(3,5),16);</span>
+<span class="s2">    const b = parseInt(hex.slice(5,7),16);</span>
+<span class="s2">    return `rgba($</span><span class="se">{{</span><span class="s2">r</span><span class="se">}}</span><span class="s2">,$</span><span class="se">{{</span><span class="s2">g</span><span class="se">}}</span><span class="s2">,$</span><span class="se">{{</span><span class="s2">b</span><span class="se">}}</span><span class="s2">,$</span><span class="se">{{</span><span class="s2">a</span><span class="se">}}</span><span class="s2">)`;</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  function _shapePropsForType(type) </span><span class="se">{{</span>
+<span class="s2">    // vis-network only supports internal labels on box, ellipse, database, circle, and text.</span>
+<span class="s2">    // diamond and hexagon force the text outside (below) the shape.</span>
+<span class="s2">    if (type === 'milestone') return </span><span class="se">{{</span><span class="s2"> shape: 'box', shapeProperties: </span><span class="se">{{</span><span class="s2"> borderRadius: 0 </span><span class="se">}}</span><span class="s2"> </span><span class="se">}}</span><span class="s2">;</span>
+<span class="s2">    if (type === 'drawing')   return </span><span class="se">{{</span><span class="s2"> shape: 'ellipse' </span><span class="se">}}</span><span class="s2">;</span>
+<span class="s2">    if (type === 'release')   return </span><span class="se">{{</span><span class="s2"> shape: 'box', shapeProperties: </span><span class="se">{{</span><span class="s2"> borderRadius: 40 </span><span class="se">}}</span><span class="s2"> </span><span class="se">}}</span><span class="s2">; // Pill shape</span>
+<span class="s2">    return </span><span class="se">{{</span><span class="s2"> shape: 'box', shapeProperties: </span><span class="se">{{</span><span class="s2"> borderRadius: 8 </span><span class="se">}}</span><span class="s2"> </span><span class="se">}}</span><span class="s2">;</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  function _buildFlowData() </span><span class="se">{{</span>
+<span class="s2">    const colMap = </span><span class="se">{{}}</span><span class="s2">;</span>
+<span class="s2">    MILESTONE_META.forEach(m =&gt; </span><span class="se">{{</span><span class="s2"> colMap[m.id] = m.color; </span><span class="se">}}</span><span class="s2">);</span>
+
+<span class="s2">    const taskItems = ALL_ITEMS.filter(i =&gt; i._task_id !== undefined);</span>
+
+<span class="s2">    const nodes = taskItems.map(item =&gt; </span><span class="se">{{</span>
+<span class="s2">      const col   = colMap[item._milestone_id] || '#90A4AE';</span>
+<span class="s2">      const props = _shapePropsForType(item._type);</span>
+<span class="s2">      const basePart = item._part ? String(item._part).split('.')[0] : '—';</span>
+<span class="s2">      const label = `#$</span><span class="se">{{</span><span class="s2">item._task_id</span><span class="se">}}</span><span class="s2">  $</span><span class="se">{{</span><span class="s2">basePart</span><span class="se">}}\n</span><span class="s2">$</span><span class="se">{{</span><span class="s2">item._type</span><span class="se">}}\n</span><span class="s2">$</span><span class="se">{{</span><span class="s2">item._start || ''</span><span class="se">}}</span><span class="s2">`;</span>
+<span class="s2">      </span>
+<span class="s2">      const titleEl = document.createElement('div');</span>
+<span class="s2">      titleEl.innerHTML = item.title;</span>
+
+<span class="s2">      return Object.assign(</span><span class="se">{{</span>
+<span class="s2">        id:    item._task_id,</span>
+<span class="s2">        label: label,</span>
+<span class="s2">        size: 80,</span>
+<span class="s2">        color: </span><span class="se">{{</span>
+<span class="s2">          background: _hex2rgba(col, 0.22),</span>
+<span class="s2">          border:     col,</span>
+<span class="s2">          highlight: </span><span class="se">{{</span><span class="s2"> background: _hex2rgba(col, 0.55), border: '#ffffff' </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">          hover:     </span><span class="se">{{</span><span class="s2"> background: _hex2rgba(col, 0.40), border: col </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">        </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">        font: </span><span class="se">{{</span><span class="s2"> color: '#dde1f0', size: 18, face: 'Inter, sans-serif', multi: false </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">        borderWidth: 2,</span>
+<span class="s2">        borderWidthSelected: 2.5,</span>
+<span class="s2">        title: titleEl,</span>
+<span class="s2">      </span><span class="se">}}</span><span class="s2">, props);</span>
+<span class="s2">    </span><span class="se">}}</span><span class="s2">);</span>
+
+<span class="s2">    const edgeSet = new Set();</span>
+<span class="s2">    const edges = [];</span>
+<span class="s2">    taskItems.forEach(item =&gt; </span><span class="se">{{</span>
+<span class="s2">      if (!item._succs || item._succs === '</span><span class="se">\u2014</span><span class="s2">' || item._succs === '-') return;</span>
+<span class="s2">      item._succs.split(',').map(s =&gt; parseInt(s.trim())).filter(id =&gt; !isNaN(id)).forEach(sid =&gt; </span><span class="se">{{</span>
+<span class="s2">        const key = `$</span><span class="se">{{</span><span class="s2">item._task_id</span><span class="se">}}</span><span class="s2">-&gt;$</span><span class="se">{{</span><span class="s2">sid</span><span class="se">}}</span><span class="s2">`;</span>
+<span class="s2">        if (edgeSet.has(key)) return;</span>
+<span class="s2">        edgeSet.add(key);</span>
+<span class="s2">        edges.push(</span><span class="se">{{</span>
+<span class="s2">          from: item._task_id,</span>
+<span class="s2">          to:   sid,</span>
+<span class="s2">          arrows: </span><span class="se">{{</span><span class="s2"> to: </span><span class="se">{{</span><span class="s2"> enabled: true, scaleFactor: 0.55 </span><span class="se">}}</span><span class="s2"> </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">          color: </span><span class="se">{{</span><span class="s2"> color: '#2a2f4a', highlight: '#4C8BF5', hover: '#4C8BF5' </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">          smooth: </span><span class="se">{{</span><span class="s2"> type: 'cubicBezier', forceDirection: 'horizontal', roundness: 0.4 </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">          width: 1, selectionWidth: 2.5,</span>
+<span class="s2">        </span><span class="se">}}</span><span class="s2">);</span>
+<span class="s2">      </span><span class="se">}}</span><span class="s2">);</span>
+<span class="s2">    </span><span class="se">}}</span><span class="s2">);</span>
+<span class="s2">    return </span><span class="se">{{</span><span class="s2"> nodes, edges </span><span class="se">}}</span><span class="s2">;</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  function _netOptions() </span><span class="se">{{</span>
+<span class="s2">    return </span><span class="se">{{</span>
+<span class="s2">      interaction: </span><span class="se">{{</span>
+<span class="s2">        hover: true, tooltipDelay: 120,</span>
+<span class="s2">        navigationButtons: false, keyboard: false,</span>
+<span class="s2">        zoomView: true, dragView: true, dragNodes: false,</span>
+<span class="s2">        zoomSpeed: 0.4,</span>
+<span class="s2">      </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">      nodes: </span><span class="se">{{</span><span class="s2"> margin: 22 </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">      edges: </span><span class="se">{{</span><span class="s2"> selectionWidth: 2.5 </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">      layout: </span><span class="se">{{</span>
+<span class="s2">        hierarchical: </span><span class="se">{{</span>
+<span class="s2">          enabled: true, direction: 'LR', sortMethod: 'directed',</span>
+<span class="s2">          levelSeparation: 500, nodeSpacing: 200, treeSpacing: 250,</span>
+<span class="s2">          blockShifting: true, edgeMinimization: true, parentCentralization: true,</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">      </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">      physics: </span><span class="se">{{</span><span class="s2"> enabled: false </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">    </span><span class="se">}}</span><span class="s2">;</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  function initFlowChart() </span><span class="se">{{</span>
+<span class="s2">    const container = document.getElementById('flowCanvas');</span>
+<span class="s2">    if (networkInstance) </span><span class="se">{{</span>
+<span class="s2">      networkInstance.fit(</span><span class="se">{{</span><span class="s2"> animation: </span><span class="se">{{</span><span class="s2"> duration: 400, easingFunction: 'easeInOutQuad' </span><span class="se">}}</span><span class="s2"> </span><span class="se">}}</span><span class="s2">);</span>
+<span class="s2">      return;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    const </span><span class="se">{{</span><span class="s2"> nodes, edges </span><span class="se">}}</span><span class="s2"> = _buildFlowData();</span>
+<span class="s2">    const netNodes = new vis.DataSet(nodes);</span>
+<span class="s2">    const netEdges = new vis.DataSet(edges);</span>
+<span class="s2">    networkInstance = new vis.Network(</span>
+<span class="s2">      container,</span>
+<span class="s2">      </span><span class="se">{{</span><span class="s2"> nodes: netNodes, edges: netEdges </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">      _netOptions()</span>
+<span class="s2">    );</span>
+<span class="s2">    networkInstance.fit(</span><span class="se">{{</span><span class="s2"> animation: </span><span class="se">{{</span><span class="s2"> duration: 600, easingFunction: 'easeInOutQuad' </span><span class="se">}}</span><span class="s2"> </span><span class="se">}}</span><span class="s2">);</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  function flowFit() </span><span class="se">{{</span>
+<span class="s2">    if (networkInstance) </span><span class="se">{{</span>
+<span class="s2">      networkInstance.fit(</span><span class="se">{{</span><span class="s2"> animation: </span><span class="se">{{</span><span class="s2"> duration: 500, easingFunction: 'easeInOutQuad' </span><span class="se">}}</span><span class="s2"> </span><span class="se">}}</span><span class="s2">);</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">  </span><span class="se">}}</span>
 <span class="s2">&lt;/script&gt;</span>
 <span class="s2">&lt;/body&gt;</span>
 <span class="s2">&lt;/html&gt;</span>
