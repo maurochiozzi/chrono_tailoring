@@ -1030,10 +1030,6 @@ def export_interactive_gantt(
       <button id="tabFlow"  class="tab-btn"        onclick="switchTab('flow')">🔀 Flow</button>
       <div class="tab-spacer"></div>
       <div id="flowToolbar" class="flow-toolbar">
-        <span style="font-size:0.65rem;color:var(--muted)">Layout:</span>
-        <button id="flowLayoutH" class="btn active" onclick="setFlowLayout('hierarchical')">Hierarchical</button>
-        <button id="flowLayoutP" class="btn"        onclick="setFlowLayout('physics')">Physics</button>
-        <div class="divider"></div>
         <button class="btn btn-accent" onclick="flowFit()">&#x229E; Fit</button>
       </div>
     </div>
@@ -1517,7 +1513,6 @@ def export_interactive_gantt(
 
   // ── Tab switching ─────────────────────────────────────────────────────────────
   let networkInstance = null;
-  let currentFlowLayout = 'hierarchical';
 
   function switchTab(tab) {{
     const isGantt = tab === 'gantt';
@@ -1539,11 +1534,13 @@ def export_interactive_gantt(
     return `rgba(${{r}},${{g}},${{b}},${{a}})`;
   }}
 
-  function _shapeForType(type) {{
-    if (type === 'milestone') return 'diamond';
-    if (type === 'drawing')   return 'ellipse';
-    if (type === 'release')   return 'hexagon';
-    return 'box';
+  function _shapePropsForType(type) {{
+    // vis-network only supports internal labels on box, ellipse, database, circle, and text.
+    // diamond and hexagon force the text outside (below) the shape.
+    if (type === 'milestone') return {{ shape: 'box', shapeProperties: {{ borderRadius: 0 }} }};
+    if (type === 'drawing')   return {{ shape: 'ellipse' }};
+    if (type === 'release')   return {{ shape: 'database' }};
+    return {{ shape: 'box', shapeProperties: {{ borderRadius: 8 }} }};
   }}
 
   function _buildFlowData() {{
@@ -1554,25 +1551,28 @@ def export_interactive_gantt(
 
     const nodes = taskItems.map(item => {{
       const col   = colMap[item._milestone_id] || '#90A4AE';
-      const shape = _shapeForType(item._type);
+      const props = _shapePropsForType(item._type);
       const basePart = item._part ? String(item._part).split('.')[0] : '—';
       const label = `#${{item._task_id}}  ${{basePart}}\n${{item._type}}\n${{item._start || ''}}`;
-      return {{
+      
+      const titleEl = document.createElement('div');
+      titleEl.innerHTML = item.title;
+
+      return Object.assign({{
         id:    item._task_id,
         label: label,
-        shape: shape,
+        size: 80,
         color: {{
           background: _hex2rgba(col, 0.22),
           border:     col,
           highlight: {{ background: _hex2rgba(col, 0.55), border: '#ffffff' }},
           hover:     {{ background: _hex2rgba(col, 0.40), border: col }},
         }},
-        font: {{ color: '#dde1f0', size: 11, face: 'Inter, sans-serif', multi: false }},
-        borderWidth: 1.5,
+        font: {{ color: '#dde1f0', size: 18, face: 'Inter, sans-serif', multi: false }},
+        borderWidth: 2,
         borderWidthSelected: 2.5,
-        shadow: {{ enabled: true, color: 'rgba(0,0,0,0.45)', size: 10, x: 2, y: 3 }},
-        title: item.title,
-      }};
+        title: titleEl,
+      }}, props);
     }});
 
     const edgeSet = new Set();
@@ -1596,40 +1596,25 @@ def export_interactive_gantt(
     return {{ nodes, edges }};
   }}
 
-  function _netOptions(layout) {{
-    const base = {{
+  function _netOptions() {{
+    return {{
       interaction: {{
         hover: true, tooltipDelay: 120,
         navigationButtons: false, keyboard: false,
-        zoomView: true, dragView: true,
-        dragNodes: layout !== 'hierarchical',
+        zoomView: true, dragView: true, dragNodes: false,
+        zoomSpeed: 0.4,
       }},
-      nodes: {{ margin: 8 }},
+      nodes: {{ margin: 22 }},
       edges: {{ selectionWidth: 2.5 }},
-    }};
-    if (layout === 'hierarchical') {{
-      return Object.assign({{}}, base, {{
-        layout: {{
-          hierarchical: {{
-            enabled: true, direction: 'LR', sortMethod: 'directed',
-            levelSeparation: 200, nodeSpacing: 55, treeSpacing: 80,
-            blockShifting: true, edgeMinimization: true, parentCentralization: true,
-          }}
-        }},
-        physics: {{ enabled: false }},
-      }});
-    }}
-    return Object.assign({{}}, base, {{
-      layout: {{ hierarchical: {{ enabled: false }} }},
-      physics: {{
-        enabled: true, solver: 'forceAtlas2Based',
-        forceAtlas2Based: {{
-          gravitationalConstant: -70, centralGravity: 0.005,
-          springLength: 160, springConstant: 0.05, damping: 0.4,
-        }},
-        stabilization: {{ iterations: 300, updateInterval: 25 }},
+      layout: {{
+        hierarchical: {{
+          enabled: true, direction: 'LR', sortMethod: 'directed',
+          levelSeparation: 500, nodeSpacing: 200, treeSpacing: 250,
+          blockShifting: true, edgeMinimization: true, parentCentralization: true,
+        }}
       }},
-    }});
+      physics: {{ enabled: false }},
+    }};
   }}
 
   function initFlowChart() {{
@@ -1644,20 +1629,9 @@ def export_interactive_gantt(
     networkInstance = new vis.Network(
       container,
       {{ nodes: netNodes, edges: netEdges }},
-      _netOptions(currentFlowLayout)
+      _netOptions()
     );
-    networkInstance.once('stabilizationIterationsDone', () => {{
-      networkInstance.setOptions({{ physics: {{ enabled: false }} }});
-      networkInstance.fit({{ animation: {{ duration: 600, easingFunction: 'easeInOutQuad' }} }});
-    }});
-  }}
-
-  function setFlowLayout(layout) {{
-    currentFlowLayout = layout;
-    document.getElementById('flowLayoutH').classList.toggle('active', layout === 'hierarchical');
-    document.getElementById('flowLayoutP').classList.toggle('active', layout === 'physics');
-    if (networkInstance) {{ networkInstance.destroy(); networkInstance = null; }}
-    initFlowChart();
+    networkInstance.fit({{ animation: {{ duration: 600, easingFunction: 'easeInOutQuad' }} }});
   }}
 
   function flowFit() {{
