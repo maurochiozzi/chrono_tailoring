@@ -1539,7 +1539,7 @@ def export_interactive_gantt(
     // diamond and hexagon force the text outside (below) the shape.
     if (type === 'milestone') return {{ shape: 'box', shapeProperties: {{ borderRadius: 0 }} }};
     if (type === 'drawing')   return {{ shape: 'ellipse' }};
-    if (type === 'release')   return {{ shape: 'database' }};
+    if (type === 'release')   return {{ shape: 'box', shapeProperties: {{ borderRadius: 40 }} }}; // Pill shape
     return {{ shape: 'box', shapeProperties: {{ borderRadius: 8 }} }};
   }}
 
