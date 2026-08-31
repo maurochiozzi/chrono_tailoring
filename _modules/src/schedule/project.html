@@ -439,7 +439,7 @@ window.runMermaid = runMermaid;</script>
     <span class="n">load_customization_types</span><span class="p">,</span>
     <span class="n">read_customization_duration</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">src.schedule.engine</span><span class="w"> </span><span class="kn">import</span> <span class="n">calculate_task_dates</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.schedule.engine</span><span class="w"> </span><span class="kn">import</span> <span class="n">calculate_task_dates</span><span class="p">,</span> <span class="n">compute_critical_path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span>
 
 <span class="c1"># [Req: RF-03, RF-05, RF-06, RF-07, RF-08, RF-09, RF-10, RF-13] — Orchestrates full schedule: loads, customises, schedules and merges tasks</span>
@@ -556,6 +556,7 @@ window.runMermaid = runMermaid;</script>
         <span class="c1"># [Req: RF-13] — Optionally merge variant drawing tasks after dates are computed</span>
         <span class="k">if</span> <span class="n">merge_drawings</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_group_drawing_tasks</span><span class="p">()</span>
+            <span class="n">compute_critical_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">)</span>
 
         <span class="n">milestone_id_to_object_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">m</span><span class="o">.</span><span class="n">milestone_id</span><span class="p">:</span> <span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">milestones</span><span class="p">}</span>
         <span class="k">for</span> <span class="n">milestone</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">milestones</span><span class="p">:</span>
@@ -821,18 +822,23 @@ window.runMermaid = runMermaid;</script>
         <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span> <span class="o">=</span> <span class="n">tasks_to_keep</span>
         <span class="n">task_id_to_task_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">task</span> <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">}</span>
 
-        <span class="c1"># [Req: RF-08.2] — Bridge successors_ids of predecessors over removed (zero-duration) tasks</span>
+        <span class="c1"># [Req: RF-08.2] — Bridge successors_ids of predecessors over removed (zero-duration) tasks recursively</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_surviving_successors</span><span class="p">(</span><span class="n">succ_ids</span><span class="p">,</span> <span class="n">visited</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">visited</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">visited</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">sid</span> <span class="ow">in</span> <span class="n">succ_ids</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">sid</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sid</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">sid</span> <span class="ow">in</span> <span class="n">task_id_to_task_map</span><span class="p">:</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sid</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">sid</span> <span class="ow">in</span> <span class="n">removed_task_info</span><span class="p">:</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_resolve_surviving_successors</span><span class="p">(</span><span class="n">removed_task_info</span><span class="p">[</span><span class="n">sid</span><span class="p">][</span><span class="s1">'successors'</span><span class="p">],</span> <span class="n">visited</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">result</span>
+
         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">:</span>
-            <span class="n">new_successors_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">original_successor_id</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">'successors_ids'</span><span class="p">,</span> <span class="p">[]):</span>
-                <span class="k">if</span> <span class="n">original_successor_id</span> <span class="ow">in</span> <span class="n">task_id_to_task_map</span><span class="p">:</span>
-                    <span class="n">new_successors_ids</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">original_successor_id</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">original_successor_id</span> <span class="ow">in</span> <span class="n">removed_task_info</span><span class="p">:</span>
-                    <span class="n">removed_succ_info</span> <span class="o">=</span> <span class="n">removed_task_info</span><span class="p">[</span><span class="n">original_successor_id</span><span class="p">]</span>
-                    <span class="k">for</span> <span class="n">indirect_successor_id</span> <span class="ow">in</span> <span class="n">removed_succ_info</span><span class="p">[</span><span class="s1">'successors'</span><span class="p">]:</span>
-                        <span class="k">if</span> <span class="n">indirect_successor_id</span> <span class="ow">in</span> <span class="n">task_id_to_task_map</span><span class="p">:</span>
-                            <span class="n">new_successors_ids</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">indirect_successor_id</span><span class="p">)</span>
-            <span class="n">task</span><span class="o">.</span><span class="n">successors_ids</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">new_successors_ids</span><span class="p">))</span>
+            <span class="n">task</span><span class="o">.</span><span class="n">successors_ids</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">_resolve_surviving_successors</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">'successors_ids'</span><span class="p">,</span> <span class="p">[]))))</span>
 
         <span class="c1"># [Req: RF-08.3] — Full graph rebuild after task removal to restore consistent object references</span>
         <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">:</span>

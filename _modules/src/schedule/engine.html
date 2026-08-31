@@ -426,7 +426,7 @@ window.runMermaid = runMermaid;</script>
            <div itemprop="articleBody">
              
   <h1>Source code for src.schedule.engine</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Set</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Optional</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">date</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">heapq</span>
 
@@ -607,54 +607,145 @@ window.runMermaid = runMermaid;</script>
             <span class="n">task</span><span class="o">.</span><span class="n">resource_id</span> <span class="o">=</span> <span class="n">fallback_slot</span>
             <span class="n">fallback_slot</span> <span class="o">=</span> <span class="p">(</span><span class="n">fallback_slot</span> <span class="o">%</span> <span class="n">num_resources</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
     
-    <span class="c1"># [Req: RF-12, RF-12.1, RF-12.2, RF-12.3, RF-12.4, RF-12.5, RF-12.6] — Critical Path: backward pass to compute slack and flag critical tasks</span>
-    <span class="k">if</span> <span class="n">tasks</span><span class="p">:</span>
-        <span class="c1"># [Req: RF-12.1] — project_end = latest end_date across all tasks</span>
-        <span class="n">project_end</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">end_date</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">)</span>
-        
-        <span class="c1"># [Req: RF-12.2] — Terminal tasks (no successors) anchor the backward pass at project_end</span>
-        <span class="n">latest_end_times</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">terminal_tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">t</span><span class="o">.</span><span class="n">successors_tasks</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">terminal_tasks</span><span class="p">:</span>
-            <span class="n">latest_end_times</span><span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">project_end</span>
-            
-        <span class="c1"># 3. Traverse backwards (reverse Kahn's) to find Latest End Times</span>
-        <span class="c1"># We process tasks only after all their successors are processed.</span>
-        <span class="n">out_degree</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">t</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">successors_tasks</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">}</span>
-        
-        <span class="c1"># Queue initialized with terminal tasks</span>
-        <span class="n">ready_for_backward</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">terminal_tasks</span><span class="p">]</span>
-        
-        <span class="n">pred_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Task</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="n">t</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">}</span>
-        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">task</span><span class="o">.</span><span class="n">successors_tasks</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">pred_map</span><span class="p">:</span>
-                    <span class="n">pred_map</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">id</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
-                    
-        <span class="c1"># [Req: RF-12.3] — Reverse Kahn traversal: propagate latest_end_times backwards via out_degree</span>
-        <span class="k">while</span> <span class="n">ready_for_backward</span><span class="p">:</span>
-            <span class="n">curr_id</span> <span class="o">=</span> <span class="n">ready_for_backward</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-            <span class="n">curr_task</span> <span class="o">=</span> <span class="n">task_map</span><span class="p">[</span><span class="n">curr_id</span><span class="p">]</span>
-            <span class="n">curr_lf</span> <span class="o">=</span> <span class="n">latest_end_times</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">curr_id</span><span class="p">,</span> <span class="n">curr_task</span><span class="o">.</span><span class="n">end_date</span><span class="p">)</span>
-            <span class="c1"># Latest Start Time for current task</span>
-            <span class="n">curr_ls</span> <span class="o">=</span> <span class="n">curr_task</span><span class="o">.</span><span class="n">init_date</span> <span class="o">+</span> <span class="p">(</span><span class="n">curr_lf</span> <span class="o">-</span> <span class="n">curr_task</span><span class="o">.</span><span class="n">end_date</span><span class="p">)</span> <span class="c1"># Shift backwards by slack</span>
-            
-            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pred_map</span><span class="p">[</span><span class="n">curr_id</span><span class="p">]:</span>
-                <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">latest_end_times</span> <span class="ow">or</span> <span class="n">latest_end_times</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">curr_ls</span><span class="p">:</span>
-                    <span class="n">latest_end_times</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">curr_ls</span>
-                
-                <span class="n">out_degree</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
-                <span class="k">if</span> <span class="n">out_degree</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">ready_for_backward</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-                    
-        <span class="c1"># 4. Mark tasks as critical if Early Finish == Late Finish</span>
-        <span class="c1"># [Req: RF-12.4, RF-12.5] — slack in minutes; is_critical=True when slack==0</span>
-        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
-            <span class="n">task</span><span class="o">.</span><span class="n">slack</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">((</span><span class="n">latest_end_times</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">task</span><span class="o">.</span><span class="n">end_date</span><span class="p">)</span> <span class="o">-</span> <span class="n">task</span><span class="o">.</span><span class="n">end_date</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">/</span> <span class="mi">60</span><span class="p">))</span>
-            <span class="n">task</span><span class="o">.</span><span class="n">is_critical</span> <span class="o">=</span> <span class="p">(</span><span class="n">task</span><span class="o">.</span><span class="n">slack</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># [Req: RF-12, RF-12.1, RF-12.2, RF-12.3, RF-12.4, RF-12.5, RF-12.6] — Identify both Structural Critical Path (CPM) and Resource Critical Chain (CCPM)</span>
+    <span class="n">compute_critical_path</span><span class="p">(</span><span class="n">tasks</span><span class="p">)</span>
 
     <span class="c1"># [Req: RF-12.6] — Final chronological sort used by all exporters</span>
     <span class="n">tasks</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">init_date</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">init_date</span> <span class="k">else</span> <span class="n">datetime</span><span class="o">.</span><span class="n">min</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="compute_structural_critical_path">
+<a class="viewcode-back" href="../../../index.html#src.schedule.engine.compute_structural_critical_path">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_structural_critical_path</span><span class="p">(</span><span class="n">tasks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Task</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Task</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Computes the Structural Critical Path (CPM) through the DAG.</span>
+<span class="sd">    </span>
+<span class="sd">    This is the longest dependency path through blueprint tasks from root to milestone</span>
+<span class="sd">    without resource queueing constraints.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">tasks</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="n">memo</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">datetime</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">next_node</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Task</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_longest</span><span class="p">(</span><span class="n">t</span><span class="p">:</span> <span class="n">Task</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">datetime</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">memo</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">memo</span><span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">'successors_tasks'</span><span class="p">,</span> <span class="p">[]):</span>
+            <span class="n">end_val</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">end_date</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">end_date</span> <span class="k">else</span> <span class="n">datetime</span><span class="o">.</span><span class="n">min</span>
+            <span class="n">memo</span><span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">duration_minutes</span><span class="p">,</span> <span class="n">end_val</span><span class="p">)</span>
+            <span class="n">next_node</span><span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="n">memo</span><span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+
+        <span class="n">best_val</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">min</span><span class="p">)</span>
+        <span class="n">best_succ</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">successors_tasks</span><span class="p">:</span>
+            <span class="n">dur</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">get_longest</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">duration_minutes</span> <span class="o">+</span> <span class="n">dur</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">val</span> <span class="o">&gt;</span> <span class="n">best_val</span><span class="p">:</span>
+                <span class="n">best_val</span> <span class="o">=</span> <span class="n">val</span>
+                <span class="n">best_succ</span> <span class="o">=</span> <span class="n">s</span>
+
+        <span class="n">memo</span><span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">best_val</span>
+        <span class="n">next_node</span><span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">best_succ</span>
+        <span class="k">return</span> <span class="n">memo</span><span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+
+    <span class="n">roots</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">'predecessors'</span><span class="p">,</span> <span class="p">[])]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">roots</span><span class="p">:</span>
+        <span class="n">roots</span> <span class="o">=</span> <span class="n">tasks</span>
+
+    <span class="n">best_root</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">roots</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">get_longest</span><span class="p">(</span><span class="n">r</span><span class="p">))</span>
+    <span class="n">path</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Task</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">curr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Task</span><span class="p">]</span> <span class="o">=</span> <span class="n">best_root</span>
+    <span class="k">while</span> <span class="n">curr</span><span class="p">:</span>
+        <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">curr</span><span class="p">)</span>
+        <span class="n">curr</span> <span class="o">=</span> <span class="n">next_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">curr</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">path</span></div>
+
+
+
+<div class="viewcode-block" id="compute_resource_critical_chain">
+<a class="viewcode-back" href="../../../index.html#src.schedule.engine.compute_resource_critical_chain">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_resource_critical_chain</span><span class="p">(</span><span class="n">tasks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Task</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Task</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Computes the Resource Critical Chain (CCPM) by tracing the driving predecessors</span>
+<span class="sd">    (both dependency blockers and resource queue blockers) backwards from the terminal task.</span>
+<span class="sd">    </span>
+<span class="sd">    This forms an unbroken, gap-free chain of tasks that directly determined the final project delivery date.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">tasks</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="n">final_task</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">tasks</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">end_date</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">end_date</span> <span class="k">else</span> <span class="n">datetime</span><span class="o">.</span><span class="n">min</span><span class="p">)</span>
+    <span class="n">chain</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Task</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">visited</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">curr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Task</span><span class="p">]</span> <span class="o">=</span> <span class="n">final_task</span>
+
+    <span class="k">while</span> <span class="n">curr</span> <span class="ow">and</span> <span class="n">curr</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+        <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">curr</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">chain</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">curr</span><span class="p">)</span>
+
+        <span class="n">candidates</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Task</span><span class="p">,</span> <span class="n">datetime</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Graph dependencies that finished before/at curr start</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">curr</span><span class="p">,</span> <span class="s1">'predecessors'</span><span class="p">,</span> <span class="p">[]):</span>
+            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">end_date</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">end_date</span> <span class="o">&lt;=</span> <span class="n">curr</span><span class="o">.</span><span class="n">init_date</span><span class="p">:</span>
+                <span class="n">candidates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">'dependency'</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">end_date</span><span class="p">))</span>
+
+        <span class="c1"># Same resource tasks that finished before/at curr start</span>
+        <span class="n">res_tasks</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="s1">'resource_id'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">curr</span><span class="p">,</span> <span class="s1">'resource_id'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">t</span><span class="o">.</span><span class="n">end_date</span> <span class="ow">and</span> <span class="n">t</span><span class="o">.</span><span class="n">end_date</span> <span class="o">&lt;=</span> <span class="n">curr</span><span class="o">.</span><span class="n">init_date</span>
+            <span class="ow">and</span> <span class="n">t</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="n">curr</span><span class="o">.</span><span class="n">id</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="n">res_tasks</span><span class="p">:</span>
+            <span class="n">prev_res</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">res_tasks</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">end_date</span><span class="p">)</span>
+            <span class="n">candidates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">'resource'</span><span class="p">,</span> <span class="n">prev_res</span><span class="p">,</span> <span class="n">prev_res</span><span class="o">.</span><span class="n">end_date</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">candidates</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="n">candidates</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">curr</span> <span class="o">=</span> <span class="n">candidates</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">chain</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">chain</span></div>
+
+
+
+<div class="viewcode-block" id="compute_critical_path">
+<a class="viewcode-back" href="../../../index.html#src.schedule.engine.compute_critical_path">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_critical_path</span><span class="p">(</span><span class="n">tasks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Task</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Task</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Computes both Structural Critical Path (CPM) and Resource Critical Chain (CCPM).</span>
+<span class="sd">    </span>
+<span class="sd">    Sets the following boolean attributes on each task:</span>
+<span class="sd">    - `is_structural_critical`: True if on the 11-step pure DAG dependency longest path.</span>
+<span class="sd">    - `is_resource_critical`: True if on the continuous resource-constrained critical chain.</span>
+<span class="sd">    - `is_critical`: Default critical flag (matches structural critical).</span>
+<span class="sd">    """</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">is_critical</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">is_structural_critical</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">is_resource_critical</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">slack</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">tasks</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="n">struct_path</span> <span class="o">=</span> <span class="n">compute_structural_critical_path</span><span class="p">(</span><span class="n">tasks</span><span class="p">)</span>
+    <span class="n">struct_set</span> <span class="o">=</span> <span class="p">{</span><span class="n">t</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">struct_path</span><span class="p">}</span>
+
+    <span class="n">res_chain</span> <span class="o">=</span> <span class="n">compute_resource_critical_chain</span><span class="p">(</span><span class="n">tasks</span><span class="p">)</span>
+    <span class="n">res_set</span> <span class="o">=</span> <span class="p">{</span><span class="n">t</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">res_chain</span><span class="p">}</span>
+
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">is_structural_critical</span> <span class="o">=</span> <span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">struct_set</span><span class="p">)</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">is_resource_critical</span> <span class="o">=</span> <span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">res_set</span><span class="p">)</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">is_critical</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">is_structural_critical</span>
+
+    <span class="k">return</span> <span class="n">struct_path</span></div>
 
 </pre></div>
 

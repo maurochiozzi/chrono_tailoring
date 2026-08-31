@@ -792,6 +792,32 @@ When a task’s in-degree reaches 0, it means all its dependencies are satisfied
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="src.schedule.engine.compute_critical_path">
+<span class="sig-prename descclassname"><span class="pre">src.schedule.engine.</span></span><span class="sig-name descname"><span class="pre">compute_critical_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tasks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.core.models.Task" title="src.core.models.Task"><span class="pre">Task</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.core.models.Task" title="src.core.models.Task"><span class="pre">Task</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/src/schedule/engine.html#compute_critical_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.schedule.engine.compute_critical_path" title="Link to this definition"></a></dt>
+<dd><p>Computes both Structural Critical Path (CPM) and Resource Critical Chain (CCPM).</p>
+<p>Sets the following boolean attributes on each task:
+- <cite>is_structural_critical</cite>: True if on the 11-step pure DAG dependency longest path.
+- <cite>is_resource_critical</cite>: True if on the continuous resource-constrained critical chain.
+- <cite>is_critical</cite>: Default critical flag (matches structural critical).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.schedule.engine.compute_resource_critical_chain">
+<span class="sig-prename descclassname"><span class="pre">src.schedule.engine.</span></span><span class="sig-name descname"><span class="pre">compute_resource_critical_chain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tasks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.core.models.Task" title="src.core.models.Task"><span class="pre">Task</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.core.models.Task" title="src.core.models.Task"><span class="pre">Task</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/src/schedule/engine.html#compute_resource_critical_chain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.schedule.engine.compute_resource_critical_chain" title="Link to this definition"></a></dt>
+<dd><p>Computes the Resource Critical Chain (CCPM) by tracing the driving predecessors
+(both dependency blockers and resource queue blockers) backwards from the terminal task.</p>
+<p>This forms an unbroken, gap-free chain of tasks that directly determined the final project delivery date.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.schedule.engine.compute_structural_critical_path">
+<span class="sig-prename descclassname"><span class="pre">src.schedule.engine.</span></span><span class="sig-name descname"><span class="pre">compute_structural_critical_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tasks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.core.models.Task" title="src.core.models.Task"><span class="pre">Task</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.core.models.Task" title="src.core.models.Task"><span class="pre">Task</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/src/schedule/engine.html#compute_structural_critical_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.schedule.engine.compute_structural_critical_path" title="Link to this definition"></a></dt>
+<dd><p>Computes the Structural Critical Path (CPM) through the DAG.</p>
+<p>This is the longest dependency path through blueprint tasks from root to milestone
+without resource queueing constraints.</p>
+</dd></dl>
+
 </section>
 <section id="module-src.schedule.loader">
 <span id="loader-handlers"></span><h3>Loader Handlers<a class="headerlink" href="#module-src.schedule.loader" title="Link to this heading"></a></h3>
@@ -1052,12 +1078,12 @@ When a task’s in-degree reaches 0, it means all its dependencies are satisfied
 <dl class="py function">
 <dt class="sig sig-object py" id="src.export.csv_export.export_critical_path_csv">
 <span class="sig-prename descclassname"><span class="pre">src.export.csv_export.</span></span><span class="sig-name descname"><span class="pre">export_critical_path_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schedule</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#src.schedule.project.ProjectSchedule" title="src.schedule.project.ProjectSchedule"><span class="pre">ProjectSchedule</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/export/csv_export.html#export_critical_path_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.export.csv_export.export_critical_path_csv" title="Link to this definition"></a></dt>
-<dd><p>Exports only the critical-path tasks (is_critical=True / slack=0) to a CSV file.</p>
+<dd><p>Exports both structural critical path and resource critical chain CSVs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>schedule</strong> (<a class="reference internal" href="#src.schedule.project.ProjectSchedule" title="src.schedule.project.ProjectSchedule"><em>ProjectSchedule</em></a>) – The fully computed project schedule.</p></li>
-<li><p><strong>file_path</strong> (<em>str</em>) – The output file path.</p></li>
+<li><p><strong>file_path</strong> (<em>str</em>) – The base output file path (used for structural path).</p></li>
 </ul>
 </dd>
 </dl>

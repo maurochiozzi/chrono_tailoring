@@ -625,6 +625,9 @@ window.runMermaid = runMermaid;</script>
             <span class="s2">"_end"</span><span class="p">:</span>        <span class="n">task</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">'%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M'</span><span class="p">),</span>
             <span class="s2">"_preds"</span><span class="p">:</span>      <span class="n">preds</span><span class="p">,</span>
             <span class="s2">"_succs"</span><span class="p">:</span>      <span class="n">succs</span><span class="p">,</span>
+            <span class="s2">"_is_critical"</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">'is_structural_critical'</span><span class="p">,</span> <span class="kc">False</span><span class="p">)),</span>
+            <span class="s2">"_is_structural_critical"</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">'is_structural_critical'</span><span class="p">,</span> <span class="kc">False</span><span class="p">)),</span>
+            <span class="s2">"_is_resource_critical"</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">'is_resource_critical'</span><span class="p">,</span> <span class="kc">False</span><span class="p">)),</span>
             <span class="s2">"_resource"</span><span class="p">:</span>   <span class="nb">getattr</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="s1">'resource_id'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">1</span><span class="p">,</span>
             <span class="c1"># Group keys for the four display modes</span>
             <span class="s2">"_group_part"</span><span class="p">:</span>      <span class="n">fname</span><span class="p">,</span>
@@ -1000,6 +1003,42 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">      border-color: transparent;</span>
 <span class="s2">    </span><span class="se">}}</span>
 
+<span class="s2">    .btn-warning </span><span class="se">{{</span>
+<span class="s2">      border-color: rgba(245, 158, 11, 0.4);</span>
+<span class="s2">      color: #fbbf24;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .btn-warning:hover </span><span class="se">{{</span>
+<span class="s2">      background: rgba(245, 158, 11, 0.15);</span>
+<span class="s2">      border-color: #f59e0b;</span>
+<span class="s2">      color: #fef08a;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .btn-warning.active </span><span class="se">{{</span>
+<span class="s2">      background: linear-gradient(135deg, #d97706 0%, #b45309 100%);</span>
+<span class="s2">      border-color: #f59e0b;</span>
+<span class="s2">      color: #fff;</span>
+<span class="s2">      box-shadow: 0 0 12px rgba(245, 158, 11, 0.45);</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .btn-warning.active:hover </span><span class="se">{{</span>
+<span class="s2">      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);</span>
+<span class="s2">    </span><span class="se">}}</span>
+
+<span class="s2">    .crit-menu-item </span><span class="se">{{</span>
+<span class="s2">      display: block;</span>
+<span class="s2">      width: 100%;</span>
+<span class="s2">      padding: 7px 14px;</span>
+<span class="s2">      background: none;</span>
+<span class="s2">      border: none;</span>
+<span class="s2">      color: var(--text);</span>
+<span class="s2">      font-size: 0.78rem;</span>
+<span class="s2">      text-align: left;</span>
+<span class="s2">      cursor: pointer;</span>
+<span class="s2">      white-space: nowrap;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .crit-menu-item:hover </span><span class="se">{{</span>
+<span class="s2">      background: var(--surface2);</span>
+<span class="s2">      color: #fbbf24;</span>
+<span class="s2">    </span><span class="se">}}</span>
+
 <span class="s2">    .search-input </span><span class="se">{{</span>
 <span class="s2">      background: var(--surface2);</span>
 <span class="s2">      color: var(--text);</span>
@@ -1205,10 +1244,24 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">      font-family: inherit;</span>
 <span class="s2">      padding: 0 8px;</span>
 <span class="s2">    </span><span class="se">}}</span>
-<span class="s2">    .vis-item </span><span class="se">{{</span><span class="s2"> font-size: 0.68rem; font-family: inherit; </span><span class="se">}}</span>
+<span class="s2">    .vis-item </span><span class="se">{{</span><span class="s2"> font-size: 0.68rem; font-family: inherit; transition: opacity 0.2s, box-shadow 0.2s; </span><span class="se">}}</span>
 <span class="s2">    .vis-item.vis-selected </span><span class="se">{{</span>
 <span class="s2">      border-color: #fff !important;</span>
 <span class="s2">      box-shadow: 0 0 0 2px rgba(255,255,255,0.2);</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .vis-item.critical-path-item </span><span class="se">{{</span>
+<span class="s2">      border: 2px solid #FFD700 !important;</span>
+<span class="s2">      box-shadow: 0 0 14px rgba(255, 215, 0, 0.85), 0 0 4px #FFD700 !important;</span>
+<span class="s2">      font-weight: 700 !important;</span>
+<span class="s2">      z-index: 100 !important;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .vis-item.critical-path-item .vis-item-content </span><span class="se">{{</span>
+<span class="s2">      color: #ffffff !important;</span>
+<span class="s2">      text-shadow: 0 0 4px rgba(0,0,0,0.9) !important;</span>
+<span class="s2">    </span><span class="se">}}</span>
+<span class="s2">    .vis-item.dimmed-item </span><span class="se">{{</span>
+<span class="s2">      opacity: 0.25 !important;</span>
+<span class="s2">      filter: grayscale(45%) !important;</span>
 <span class="s2">    </span><span class="se">}}</span>
 <span class="s2">    .vis-current-time </span><span class="se">{{</span><span class="s2"> background-color: var(--accent) !important; width: 2px; opacity: 0.7; </span><span class="se">}}</span>
 
@@ -1368,6 +1421,16 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">      &lt;input type="text" id="searchInput" list="partNumbers" placeholder="Search Part Number..." onchange="searchPart()" class="search-input" /&gt;</span>
 <span class="s2">      &lt;datalist id="partNumbers"&gt;&lt;/datalist&gt;</span>
 <span class="s2">      &lt;div class="divider"&gt;&lt;/div&gt;</span>
+<span class="s2">      &lt;div class="crit-dropdown" style="position:relative;display:inline-block"&gt;</span>
+<span class="s2">        &lt;button id="ganttCritBtn" class="btn btn-warning" onclick="toggleGanttCritDropdown()"&gt;⚠️ Critical ▾&lt;/button&gt;</span>
+<span class="s2">        &lt;div id="ganttCritMenu" class="crit-menu" style="display:none;position:absolute;top:100%;left:0;z-index:999;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:4px 0;min-width:220px;box-shadow:0 8px 24px rgba(0,0,0,.25)"&gt;</span>
+<span class="s2">          &lt;button class="crit-menu-item" onclick="setGanttCritMode('cpm')"&gt;📐 Structural Path (CPM)&lt;/button&gt;</span>
+<span class="s2">          &lt;button class="crit-menu-item" onclick="setGanttCritMode('ccpm')"&gt;🔗 Resource Chain (CCPM)&lt;/button&gt;</span>
+<span class="s2">          &lt;hr style="margin:4px 8px;border-color:var(--border)"&gt;</span>
+<span class="s2">          &lt;button class="crit-menu-item" onclick="setGanttCritMode('off')"&gt;✕ Clear&lt;/button&gt;</span>
+<span class="s2">        &lt;/div&gt;</span>
+<span class="s2">      &lt;/div&gt;</span>
+<span class="s2">      &lt;div class="divider"&gt;&lt;/div&gt;</span>
 <span class="s2">      &lt;button class="btn btn-export" onclick="exportJSON()"&gt;⬇ JSON&lt;/button&gt;</span>
 <span class="s2">      &lt;button class="btn btn-export" onclick="exportCSV()"&gt;⬇ CSV&lt;/button&gt;</span>
 <span class="s2">      &lt;div class="divider"&gt;&lt;/div&gt;</span>
@@ -1460,6 +1523,16 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">      &lt;button id="tabFlow"  class="tab-btn"        onclick="switchTab('flow')"&gt;🔀 Flow&lt;/button&gt;</span>
 <span class="s2">      &lt;div class="tab-spacer"&gt;&lt;/div&gt;</span>
 <span class="s2">      &lt;div id="flowToolbar" class="flow-toolbar"&gt;</span>
+<span class="s2">        &lt;div class="crit-dropdown" style="position:relative;display:inline-block"&gt;</span>
+<span class="s2">          &lt;button id="flowCritBtn" class="btn btn-warning" onclick="toggleFlowCritDropdown()"&gt;⚠️ Critical ▾&lt;/button&gt;</span>
+<span class="s2">          &lt;div id="flowCritMenu" class="crit-menu" style="display:none;position:absolute;top:100%;left:0;z-index:999;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:4px 0;min-width:220px;box-shadow:0 8px 24px rgba(0,0,0,.25)"&gt;</span>
+<span class="s2">            &lt;button class="crit-menu-item" onclick="setFlowCritMode('cpm')"&gt;📐 Structural Path (CPM)&lt;/button&gt;</span>
+<span class="s2">            &lt;button class="crit-menu-item" onclick="setFlowCritMode('ccpm')"&gt;🔗 Resource Chain (CCPM)&lt;/button&gt;</span>
+<span class="s2">            &lt;hr style="margin:4px 8px;border-color:var(--border)"&gt;</span>
+<span class="s2">            &lt;button class="crit-menu-item" onclick="setFlowCritMode('off')"&gt;✕ Clear&lt;/button&gt;</span>
+<span class="s2">          &lt;/div&gt;</span>
+<span class="s2">        &lt;/div&gt;</span>
+<span class="s2">        &lt;div class="divider"&gt;&lt;/div&gt;</span>
 <span class="s2">        &lt;button class="btn btn-accent" onclick="flowFit()"&gt;&amp;#x229E; Fit&lt;/button&gt;</span>
 <span class="s2">      &lt;/div&gt;</span>
 <span class="s2">    &lt;/div&gt;</span>
@@ -1779,7 +1852,14 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">    // Re-apply current group key so items land in the right row</span>
 <span class="s2">    const withGroup = visible.map(item =&gt; </span><span class="se">{{</span>
 <span class="s2">      if (item._task_id === undefined) return item; // leave background items alone</span>
-<span class="s2">      return Object.assign(</span><span class="se">{{}}</span><span class="s2">, item, </span><span class="se">{{</span><span class="s2"> group: _groupKeyForItem(item) </span><span class="se">}}</span><span class="s2">);</span>
+<span class="s2">      let className = item.className || '';</span>
+<span class="s2">      if (ganttCriticalActive) </span><span class="se">{{</span>
+<span class="s2">        className = item._is_critical ? 'critical-path-item' : 'dimmed-item';</span>
+<span class="s2">      </span><span class="se">}}</span>
+<span class="s2">      return Object.assign(</span><span class="se">{{}}</span><span class="s2">, item, </span><span class="se">{{</span>
+<span class="s2">        group: _groupKeyForItem(item),</span>
+<span class="s2">        className: className</span>
+<span class="s2">      </span><span class="se">}}</span><span class="s2">);</span>
 <span class="s2">    </span><span class="se">}}</span><span class="s2">);</span>
 
 <span class="s2">    dataset.clear();</span>
@@ -1941,6 +2021,59 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">    timeline.fit();</span>
 <span class="s2">  </span><span class="se">}}</span><span class="s2">, 150);</span>
 
+<span class="s2">  // ── Gantt Critical Path Toggle (CPM / CCPM) ─────────────────────────────────</span>
+<span class="s2">  let ganttCriticalActive = false;</span>
+<span class="s2">  let ganttCritMode = 'off'; // 'off' | 'cpm' | 'ccpm'</span>
+
+<span class="s2">  function toggleGanttCritDropdown() </span><span class="se">{{</span>
+<span class="s2">    const menu = document.getElementById('ganttCritMenu');</span>
+<span class="s2">    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  // Close dropdown on outside click</span>
+<span class="s2">  document.addEventListener('click', function(e) </span><span class="se">{{</span>
+<span class="s2">    const gd = document.getElementById('ganttCritMenu');</span>
+<span class="s2">    const gb = document.getElementById('ganttCritBtn');</span>
+<span class="s2">    if (gd &amp;&amp; !gd.contains(e.target) &amp;&amp; e.target !== gb) gd.style.display = 'none';</span>
+<span class="s2">    const fd = document.getElementById('flowCritMenu');</span>
+<span class="s2">    const fb = document.getElementById('flowCritBtn');</span>
+<span class="s2">    if (fd &amp;&amp; !fd.contains(e.target) &amp;&amp; e.target !== fb) fd.style.display = 'none';</span>
+<span class="s2">  </span><span class="se">}}</span><span class="s2">);</span>
+
+<span class="s2">  function setGanttCritMode(mode) </span><span class="se">{{</span>
+<span class="s2">    document.getElementById('ganttCritMenu').style.display = 'none';</span>
+<span class="s2">    const btn = document.getElementById('ganttCritBtn');</span>
+
+<span class="s2">    if (mode === ganttCritMode || mode === 'off') </span><span class="se">{{</span>
+<span class="s2">      ganttCritMode = 'off';</span>
+<span class="s2">      ganttCriticalActive = false;</span>
+<span class="s2">      if (btn) </span><span class="se">{{</span><span class="s2"> btn.classList.remove('active'); btn.textContent = '⚠️ Critical ▾'; </span><span class="se">}}</span>
+<span class="s2">    </span><span class="se">}}</span><span class="s2"> else </span><span class="se">{{</span>
+<span class="s2">      ganttCritMode = mode;</span>
+<span class="s2">      ganttCriticalActive = true;</span>
+<span class="s2">      const label = mode === 'cpm' ? '📐 CPM' : '🔗 CCPM';</span>
+<span class="s2">      if (btn) </span><span class="se">{{</span><span class="s2"> btn.classList.add('active'); btn.textContent = label + ' ▾'; </span><span class="se">}}</span>
+<span class="s2">    </span><span class="se">}}</span>
+
+<span class="s2">    const critField = ganttCritMode === 'ccpm' ? '_is_resource_critical' : '_is_structural_critical';</span>
+<span class="s2">    const currentItems = dataset.get();</span>
+<span class="s2">    const updates = currentItems.map(item =&gt; </span><span class="se">{{</span>
+<span class="s2">      if (item.type === 'background') return null;</span>
+<span class="s2">      if (ganttCriticalActive) </span><span class="se">{{</span>
+<span class="s2">        return </span><span class="se">{{</span>
+<span class="s2">          id: item.id,</span>
+<span class="s2">          className: item[critField] ? 'critical-path-item' : 'dimmed-item'</span>
+<span class="s2">        </span><span class="se">}}</span><span class="s2">;</span>
+<span class="s2">      </span><span class="se">}}</span><span class="s2"> else </span><span class="se">{{</span>
+<span class="s2">        return </span><span class="se">{{</span><span class="s2"> id: item.id, className: '' </span><span class="se">}}</span><span class="s2">;</span>
+<span class="s2">      </span><span class="se">}}</span>
+<span class="s2">    </span><span class="se">}}</span><span class="s2">).filter(Boolean);</span>
+
+<span class="s2">    dataset.update(updates);</span>
+<span class="s2">    const msgs = </span><span class="se">{{</span><span class="s2"> cpm: '📐 Structural Path (CPM) Highlighted', ccpm: '🔗 Resource Chain (CCPM) Highlighted', off: '✓ Standard View' </span><span class="se">}}</span><span class="s2">;</span>
+<span class="s2">    showToast(msgs[ganttCritMode]);</span>
+<span class="s2">  </span><span class="se">}}</span>
+
 <span class="s2">  // ── Tab switching ─────────────────────────────────────────────────────────────</span>
 <span class="s2">  let networkInstance = null;</span>
 
@@ -1973,11 +2106,21 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">    return </span><span class="se">{{</span><span class="s2"> shape: 'box', shapeProperties: </span><span class="se">{{</span><span class="s2"> borderRadius: 8 </span><span class="se">}}</span><span class="s2"> </span><span class="se">}}</span><span class="s2">;</span>
 <span class="s2">  </span><span class="se">}}</span>
 
+<span class="s2">  let flowCriticalActive = false;</span>
+<span class="s2">  let netNodes = null;</span>
+<span class="s2">  let netEdges = null;</span>
+
 <span class="s2">  function _buildFlowData() </span><span class="se">{{</span>
 <span class="s2">    const colMap = </span><span class="se">{{}}</span><span class="s2">;</span>
 <span class="s2">    MILESTONE_META.forEach(m =&gt; </span><span class="se">{{</span><span class="s2"> colMap[m.id] = m.color; </span><span class="se">}}</span><span class="s2">);</span>
 
 <span class="s2">    const taskItems = ALL_ITEMS.filter(i =&gt; i._task_id !== undefined);</span>
+<span class="s2">    const critMapCPM = </span><span class="se">{{}}</span><span class="s2">;</span>
+<span class="s2">    const critMapCCPM = </span><span class="se">{{}}</span><span class="s2">;</span>
+<span class="s2">    taskItems.forEach(i =&gt; </span><span class="se">{{</span>
+<span class="s2">      critMapCPM[i._task_id]  = !!i._is_structural_critical;</span>
+<span class="s2">      critMapCCPM[i._task_id] = !!i._is_resource_critical;</span>
+<span class="s2">    </span><span class="se">}}</span><span class="s2">);</span>
 
 <span class="s2">    const nodes = taskItems.map(item =&gt; </span><span class="se">{{</span>
 <span class="s2">      const col   = colMap[item._milestone_id] || '#90A4AE';</span>
@@ -2002,6 +2145,9 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">        borderWidth: 2,</span>
 <span class="s2">        borderWidthSelected: 2.5,</span>
 <span class="s2">        title: titleEl,</span>
+<span class="s2">        _is_structural_critical: !!item._is_structural_critical,</span>
+<span class="s2">        _is_resource_critical: !!item._is_resource_critical,</span>
+<span class="s2">        _orig_border: col,</span>
 <span class="s2">      </span><span class="se">}}</span><span class="s2">, props);</span>
 <span class="s2">    </span><span class="se">}}</span><span class="s2">);</span>
 
@@ -2013,13 +2159,18 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">        const key = `$</span><span class="se">{{</span><span class="s2">item._task_id</span><span class="se">}}</span><span class="s2">-&gt;$</span><span class="se">{{</span><span class="s2">sid</span><span class="se">}}</span><span class="s2">`;</span>
 <span class="s2">        if (edgeSet.has(key)) return;</span>
 <span class="s2">        edgeSet.add(key);</span>
+<span class="s2">        const isCritCPM  = (item._is_structural_critical === true) &amp;&amp; (critMapCPM[sid]  === true);</span>
+<span class="s2">        const isCritCCPM = (item._is_resource_critical  === true) &amp;&amp; (critMapCCPM[sid] === true);</span>
 <span class="s2">        edges.push(</span><span class="se">{{</span>
+<span class="s2">          id:   key,</span>
 <span class="s2">          from: item._task_id,</span>
 <span class="s2">          to:   sid,</span>
 <span class="s2">          arrows: </span><span class="se">{{</span><span class="s2"> to: </span><span class="se">{{</span><span class="s2"> enabled: true, scaleFactor: 0.55 </span><span class="se">}}</span><span class="s2"> </span><span class="se">}}</span><span class="s2">,</span>
 <span class="s2">          color: </span><span class="se">{{</span><span class="s2"> color: '#2a2f4a', highlight: '#4C8BF5', hover: '#4C8BF5' </span><span class="se">}}</span><span class="s2">,</span>
 <span class="s2">          smooth: </span><span class="se">{{</span><span class="s2"> type: 'cubicBezier', forceDirection: 'horizontal', roundness: 0.4 </span><span class="se">}}</span><span class="s2">,</span>
 <span class="s2">          width: 1, selectionWidth: 2.5,</span>
+<span class="s2">          _is_structural_critical: isCritCPM,</span>
+<span class="s2">          _is_resource_critical: isCritCCPM,</span>
 <span class="s2">        </span><span class="se">}}</span><span class="s2">);</span>
 <span class="s2">      </span><span class="se">}}</span><span class="s2">);</span>
 <span class="s2">    </span><span class="se">}}</span><span class="s2">);</span>
@@ -2054,14 +2205,98 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">      return;</span>
 <span class="s2">    </span><span class="se">}}</span>
 <span class="s2">    const </span><span class="se">{{</span><span class="s2"> nodes, edges </span><span class="se">}}</span><span class="s2"> = _buildFlowData();</span>
-<span class="s2">    const netNodes = new vis.DataSet(nodes);</span>
-<span class="s2">    const netEdges = new vis.DataSet(edges);</span>
+<span class="s2">    netNodes = new vis.DataSet(nodes);</span>
+<span class="s2">    netEdges = new vis.DataSet(edges);</span>
 <span class="s2">    networkInstance = new vis.Network(</span>
 <span class="s2">      container,</span>
 <span class="s2">      </span><span class="se">{{</span><span class="s2"> nodes: netNodes, edges: netEdges </span><span class="se">}}</span><span class="s2">,</span>
 <span class="s2">      _netOptions()</span>
 <span class="s2">    );</span>
 <span class="s2">    networkInstance.fit(</span><span class="se">{{</span><span class="s2"> animation: </span><span class="se">{{</span><span class="s2"> duration: 600, easingFunction: 'easeInOutQuad' </span><span class="se">}}</span><span class="s2"> </span><span class="se">}}</span><span class="s2">);</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  let flowCritMode = 'off'; // 'off' | 'cpm' | 'ccpm'</span>
+
+<span class="s2">  function toggleFlowCritDropdown() </span><span class="se">{{</span>
+<span class="s2">    const menu = document.getElementById('flowCritMenu');</span>
+<span class="s2">    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';</span>
+<span class="s2">  </span><span class="se">}}</span>
+
+<span class="s2">  function setFlowCritMode(mode) </span><span class="se">{{</span>
+<span class="s2">    document.getElementById('flowCritMenu').style.display = 'none';</span>
+<span class="s2">    const btn = document.getElementById('flowCritBtn');</span>
+
+<span class="s2">    if (mode === flowCritMode || mode === 'off') </span><span class="se">{{</span>
+<span class="s2">      flowCritMode = 'off';</span>
+<span class="s2">      flowCriticalActive = false;</span>
+<span class="s2">      if (btn) </span><span class="se">{{</span><span class="s2"> btn.classList.remove('active'); btn.textContent = '⚠️ Critical ▾'; </span><span class="se">}}</span>
+<span class="s2">    </span><span class="se">}}</span><span class="s2"> else </span><span class="se">{{</span>
+<span class="s2">      flowCritMode = mode;</span>
+<span class="s2">      flowCriticalActive = true;</span>
+<span class="s2">      const label = mode === 'cpm' ? '📐 CPM' : '🔗 CCPM';</span>
+<span class="s2">      if (btn) </span><span class="se">{{</span><span class="s2"> btn.classList.add('active'); btn.textContent = label + ' ▾'; </span><span class="se">}}</span>
+<span class="s2">    </span><span class="se">}}</span>
+
+<span class="s2">    if (!networkInstance) </span><span class="se">{{</span><span class="s2"> initFlowChart(); </span><span class="se">}}</span>
+<span class="s2">    if (!netEdges || !netNodes) return;</span>
+
+<span class="s2">    const critField = flowCritMode === 'ccpm' ? '_is_resource_critical' : '_is_structural_critical';</span>
+
+<span class="s2">    const allEdges = netEdges.get();</span>
+<span class="s2">    const edgeUpdates = allEdges.map(edge =&gt; </span><span class="se">{{</span>
+<span class="s2">      if (flowCriticalActive) </span><span class="se">{{</span>
+<span class="s2">        if (edge[critField]) </span><span class="se">{{</span>
+<span class="s2">          return </span><span class="se">{{</span>
+<span class="s2">            id: edge.id,</span>
+<span class="s2">            color: </span><span class="se">{{</span><span class="s2"> color: '#FFD700', highlight: '#FFE55C', hover: '#FFE55C' </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">            width: 4,</span>
+<span class="s2">            arrows: </span><span class="se">{{</span><span class="s2"> to: </span><span class="se">{{</span><span class="s2"> enabled: true, scaleFactor: 0.95 </span><span class="se">}}</span><span class="s2"> </span><span class="se">}}</span>
+<span class="s2">          </span><span class="se">}}</span><span class="s2">;</span>
+<span class="s2">        </span><span class="se">}}</span><span class="s2"> else </span><span class="se">{{</span>
+<span class="s2">          return </span><span class="se">{{</span>
+<span class="s2">            id: edge.id,</span>
+<span class="s2">            color: </span><span class="se">{{</span><span class="s2"> color: 'rgba(42, 47, 74, 0.22)', highlight: '#4C8BF5', hover: '#4C8BF5' </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">            width: 1,</span>
+<span class="s2">            arrows: </span><span class="se">{{</span><span class="s2"> to: </span><span class="se">{{</span><span class="s2"> enabled: true, scaleFactor: 0.4 </span><span class="se">}}</span><span class="s2"> </span><span class="se">}}</span>
+<span class="s2">          </span><span class="se">}}</span><span class="s2">;</span>
+<span class="s2">        </span><span class="se">}}</span>
+<span class="s2">      </span><span class="se">}}</span><span class="s2"> else </span><span class="se">{{</span>
+<span class="s2">        return </span><span class="se">{{</span>
+<span class="s2">          id: edge.id,</span>
+<span class="s2">          color: </span><span class="se">{{</span><span class="s2"> color: '#2a2f4a', highlight: '#4C8BF5', hover: '#4C8BF5' </span><span class="se">}}</span><span class="s2">,</span>
+<span class="s2">          width: 1,</span>
+<span class="s2">          arrows: </span><span class="se">{{</span><span class="s2"> to: </span><span class="se">{{</span><span class="s2"> enabled: true, scaleFactor: 0.55 </span><span class="se">}}</span><span class="s2"> </span><span class="se">}}</span>
+<span class="s2">        </span><span class="se">}}</span><span class="s2">;</span>
+<span class="s2">      </span><span class="se">}}</span>
+<span class="s2">    </span><span class="se">}}</span><span class="s2">);</span>
+<span class="s2">    netEdges.update(edgeUpdates);</span>
+
+<span class="s2">    const allNodes = netNodes.get();</span>
+<span class="s2">    const nodeUpdates = allNodes.map(node =&gt; </span><span class="se">{{</span>
+<span class="s2">      if (flowCriticalActive &amp;&amp; node[critField]) </span><span class="se">{{</span>
+<span class="s2">        return </span><span class="se">{{</span>
+<span class="s2">          id: node.id,</span>
+<span class="s2">          borderWidth: 3.5,</span>
+<span class="s2">          color: </span><span class="se">{{</span>
+<span class="s2">            border: '#FFD700',</span>
+<span class="s2">            highlight: </span><span class="se">{{</span><span class="s2"> border: '#FFE55C' </span><span class="se">}}</span>
+<span class="s2">          </span><span class="se">}}</span>
+<span class="s2">        </span><span class="se">}}</span><span class="s2">;</span>
+<span class="s2">      </span><span class="se">}}</span><span class="s2"> else </span><span class="se">{{</span>
+<span class="s2">        return </span><span class="se">{{</span>
+<span class="s2">          id: node.id,</span>
+<span class="s2">          borderWidth: 2,</span>
+<span class="s2">          color: </span><span class="se">{{</span>
+<span class="s2">            border: node._orig_border,</span>
+<span class="s2">            highlight: </span><span class="se">{{</span><span class="s2"> border: '#ffffff' </span><span class="se">}}</span>
+<span class="s2">          </span><span class="se">}}</span>
+<span class="s2">        </span><span class="se">}}</span><span class="s2">;</span>
+<span class="s2">      </span><span class="se">}}</span>
+<span class="s2">    </span><span class="se">}}</span><span class="s2">);</span>
+<span class="s2">    netNodes.update(nodeUpdates);</span>
+
+<span class="s2">    const msgs = </span><span class="se">{{</span><span class="s2"> cpm: '📐 Structural Path (CPM)', ccpm: '🔗 Resource Chain (CCPM)', off: '✓ Standard View' </span><span class="se">}}</span><span class="s2">;</span>
+<span class="s2">    showToast(msgs[flowCritMode]);</span>
 <span class="s2">  </span><span class="se">}}</span>
 
 <span class="s2">  function flowFit() </span><span class="se">{{</span>

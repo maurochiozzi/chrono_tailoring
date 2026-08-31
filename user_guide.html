@@ -54,7 +54,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#advanced-features">3. Advanced Features</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#recursive-duplication-variants">3.1. Recursive Duplication (Variants)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#drawing-consolidation">3.2. Drawing Consolidation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optional-drawing-merging-merge-drawings">3.2. Optional Drawing Merging (<code class="docutils literal notranslate"><span class="pre">--merge-drawings</span></code>)</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#understanding-outputs">4. Understanding Outputs</a></li>
@@ -235,17 +235,36 @@ Example: If you have a row with <code class="docutils literal notranslate"><span
 <li><p>Allows you to specify different customizations for each clone.</p></li>
 </ol>
 </section>
-<section id="drawing-consolidation">
-<h3>3.2. Drawing Consolidation<a class="headerlink" href="#drawing-consolidation" title="Link to this heading"></a></h3>
-<p>The system automatically identifies “drawing” tasks for the same base part across different variants and <strong>consolidates</strong> them into a single task. This prevents redundant work in the schedule.</p>
+<section id="optional-drawing-merging-merge-drawings">
+<h3>3.2. Optional Drawing Merging (<code class="docutils literal notranslate"><span class="pre">--merge-drawings</span></code>)<a class="headerlink" href="#optional-drawing-merging-merge-drawings" title="Link to this heading"></a></h3>
+<p>By default, individual variant drawing tasks are scheduled separately. When running with the <code class="docutils literal notranslate"><span class="pre">--merge-drawings</span></code> flag:</p>
+<ul class="simple">
+<li><p>The system identifies candidate <code class="docutils literal notranslate"><span class="pre">drawing</span></code> tasks sharing the same base part number.</p></li>
+<li><p>Combines their durations into a single unified <code class="docutils literal notranslate"><span class="pre">Merged</span> <span class="pre">Drawing</span> <span class="pre">for</span> <span class="pre">&lt;base_part&gt;</span></code> block.</p></li>
+<li><p>Re-wires all predecessor part models and successor releases to connect directly to the merged block.</p></li>
+</ul>
 </section>
 </section>
 <hr class="docutils" />
 <section id="understanding-outputs">
 <h2>4. Understanding Outputs<a class="headerlink" href="#understanding-outputs" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">output/gantt_interactive.html</span></code></strong>: The primary dashboard. Use the sidebar to filter by Milestone or Task Type.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">output/exported_tasks.csv</span></code></strong>: Full spreadsheet of every task instance with calculated dates.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">output/gantt_interactive.html</span></code></strong>: Dual-view interactive dashboard:</p>
+<ul>
+<li><p><strong>📅 Gantt View</strong>:</p>
+<ul>
+<li><p><strong>Grouping</strong>: Group tasks dynamically by <strong>Part Number</strong>, <strong>Milestone</strong>, assigned <strong>Resource</strong>, or view as a flat <strong>Task</strong> list.</p></li>
+<li><p><strong>Sorting</strong>: Toggle between Alphabetical (<code class="docutils literal notranslate"><span class="pre">A→Z</span></code>) and Initial Scheduled Date (<code class="docutils literal notranslate"><span class="pre">Date</span></code>).</p></li>
+<li><p><strong>Search</strong>: Auto-complete search bar that focuses and scrolls directly to the selected part.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">⚠️</span> <span class="pre">Critical</span> <span class="pre">Path</span></code> Toggle</strong>: Instantly highlights critical path task bars with golden borders and dims non-critical tasks.</p></li>
+<li><p><strong>Resource Graph</strong>: Live utilization curve matching active filters and timelines.</p></li>
+</ul>
+</li>
+<li><p><strong>🔀 Flow View</strong>: Interactive, pan/zoom DAG network flowchart with semantic node shapes (Milestones, Drawings, Releases, Tasks) and one-click Critical Path arrow highlighting.</p></li>
+</ul>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">output/exported_tasks.csv</span></code></strong>: Full spreadsheet of every task instance with calculated start/end dates, assigned resource IDs, and semicolon-delimited predecessor IDs.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">output/critical_path.csv</span></code></strong>: Unbranching sequential path representing the longest duration path from initial root task to project completion.</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">output/resource_vs_duration.png</span></code></strong>: Sensitivity analysis showing how adding resources impacts the deadline.</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">output/transformation_log.json</span></code></strong>: An audit trail showing exactly which tasks were merged or removed.</p></li>
 <li><p><strong><code class="docutils literal notranslate"><span class="pre">output/*.mmd</span></code></strong>: Mermaid source files for inclusion in documentation or GitHub.</p></li>
