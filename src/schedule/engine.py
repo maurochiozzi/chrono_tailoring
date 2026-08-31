@@ -107,6 +107,7 @@ def calculate_task_dates(
     active_tasks_finish_times: List[Tuple[datetime, int]] = []
     num_active_resources = 0
     completed_tasks_count = 0
+    free_slots: List[int] = list(range(1, num_resources + 1))  # resource slot IDs 1..N
     
     # [Req: RF-10.3] — Event-driven loop: advance to the next relevant event (start or finish)
     while completed_tasks_count < len(tasks):
@@ -126,8 +127,9 @@ def calculate_task_dates(
         
         # [Req: RF-10.6] — Process finished tasks; propagate earliest_start to successors; release slots
         while active_tasks_finish_times and active_tasks_finish_times[0][0] <= current_event_time:
-            finished_time, finished_task_id = heapq.heappop(active_tasks_finish_times)
+            finished_time, finished_task_id, finished_slot = heapq.heappop(active_tasks_finish_times)
             num_active_resources -= 1
+            free_slots.append(finished_slot)
             
             finished_task = task_map[finished_task_id]
             completed_tasks_count += 1
@@ -161,14 +163,19 @@ def calculate_task_dates(
             task_to_schedule.init_date = get_next_working_time(actual_start_time, 0, holidays, working_start_hour, working_end_hour)
             task_to_schedule.end_date = get_next_working_time(task_to_schedule.init_date, task_to_schedule.duration_minutes, holidays, working_start_hour, working_end_hour)
             
-            heapq.heappush(active_tasks_finish_times, (task_to_schedule.end_date, task_to_schedule.id))
+            slot = free_slots.pop(0)
+            task_to_schedule.resource_id = slot
+            heapq.heappush(active_tasks_finish_times, (task_to_schedule.end_date, task_to_schedule.id, slot))
             num_active_resources += 1
 
     # [Req: RF-10.7] — Safety pass: assign dates to any task missed by the main loop (edge cases)
+    fallback_slot = 1
     for task in tasks:
         if task.init_date is None:
             task.init_date = get_next_working_time(project_start_date, 0, holidays, working_start_hour, working_end_hour)
             task.end_date = get_next_working_time(task.init_date, task.duration_minutes, holidays, working_start_hour, working_end_hour)
+            task.resource_id = fallback_slot
+            fallback_slot = (fallback_slot % num_resources) + 1
     
     # [Req: RF-12, RF-12.1, RF-12.2, RF-12.3, RF-12.4, RF-12.5, RF-12.6] — Critical Path: backward pass to compute slack and flag critical tasks
     if tasks:

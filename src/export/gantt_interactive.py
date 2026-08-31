@@ -172,7 +172,7 @@ def export_interactive_gantt(
 
         items.append({
             "id":      task.id,
-            "group":   fname,          # row = formatted task name
+            "group":   fname,          # row = formatted task name (default: by part)
             "content": f"#{task.id}",      # compact bar label
             "start":   task.init_date.strftime('%Y-%m-%dT%H:%M:%S'),
             "end":     task.end_date.strftime('%Y-%m-%dT%H:%M:%S'),
@@ -195,6 +195,12 @@ def export_interactive_gantt(
             "_end":        task.end_date.strftime('%Y-%m-%d %H:%M'),
             "_preds":      preds,
             "_succs":      succs,
+            "_resource":   getattr(task, 'resource_id', None) or 1,
+            # Group keys for the four display modes
+            "_group_part":      fname,
+            "_group_milestone": milestone_label,
+            "_group_task":      f"#{task.id} — {fname}",
+            "_group_resource":  f"Resource {getattr(task, 'resource_id', None) or 1}",
         })
         
     # Combine critical_links and task_links based on the flag
@@ -354,6 +360,7 @@ def export_interactive_gantt(
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <link href="https://unpkg.com/vis-timeline@7.7.3/dist/vis-timeline-graph2d.min.css" rel="stylesheet"/>
   <script src="https://unpkg.com/vis-timeline@7.7.3/dist/vis-timeline-graph2d.min.js"></script>
+  <script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
 
   <style>
     *, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
@@ -553,6 +560,16 @@ def export_interactive_gantt(
 
     .divider {{ width: 1px; height: 20px; background: var(--border); margin: 0 3px; }}
 
+    .btn.active {{
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      border-color: transparent;
+      color: #fff;
+    }}
+    .btn.active:hover {{
+      background: linear-gradient(135deg, #5f9cf6 0%, #9271ff 100%);
+      border-color: transparent;
+    }}
+
     .search-input {{
       background: var(--surface2);
       color: var(--text);
@@ -697,6 +714,32 @@ def export_interactive_gantt(
       white-space: nowrap;
     }}
 
+    /* ── Tab Bar ─────────────────────────────────────────────────────────────── */
+    .tab-bar {{
+      display: flex;
+      align-items: center;
+      height: 38px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 16px;
+      gap: 0;
+      z-index: 5;
+    }}
+    .tab-btn {{
+      display: flex; align-items: center; gap: 6px;
+      padding: 0 18px; height: 100%;
+      font-size: 0.78rem; font-weight: 500; font-family: inherit;
+      color: var(--muted); background: none; border: none;
+      border-bottom: 2px solid transparent; cursor: pointer;
+      transition: color 0.15s, border-color 0.15s; white-space: nowrap;
+    }}
+    .tab-btn:hover {{ color: var(--text); }}
+    .tab-btn.active {{ color: var(--accent); border-bottom-color: var(--accent); }}
+    .tab-spacer {{ flex: 1; }}
+    .flow-toolbar {{ display: none; align-items: center; gap: 6px; }}
+    .flow-toolbar.visible {{ display: flex; }}
+
     /* ── Timeline ────────────────────────────────────────────────────────────── */
     .main-content {{
       flex: 1;
@@ -706,8 +749,11 @@ def export_interactive_gantt(
       background: #0d0f1a;
       position: relative;
     }}
+    #ganttView {{ flex: 1; display: flex; flex-direction: column; overflow: hidden; }}
     #gantt {{ flex: 1; overflow: hidden; }}
     #resourceGraph, #allocationGraph {{ height: 160px; border-top: 1px solid var(--border); background: var(--bg); flex-shrink: 0; }}
+    #flowView {{ flex: 1; display: none; flex-direction: column; overflow: hidden; background: #080a12; }}
+    #flowCanvas {{ flex: 1; width: 100%; height: 100%; }}
 
 
     /* ── Vis.js overrides ────────────────────────────────────────────────────── */
@@ -878,7 +924,16 @@ def export_interactive_gantt(
       <button class="btn" onclick="zoomIn()">＋ Zoom In</button>
       <button class="btn" onclick="zoomOut()">－ Zoom Out</button>
       <button class="btn" onclick="goToday()">◎ Today</button>
-      <button class="btn" onclick="toggleSort()">↕ Sort Rows</button>
+      <div class="divider"></div>
+      <span style="font-size:0.65rem;color:var(--muted);white-space:nowrap">Group:</span>
+      <button id="grpPart"      class="btn active"  onclick="setGroupMode('part')">Part</button>
+      <button id="grpMilestone" class="btn"         onclick="setGroupMode('milestone')">Milestone</button>
+      <button id="grpResource"  class="btn"         onclick="setGroupMode('resource')">Resource</button>
+      <button id="grpTask"      class="btn"         onclick="setGroupMode('task')">Task</button>
+      <div class="divider"></div>
+      <span style="font-size:0.65rem;color:var(--muted);white-space:nowrap">Sort:</span>
+      <button id="sortAlphaBtn" class="btn active"  onclick="setSortMode('alpha')">A→Z</button>
+      <button id="sortDateBtn"  class="btn"         onclick="setSortMode('date')">Date</button>
       <div class="divider"></div>
       <input type="text" id="searchInput" list="partNumbers" placeholder="Search Part Number..." onchange="searchPart()" class="search-input" />
       <datalist id="partNumbers"></datalist>
@@ -969,12 +1024,34 @@ def export_interactive_gantt(
   </aside>
 
   <div class="main-content">
-    <div id="gantt"></div>
-    <div class="graph-wrapper">
-       <div id="resourceGraph"></div>
+    <!-- ── Tab bar ── -->
+    <div class="tab-bar">
+      <button id="tabGantt" class="tab-btn active" onclick="switchTab('gantt')">📅 Gantt</button>
+      <button id="tabFlow"  class="tab-btn"        onclick="switchTab('flow')">🔀 Flow</button>
+      <div class="tab-spacer"></div>
+      <div id="flowToolbar" class="flow-toolbar">
+        <span style="font-size:0.65rem;color:var(--muted)">Layout:</span>
+        <button id="flowLayoutH" class="btn active" onclick="setFlowLayout('hierarchical')">Hierarchical</button>
+        <button id="flowLayoutP" class="btn"        onclick="setFlowLayout('physics')">Physics</button>
+        <div class="divider"></div>
+        <button class="btn btn-accent" onclick="flowFit()">&#x229E; Fit</button>
+      </div>
     </div>
-    <div class="graph-wrapper">
-       <div id="allocationGraph"></div>
+
+    <!-- ── Gantt view ── -->
+    <div id="ganttView">
+      <div id="gantt"></div>
+      <div class="graph-wrapper">
+         <div id="resourceGraph"></div>
+      </div>
+      <div class="graph-wrapper">
+         <div id="allocationGraph"></div>
+      </div>
+    </div>
+
+    <!-- ── Flow view ── -->
+    <div id="flowView">
+      <div id="flowCanvas"></div>
     </div>
   </div>
 </div>
@@ -1204,22 +1281,65 @@ def export_interactive_gantt(
     }}, 50);
   }}
   
-  let sortAlpha = false;
-  function toggleSort() {{
-    sortAlpha = !sortAlpha;
-    let gArray = Object.values(groups.get());
-    if (sortAlpha) {{
-        gArray.sort((a,b) => a.content.localeCompare(b.content));
+  // ── Group & Sort mode ────────────────────────────────────────────────────────
+  let currentGroupMode = 'part';  // 'part' | 'milestone' | 'resource' | 'task'
+  let currentSortMode  = 'alpha'; // 'alpha' | 'date'
+
+  function _groupKeyForItem(item) {{
+    if (currentGroupMode === 'milestone') return item._group_milestone || item._group_part;
+    if (currentGroupMode === 'resource')  return item._group_resource  || item._group_part;
+    if (currentGroupMode === 'task')      return item._group_task      || item._group_part;
+    return item._group_part;
+  }}
+
+  function _buildGroups(sortedItems) {{
+    const seen = new Map(); // key → earliest start (for date sort)
+    sortedItems.forEach(item => {{
+      if (item._task_id === undefined) return; // skip background items
+      const key = _groupKeyForItem(item);
+      if (!seen.has(key)) seen.set(key, item.start);
+    }});
+
+    let entries = [...seen.entries()];
+    if (currentSortMode === 'alpha') {{
+      entries.sort((a, b) => a[0].localeCompare(b[0]));
     }} else {{
-        // Recover original chronological order from ALL_GROUPS
-        let orderMap = new Map();
-        ALL_GROUPS.forEach((g, idx) => orderMap.set(g.id, idx));
-        gArray.sort((a,b) => (orderMap.get(a.id) || 0) - (orderMap.get(b.id) || 0));
+      entries.sort((a, b) => new Date(a[1]) - new Date(b[1]));
     }}
-    // Apply order
+    return entries.map(([key]) => ({{ id: key, content: key }}));
+  }}
+
+  function _applyGroupMode() {{
+    // Only operate on items currently visible in the dataset (respects active filters)
+    const currentIds = new Set(dataset.getIds());
+    const visibleItems = ALL_ITEMS.filter(i => i._task_id !== undefined && currentIds.has(i.id));
+    const newGroups = _buildGroups(visibleItems);
+
+    // Update only the group field of currently visible items
+    const updates = visibleItems.map(item => ({{
+      id: item.id,
+      group: _groupKeyForItem(item)
+    }}));
+
     groups.clear();
-    groups.add(gArray);
-    groups.add(gArray);
+    groups.add(newGroups);
+    dataset.update(updates);
+  }}
+
+  function setGroupMode(mode) {{
+    currentGroupMode = mode;
+    document.getElementById('grpPart').classList.toggle('active', mode === 'part');
+    document.getElementById('grpMilestone').classList.toggle('active', mode === 'milestone');
+    document.getElementById('grpResource').classList.toggle('active', mode === 'resource');
+    document.getElementById('grpTask').classList.toggle('active', mode === 'task');
+    _applyGroupMode();
+  }}
+
+  function setSortMode(mode) {{
+    currentSortMode = mode;
+    document.getElementById('sortAlphaBtn').classList.toggle('active', mode === 'alpha');
+    document.getElementById('sortDateBtn').classList.toggle('active', mode === 'date');
+    _applyGroupMode();
   }}
 
   // ── Re-apply all active filters and refresh dataset ───────────────────────────
@@ -1229,16 +1349,20 @@ def export_interactive_gantt(
       const typeOk      = !hiddenTypes.has(item._type);
       return milestoneOk && typeOk;
     }});
-    dataset.clear();
-    dataset.add(visible);
 
-    // Hide/show row labels for rows that have no visible items
-    const visibleNames = new Set(visible.map(i => i.group));
-    ALL_GROUPS.forEach(g => {{
-      groups.update({{ id: g.id, visible: visibleNames.has(g.id) }});
+    // Re-apply current group key so items land in the right row
+    const withGroup = visible.map(item => {{
+      if (item._task_id === undefined) return item; // leave background items alone
+      return Object.assign({{}}, item, {{ group: _groupKeyForItem(item) }});
     }});
-    
-    // Hide/show row labels for rows that have no visible items
+
+    dataset.clear();
+    dataset.add(withGroup);
+
+    // Rebuild groups from currently visible task items
+    const newGroups = _buildGroups(withGroup);
+    groups.clear();
+    groups.add(newGroups);
   }}
 
   // ── Sidebar: Milestones ───────────────────────────────────────────────────────
@@ -1336,7 +1460,8 @@ def export_interactive_gantt(
     const rows = tasks.map(item => ({{
       id: item._task_id, name: item._name,
       milestone: item._milestone, type: item._type,
-      part: item._part, duration_h: item._duration_h,
+      part: item._part, resource: item._resource,
+      duration_h: item._duration_h,
       start: item._start, end: item._end,
       predecessors: item._preds === '—' ? '' : item._preds,
       successors: item._succs === '—' ? '' : item._succs,
@@ -1347,7 +1472,7 @@ def export_interactive_gantt(
 
   function exportCSV() {{
     const tasks = ALL_ITEMS.filter(item => item._task_id !== undefined);
-    const cols = ['id','name','milestone','type','part','duration_h','start','end','predecessors','successors'];
+    const cols = ['id','name','milestone','type','part','resource','duration_h','start','end','predecessors','successors'];
     const esc  = v => String(v ?? '');
     const rows = [cols.join(',')];
     tasks.forEach(item => {{
@@ -1355,7 +1480,7 @@ def export_interactive_gantt(
       let succs = (item._succs && item._succs !== '—') ? String(item._succs).replace(/, /g, ';').replace(/,/g, ';') : '';
       rows.push([
         item._task_id, item._name, item._milestone, item._type,
-        item._part,    item._duration_h, item._start, item._end,
+        item._part,    item._resource, item._duration_h, item._start, item._end,
         preds, succs,
       ].map(esc).join(','));
     }});
@@ -1389,6 +1514,157 @@ def export_interactive_gantt(
   setTimeout(() => {{
     timeline.fit();
   }}, 150);
+
+  // ── Tab switching ─────────────────────────────────────────────────────────────
+  let networkInstance = null;
+  let currentFlowLayout = 'hierarchical';
+
+  function switchTab(tab) {{
+    const isGantt = tab === 'gantt';
+    document.getElementById('ganttView').style.display  = isGantt ? 'flex' : 'none';
+    document.getElementById('flowView').style.display   = isGantt ? 'none' : 'flex';
+    document.getElementById('tabGantt').classList.toggle('active', isGantt);
+    document.getElementById('tabFlow').classList.toggle('active', !isGantt);
+    document.getElementById('flowToolbar').classList.toggle('visible', !isGantt);
+    if (!isGantt) {{
+      setTimeout(() => initFlowChart(), 80);
+    }}
+  }}
+
+  // ── Flow chart helpers ────────────────────────────────────────────────────────
+  function _hex2rgba(hex, a) {{
+    const r = parseInt(hex.slice(1,3),16);
+    const g = parseInt(hex.slice(3,5),16);
+    const b = parseInt(hex.slice(5,7),16);
+    return `rgba(${{r}},${{g}},${{b}},${{a}})`;
+  }}
+
+  function _shapeForType(type) {{
+    if (type === 'milestone') return 'diamond';
+    if (type === 'drawing')   return 'ellipse';
+    if (type === 'release')   return 'hexagon';
+    return 'box';
+  }}
+
+  function _buildFlowData() {{
+    const colMap = {{}};
+    MILESTONE_META.forEach(m => {{ colMap[m.id] = m.color; }});
+
+    const taskItems = ALL_ITEMS.filter(i => i._task_id !== undefined);
+
+    const nodes = taskItems.map(item => {{
+      const col   = colMap[item._milestone_id] || '#90A4AE';
+      const shape = _shapeForType(item._type);
+      const basePart = item._part ? String(item._part).split('.')[0] : '—';
+      const label = `#${{item._task_id}}  ${{basePart}}\n${{item._type}}\n${{item._start || ''}}`;
+      return {{
+        id:    item._task_id,
+        label: label,
+        shape: shape,
+        color: {{
+          background: _hex2rgba(col, 0.22),
+          border:     col,
+          highlight: {{ background: _hex2rgba(col, 0.55), border: '#ffffff' }},
+          hover:     {{ background: _hex2rgba(col, 0.40), border: col }},
+        }},
+        font: {{ color: '#dde1f0', size: 11, face: 'Inter, sans-serif', multi: false }},
+        borderWidth: 1.5,
+        borderWidthSelected: 2.5,
+        shadow: {{ enabled: true, color: 'rgba(0,0,0,0.45)', size: 10, x: 2, y: 3 }},
+        title: item.title,
+      }};
+    }});
+
+    const edgeSet = new Set();
+    const edges = [];
+    taskItems.forEach(item => {{
+      if (!item._succs || item._succs === '\u2014' || item._succs === '-') return;
+      item._succs.split(',').map(s => parseInt(s.trim())).filter(id => !isNaN(id)).forEach(sid => {{
+        const key = `${{item._task_id}}->${{sid}}`;
+        if (edgeSet.has(key)) return;
+        edgeSet.add(key);
+        edges.push({{
+          from: item._task_id,
+          to:   sid,
+          arrows: {{ to: {{ enabled: true, scaleFactor: 0.55 }} }},
+          color: {{ color: '#2a2f4a', highlight: '#4C8BF5', hover: '#4C8BF5' }},
+          smooth: {{ type: 'cubicBezier', forceDirection: 'horizontal', roundness: 0.4 }},
+          width: 1, selectionWidth: 2.5,
+        }});
+      }});
+    }});
+    return {{ nodes, edges }};
+  }}
+
+  function _netOptions(layout) {{
+    const base = {{
+      interaction: {{
+        hover: true, tooltipDelay: 120,
+        navigationButtons: false, keyboard: false,
+        zoomView: true, dragView: true,
+        dragNodes: layout !== 'hierarchical',
+      }},
+      nodes: {{ margin: 8 }},
+      edges: {{ selectionWidth: 2.5 }},
+    }};
+    if (layout === 'hierarchical') {{
+      return Object.assign({{}}, base, {{
+        layout: {{
+          hierarchical: {{
+            enabled: true, direction: 'LR', sortMethod: 'directed',
+            levelSeparation: 200, nodeSpacing: 55, treeSpacing: 80,
+            blockShifting: true, edgeMinimization: true, parentCentralization: true,
+          }}
+        }},
+        physics: {{ enabled: false }},
+      }});
+    }}
+    return Object.assign({{}}, base, {{
+      layout: {{ hierarchical: {{ enabled: false }} }},
+      physics: {{
+        enabled: true, solver: 'forceAtlas2Based',
+        forceAtlas2Based: {{
+          gravitationalConstant: -70, centralGravity: 0.005,
+          springLength: 160, springConstant: 0.05, damping: 0.4,
+        }},
+        stabilization: {{ iterations: 300, updateInterval: 25 }},
+      }},
+    }});
+  }}
+
+  function initFlowChart() {{
+    const container = document.getElementById('flowCanvas');
+    if (networkInstance) {{
+      networkInstance.fit({{ animation: {{ duration: 400, easingFunction: 'easeInOutQuad' }} }});
+      return;
+    }}
+    const {{ nodes, edges }} = _buildFlowData();
+    const netNodes = new vis.DataSet(nodes);
+    const netEdges = new vis.DataSet(edges);
+    networkInstance = new vis.Network(
+      container,
+      {{ nodes: netNodes, edges: netEdges }},
+      _netOptions(currentFlowLayout)
+    );
+    networkInstance.once('stabilizationIterationsDone', () => {{
+      networkInstance.setOptions({{ physics: {{ enabled: false }} }});
+      networkInstance.fit({{ animation: {{ duration: 600, easingFunction: 'easeInOutQuad' }} }});
+    }});
+  }}
+
+  function setFlowLayout(layout) {{
+    currentFlowLayout = layout;
+    document.getElementById('flowLayoutH').classList.toggle('active', layout === 'hierarchical');
+    document.getElementById('flowLayoutP').classList.toggle('active', layout === 'physics');
+    if (networkInstance) {{ networkInstance.destroy(); networkInstance = null; }}
+    initFlowChart();
+  }}
+
+  function flowFit() {{
+    if (networkInstance) {{
+      networkInstance.fit({{ animation: {{ duration: 500, easingFunction: 'easeInOutQuad' }} }});
+    }}
+  }}
 </script>
 </body>
 </html>

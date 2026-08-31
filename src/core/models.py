@@ -65,6 +65,9 @@ class Task:
         self.variant_name = variant_name
         self.variant_customizations = variant_customizations if variant_customizations is not None else {}
         self.milestone_id = milestone_id
+        self.resource_id: Optional[int] = None   # set by the scheduling engine
+        self.slack: int = 0
+        self.is_critical: bool = False
 
 
     # [Req: RF-02.3, RNF-11] — Tolerates NaN, floats and non-numeric values in the successors field
@@ -112,6 +115,7 @@ class Task:
         )
         # explicitly maintain old dependency pointers for cloning
         new_task.successors_ids = list(self.successors_ids)
+        new_task.resource_id = self.resource_id
         return new_task
 
     # [Req: RF-02.4, RF-03.6] — Materialises successor object references from IDs after graph re-wiring

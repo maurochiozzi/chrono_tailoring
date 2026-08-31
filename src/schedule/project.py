@@ -272,6 +272,11 @@ class ProjectSchedule:
                 merged_task.init_date = earliest_init
                 merged_task.end_date = latest_end
                 
+                merged_successors = set()
+                for dt in drawing_tasks:
+                    merged_successors.update(getattr(dt, 'successors_ids', []))
+                merged_task.successors_ids = sorted(list(merged_successors))
+                
                 self._next_task_id += 1
                 for dt in drawing_tasks:
                     original_drawing_id_to_merged_id_map[dt.id] = merged_task.id
@@ -289,7 +294,7 @@ class ProjectSchedule:
                 merged_tasks.append(merged_task)
 
         # [Req: RF-13.5] — Phase 1: remap all successors_ids pointing to individual variants -> merged ID
-        for task in self.tasks:
+        for task in self.tasks + merged_tasks:
             new_successors_ids_set = set()
             for original_successor_id in getattr(task, 'successors_ids', []):
                 if original_successor_id in original_drawing_id_to_merged_id_map:
