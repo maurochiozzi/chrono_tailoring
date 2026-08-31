@@ -64,10 +64,10 @@ def export_tasks_to_csv(schedule: ProjectSchedule, file_path: str):
                 'Duration (minutes)': task.duration_minutes,
                 'Start Date': task.init_date.strftime('%Y-%m-%d %H:%M') if task.init_date else '',
                 'End Date': task.end_date.strftime('%Y-%m-%d %H:%M') if task.end_date else '',
-                'Predecessor IDs': ', '.join(str(p.id) for p in task.predecessors),
-                'Successor IDs': ', '.join(str(s.id) for s in getattr(task, 'successors_tasks', [])),
+                'Predecessor IDs': ';'.join(str(p.id) for p in task.predecessors),
                 'Variant Name': getattr(task, 'variant_name', ''),
-                'Is Critical': getattr(task, 'is_critical', False),
+                'Is Structural Critical (CPM)': getattr(task, 'is_structural_critical', False),
+                'Is Resource Critical (CCPM)': getattr(task, 'is_resource_critical', False),
                 'Slack (min)': getattr(task, 'slack', 0),
             }
             
@@ -92,32 +92,42 @@ def export_tasks_to_csv(schedule: ProjectSchedule, file_path: str):
         print(f"An error occurred while exporting tasks to {file_path}: {e}")
 
 
-# [Req: RF-12.6] — Exports only critical-path tasks (slack == 0) to a dedicated CSV
+def _export_path_csv(tasks, file_path: str, label: str):
+    """Helper to export a list of tasks to a critical-path CSV."""
+    data = []
+    for task in tasks:
+        data.append({
+            'Task ID': task.id,
+            'Part Number': task.part_number,
+            'Task Name': task.name,
+            'Task Type': task.type.description,
+            'Duration (min)': task.duration_minutes,
+            'Start Date': task.init_date.strftime('%Y-%m-%d %H:%M') if task.init_date else '',
+            'End Date': task.end_date.strftime('%Y-%m-%d %H:%M') if task.end_date else '',
+            'Predecessor IDs': ';'.join(str(p.id) for p in task.predecessors),
+        })
+    df = pd.DataFrame(data)
+    df.to_csv(file_path, index=False, encoding='utf-8-sig')
+    print(f"{label}: {len(tasks)} tasks -> {config.rel_path(Path(file_path))}")
+
+
+# [Req: RF-12.6] — Exports both Structural Critical Path (CPM) and Resource Critical Chain (CCPM)
 def export_critical_path_csv(schedule: ProjectSchedule, file_path: str):
-    """Exports only the critical-path tasks (is_critical=True / slack=0) to a CSV file.
+    """Exports both structural critical path and resource critical chain CSVs.
 
     Args:
         schedule (ProjectSchedule): The fully computed project schedule.
-        file_path (str): The output file path.
+        file_path (str): The base output file path (used for structural path).
     """
     try:
-        from src.schedule.engine import compute_critical_path
-        critical_tasks = compute_critical_path(schedule.tasks)
-        data = []
-        for task in critical_tasks:
-            data.append({
-                'Task ID': task.id,
-                'Part Number': task.part_number,
-                'Task Name': task.name,
-                'Task Type': task.type.description,
-                'Duration (min)': task.duration_minutes,
-                'Slack (min)': getattr(task, 'slack', 0),
-                'Start Date': task.init_date.strftime('%Y-%m-%d %H:%M') if task.init_date else '',
-                'End Date': task.end_date.strftime('%Y-%m-%d %H:%M') if task.end_date else '',
-                'Predecessor IDs': ', '.join(str(p.id) for p in task.predecessors),
-            })
-        df = pd.DataFrame(data)
-        df.to_csv(file_path, index=False, encoding='utf-8-sig')
-        print(f"Critical path exported: {len(critical_tasks)} tasks -> {config.rel_path(Path(file_path))}")
+        from src.schedule.engine import compute_structural_critical_path, compute_resource_critical_chain
+
+        struct_path = compute_structural_critical_path(schedule.tasks)
+        _export_path_csv(struct_path, file_path, "Structural Critical Path (CPM)")
+
+        res_chain = compute_resource_critical_chain(schedule.tasks)
+        res_file = file_path.replace('critical_path', 'critical_chain')
+        _export_path_csv(res_chain, res_file, "Resource Critical Chain (CCPM)")
+
     except Exception as e:
         print(f"An error occurred while exporting critical path to {file_path}: {e}")

@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple, Set
+from typing import List, Dict, Tuple, Set, Optional
 from datetime import datetime, date
 import heapq
 
@@ -177,26 +177,19 @@ def calculate_task_dates(
             task.resource_id = fallback_slot
             fallback_slot = (fallback_slot % num_resources) + 1
     
-    # [Req: RF-12, RF-12.1, RF-12.2, RF-12.3, RF-12.4, RF-12.5, RF-12.6] — Identify the unbranching critical path through the DAG
+    # [Req: RF-12, RF-12.1, RF-12.2, RF-12.3, RF-12.4, RF-12.5, RF-12.6] — Identify both Structural Critical Path (CPM) and Resource Critical Chain (CCPM)
     compute_critical_path(tasks)
 
     # [Req: RF-12.6] — Final chronological sort used by all exporters
     tasks.sort(key=lambda t: t.init_date if t.init_date else datetime.min)
 
 
-def compute_critical_path(tasks: List[Task]) -> List[Task]:
-    """Identifies the unbranching critical path through the task DAG (the longest path
-    from a root task to a terminal task by cumulative task duration / latest completion).
+def compute_structural_critical_path(tasks: List[Task]) -> List[Task]:
+    """Computes the Structural Critical Path (CPM) through the DAG.
     
-    Sets `task.is_critical = True` for all tasks along this exact sequence, and False otherwise.
-
-    Returns:
-        List[Task]: The ordered list of critical path tasks from start to finish.
+    This is the longest dependency path through blueprint tasks from root to milestone
+    without resource queueing constraints.
     """
-    for t in tasks:
-        t.is_critical = False
-        t.slack = 0
-
     if not tasks:
         return []
 
@@ -236,8 +229,81 @@ def compute_critical_path(tasks: List[Task]) -> List[Task]:
         path.append(curr)
         curr = next_node.get(curr.id)
 
-    critical_ids = {t.id for t in path}
-    for t in tasks:
-        t.is_critical = (t.id in critical_ids)
-
     return path
+
+
+def compute_resource_critical_chain(tasks: List[Task]) -> List[Task]:
+    """Computes the Resource Critical Chain (CCPM) by tracing the driving predecessors
+    (both dependency blockers and resource queue blockers) backwards from the terminal task.
+    
+    This forms an unbroken, gap-free chain of tasks that directly determined the final project delivery date.
+    """
+    if not tasks:
+        return []
+
+    final_task = max(tasks, key=lambda t: t.end_date if t.end_date else datetime.min)
+    chain: List[Task] = []
+    visited: Set[int] = set()
+    curr: Optional[Task] = final_task
+
+    while curr and curr.id not in visited:
+        visited.add(curr.id)
+        chain.append(curr)
+
+        candidates: List[Tuple[str, Task, datetime]] = []
+
+        # Graph dependencies that finished before/at curr start
+        for p in getattr(curr, 'predecessors', []):
+            if p.end_date and p.end_date <= curr.init_date:
+                candidates.append(('dependency', p, p.end_date))
+
+        # Same resource tasks that finished before/at curr start
+        res_tasks = [
+            t for t in tasks
+            if getattr(t, 'resource_id', None) == getattr(curr, 'resource_id', None)
+            and t.end_date and t.end_date <= curr.init_date
+            and t.id != curr.id
+        ]
+        if res_tasks:
+            prev_res = max(res_tasks, key=lambda t: t.end_date)
+            candidates.append(('resource', prev_res, prev_res.end_date))
+
+        if not candidates:
+            break
+
+        candidates.sort(key=lambda x: x[2], reverse=True)
+        curr = candidates[0][1]
+
+    chain.reverse()
+    return chain
+
+
+def compute_critical_path(tasks: List[Task]) -> List[Task]:
+    """Computes both Structural Critical Path (CPM) and Resource Critical Chain (CCPM).
+    
+    Sets the following boolean attributes on each task:
+    - `is_structural_critical`: True if on the 11-step pure DAG dependency longest path.
+    - `is_resource_critical`: True if on the continuous resource-constrained critical chain.
+    - `is_critical`: Default critical flag (matches structural critical).
+    """
+    for t in tasks:
+        t.is_critical = False
+        t.is_structural_critical = False
+        t.is_resource_critical = False
+        t.slack = 0
+
+    if not tasks:
+        return []
+
+    struct_path = compute_structural_critical_path(tasks)
+    struct_set = {t.id for t in struct_path}
+
+    res_chain = compute_resource_critical_chain(tasks)
+    res_set = {t.id for t in res_chain}
+
+    for t in tasks:
+        t.is_structural_critical = (t.id in struct_set)
+        t.is_resource_critical = (t.id in res_set)
+        t.is_critical = t.is_structural_critical
+
+    return struct_path

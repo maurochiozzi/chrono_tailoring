@@ -129,15 +129,26 @@ When you add a part to `extra_args` in your config, the system:
 3. Appends a suffix (e.g., `.1`) to the part number.
 4. Allows you to specify different customizations for each clone.
 
-### 3.2. Drawing Consolidation
-The system automatically identifies "drawing" tasks for the same base part across different variants and **consolidates** them into a single task. This prevents redundant work in the schedule.
+### 3.2. Optional Drawing Merging (`--merge-drawings`)
+By default, individual variant drawing tasks are scheduled separately. When running with the `--merge-drawings` flag:
+- The system identifies candidate `drawing` tasks sharing the same base part number.
+- Combines their durations into a single unified `Merged Drawing for <base_part>` block.
+- Re-wires all predecessor part models and successor releases to connect directly to the merged block.
 
 ---
 
 ## 4. Understanding Outputs
 
-- **`output/gantt_interactive.html`**: The primary dashboard. Use the sidebar to filter by Milestone or Task Type.
-- **`output/exported_tasks.csv`**: Full spreadsheet of every task instance with calculated dates.
+- **`output/gantt_interactive.html`**: Dual-view interactive dashboard:
+  - **📅 Gantt View**:
+    - **Grouping**: Group tasks dynamically by **Part Number**, **Milestone**, assigned **Resource**, or view as a flat **Task** list.
+    - **Sorting**: Toggle between Alphabetical (`A→Z`) and Initial Scheduled Date (`Date`).
+    - **Search**: Auto-complete search bar that focuses and scrolls directly to the selected part.
+    - **`⚠️ Critical Path` Toggle**: Instantly highlights critical path task bars with golden borders and dims non-critical tasks.
+    - **Resource Graph**: Live utilization curve matching active filters and timelines.
+  - **🔀 Flow View**: Interactive, pan/zoom DAG network flowchart with semantic node shapes (Milestones, Drawings, Releases, Tasks) and one-click Critical Path arrow highlighting.
+- **`output/exported_tasks.csv`**: Full spreadsheet of every task instance with calculated start/end dates, assigned resource IDs, and semicolon-delimited predecessor IDs.
+- **`output/critical_path.csv`**: Unbranching sequential path representing the longest duration path from initial root task to project completion.
 - **`output/resource_vs_duration.png`**: Sensitivity analysis showing how adding resources impacts the deadline.
 - **`output/transformation_log.json`**: An audit trail showing exactly which tasks were merged or removed.
 - **`output/*.mmd`**: Mermaid source files for inclusion in documentation or GitHub.

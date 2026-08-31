@@ -195,7 +195,9 @@ def export_interactive_gantt(
             "_end":        task.end_date.strftime('%Y-%m-%d %H:%M'),
             "_preds":      preds,
             "_succs":      succs,
-            "_is_critical": bool(getattr(task, 'is_critical', False)),
+            "_is_critical": bool(getattr(task, 'is_structural_critical', False)),
+            "_is_structural_critical": bool(getattr(task, 'is_structural_critical', False)),
+            "_is_resource_critical": bool(getattr(task, 'is_resource_critical', False)),
             "_resource":   getattr(task, 'resource_id', None) or 1,
             # Group keys for the four display modes
             "_group_part":      fname,
@@ -590,6 +592,23 @@ def export_interactive_gantt(
       background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
     }}
 
+    .crit-menu-item {{
+      display: block;
+      width: 100%;
+      padding: 7px 14px;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 0.78rem;
+      text-align: left;
+      cursor: pointer;
+      white-space: nowrap;
+    }}
+    .crit-menu-item:hover {{
+      background: var(--surface2);
+      color: #fbbf24;
+    }}
+
     .search-input {{
       background: var(--surface2);
       color: var(--text);
@@ -795,10 +814,24 @@ def export_interactive_gantt(
       font-family: inherit;
       padding: 0 8px;
     }}
-    .vis-item {{ font-size: 0.68rem; font-family: inherit; }}
+    .vis-item {{ font-size: 0.68rem; font-family: inherit; transition: opacity 0.2s, box-shadow 0.2s; }}
     .vis-item.vis-selected {{
       border-color: #fff !important;
       box-shadow: 0 0 0 2px rgba(255,255,255,0.2);
+    }}
+    .vis-item.critical-path-item {{
+      border: 2px solid #FFD700 !important;
+      box-shadow: 0 0 14px rgba(255, 215, 0, 0.85), 0 0 4px #FFD700 !important;
+      font-weight: 700 !important;
+      z-index: 100 !important;
+    }}
+    .vis-item.critical-path-item .vis-item-content {{
+      color: #ffffff !important;
+      text-shadow: 0 0 4px rgba(0,0,0,0.9) !important;
+    }}
+    .vis-item.dimmed-item {{
+      opacity: 0.25 !important;
+      filter: grayscale(45%) !important;
     }}
     .vis-current-time {{ background-color: var(--accent) !important; width: 2px; opacity: 0.7; }}
 
@@ -958,6 +991,16 @@ def export_interactive_gantt(
       <input type="text" id="searchInput" list="partNumbers" placeholder="Search Part Number..." onchange="searchPart()" class="search-input" />
       <datalist id="partNumbers"></datalist>
       <div class="divider"></div>
+      <div class="crit-dropdown" style="position:relative;display:inline-block">
+        <button id="ganttCritBtn" class="btn btn-warning" onclick="toggleGanttCritDropdown()">⚠️ Critical ▾</button>
+        <div id="ganttCritMenu" class="crit-menu" style="display:none;position:absolute;top:100%;left:0;z-index:999;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:4px 0;min-width:220px;box-shadow:0 8px 24px rgba(0,0,0,.25)">
+          <button class="crit-menu-item" onclick="setGanttCritMode('cpm')">📐 Structural Path (CPM)</button>
+          <button class="crit-menu-item" onclick="setGanttCritMode('ccpm')">🔗 Resource Chain (CCPM)</button>
+          <hr style="margin:4px 8px;border-color:var(--border)">
+          <button class="crit-menu-item" onclick="setGanttCritMode('off')">✕ Clear</button>
+        </div>
+      </div>
+      <div class="divider"></div>
       <button class="btn btn-export" onclick="exportJSON()">⬇ JSON</button>
       <button class="btn btn-export" onclick="exportCSV()">⬇ CSV</button>
       <div class="divider"></div>
@@ -1050,7 +1093,15 @@ def export_interactive_gantt(
       <button id="tabFlow"  class="tab-btn"        onclick="switchTab('flow')">🔀 Flow</button>
       <div class="tab-spacer"></div>
       <div id="flowToolbar" class="flow-toolbar">
-        <button id="flowCritBtn" class="btn btn-warning" onclick="toggleFlowCriticalPath()">⚠️ Critical Path</button>
+        <div class="crit-dropdown" style="position:relative;display:inline-block">
+          <button id="flowCritBtn" class="btn btn-warning" onclick="toggleFlowCritDropdown()">⚠️ Critical ▾</button>
+          <div id="flowCritMenu" class="crit-menu" style="display:none;position:absolute;top:100%;left:0;z-index:999;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:4px 0;min-width:220px;box-shadow:0 8px 24px rgba(0,0,0,.25)">
+            <button class="crit-menu-item" onclick="setFlowCritMode('cpm')">📐 Structural Path (CPM)</button>
+            <button class="crit-menu-item" onclick="setFlowCritMode('ccpm')">🔗 Resource Chain (CCPM)</button>
+            <hr style="margin:4px 8px;border-color:var(--border)">
+            <button class="crit-menu-item" onclick="setFlowCritMode('off')">✕ Clear</button>
+          </div>
+        </div>
         <div class="divider"></div>
         <button class="btn btn-accent" onclick="flowFit()">&#x229E; Fit</button>
       </div>
@@ -1371,7 +1422,14 @@ def export_interactive_gantt(
     // Re-apply current group key so items land in the right row
     const withGroup = visible.map(item => {{
       if (item._task_id === undefined) return item; // leave background items alone
-      return Object.assign({{}}, item, {{ group: _groupKeyForItem(item) }});
+      let className = item.className || '';
+      if (ganttCriticalActive) {{
+        className = item._is_critical ? 'critical-path-item' : 'dimmed-item';
+      }}
+      return Object.assign({{}}, item, {{
+        group: _groupKeyForItem(item),
+        className: className
+      }});
     }});
 
     dataset.clear();
@@ -1533,6 +1591,59 @@ def export_interactive_gantt(
     timeline.fit();
   }}, 150);
 
+  // ── Gantt Critical Path Toggle (CPM / CCPM) ─────────────────────────────────
+  let ganttCriticalActive = false;
+  let ganttCritMode = 'off'; // 'off' | 'cpm' | 'ccpm'
+
+  function toggleGanttCritDropdown() {{
+    const menu = document.getElementById('ganttCritMenu');
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+  }}
+
+  // Close dropdown on outside click
+  document.addEventListener('click', function(e) {{
+    const gd = document.getElementById('ganttCritMenu');
+    const gb = document.getElementById('ganttCritBtn');
+    if (gd && !gd.contains(e.target) && e.target !== gb) gd.style.display = 'none';
+    const fd = document.getElementById('flowCritMenu');
+    const fb = document.getElementById('flowCritBtn');
+    if (fd && !fd.contains(e.target) && e.target !== fb) fd.style.display = 'none';
+  }});
+
+  function setGanttCritMode(mode) {{
+    document.getElementById('ganttCritMenu').style.display = 'none';
+    const btn = document.getElementById('ganttCritBtn');
+
+    if (mode === ganttCritMode || mode === 'off') {{
+      ganttCritMode = 'off';
+      ganttCriticalActive = false;
+      if (btn) {{ btn.classList.remove('active'); btn.textContent = '⚠️ Critical ▾'; }}
+    }} else {{
+      ganttCritMode = mode;
+      ganttCriticalActive = true;
+      const label = mode === 'cpm' ? '📐 CPM' : '🔗 CCPM';
+      if (btn) {{ btn.classList.add('active'); btn.textContent = label + ' ▾'; }}
+    }}
+
+    const critField = ganttCritMode === 'ccpm' ? '_is_resource_critical' : '_is_structural_critical';
+    const currentItems = dataset.get();
+    const updates = currentItems.map(item => {{
+      if (item.type === 'background') return null;
+      if (ganttCriticalActive) {{
+        return {{
+          id: item.id,
+          className: item[critField] ? 'critical-path-item' : 'dimmed-item'
+        }};
+      }} else {{
+        return {{ id: item.id, className: '' }};
+      }}
+    }}).filter(Boolean);
+
+    dataset.update(updates);
+    const msgs = {{ cpm: '📐 Structural Path (CPM) Highlighted', ccpm: '🔗 Resource Chain (CCPM) Highlighted', off: '✓ Standard View' }};
+    showToast(msgs[ganttCritMode]);
+  }}
+
   // ── Tab switching ─────────────────────────────────────────────────────────────
   let networkInstance = null;
 
@@ -1574,9 +1685,11 @@ def export_interactive_gantt(
     MILESTONE_META.forEach(m => {{ colMap[m.id] = m.color; }});
 
     const taskItems = ALL_ITEMS.filter(i => i._task_id !== undefined);
-    const criticalMap = {{}};
+    const critMapCPM = {{}};
+    const critMapCCPM = {{}};
     taskItems.forEach(i => {{
-      criticalMap[i._task_id] = !!i._is_critical;
+      critMapCPM[i._task_id]  = !!i._is_structural_critical;
+      critMapCCPM[i._task_id] = !!i._is_resource_critical;
     }});
 
     const nodes = taskItems.map(item => {{
@@ -1602,7 +1715,8 @@ def export_interactive_gantt(
         borderWidth: 2,
         borderWidthSelected: 2.5,
         title: titleEl,
-        _is_critical: !!item._is_critical,
+        _is_structural_critical: !!item._is_structural_critical,
+        _is_resource_critical: !!item._is_resource_critical,
         _orig_border: col,
       }}, props);
     }});
@@ -1615,7 +1729,8 @@ def export_interactive_gantt(
         const key = `${{item._task_id}}->${{sid}}`;
         if (edgeSet.has(key)) return;
         edgeSet.add(key);
-        const isCritEdge = (item._is_critical === true) && (criticalMap[sid] === true);
+        const isCritCPM  = (item._is_structural_critical === true) && (critMapCPM[sid]  === true);
+        const isCritCCPM = (item._is_resource_critical  === true) && (critMapCCPM[sid] === true);
         edges.push({{
           id:   key,
           from: item._task_id,
@@ -1624,7 +1739,8 @@ def export_interactive_gantt(
           color: {{ color: '#2a2f4a', highlight: '#4C8BF5', hover: '#4C8BF5' }},
           smooth: {{ type: 'cubicBezier', forceDirection: 'horizontal', roundness: 0.4 }},
           width: 1, selectionWidth: 2.5,
-          _is_critical: isCritEdge,
+          _is_structural_critical: isCritCPM,
+          _is_resource_critical: isCritCCPM,
         }});
       }});
     }});
@@ -1669,20 +1785,37 @@ def export_interactive_gantt(
     networkInstance.fit({{ animation: {{ duration: 600, easingFunction: 'easeInOutQuad' }} }});
   }}
 
-  function toggleFlowCriticalPath() {{
-    flowCriticalActive = !flowCriticalActive;
-    const btn = document.getElementById('flowCritBtn');
-    if (btn) btn.classList.toggle('active', flowCriticalActive);
+  let flowCritMode = 'off'; // 'off' | 'cpm' | 'ccpm'
 
-    if (!networkInstance) {{
-      initFlowChart();
+  function toggleFlowCritDropdown() {{
+    const menu = document.getElementById('flowCritMenu');
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+  }}
+
+  function setFlowCritMode(mode) {{
+    document.getElementById('flowCritMenu').style.display = 'none';
+    const btn = document.getElementById('flowCritBtn');
+
+    if (mode === flowCritMode || mode === 'off') {{
+      flowCritMode = 'off';
+      flowCriticalActive = false;
+      if (btn) {{ btn.classList.remove('active'); btn.textContent = '⚠️ Critical ▾'; }}
+    }} else {{
+      flowCritMode = mode;
+      flowCriticalActive = true;
+      const label = mode === 'cpm' ? '📐 CPM' : '🔗 CCPM';
+      if (btn) {{ btn.classList.add('active'); btn.textContent = label + ' ▾'; }}
     }}
+
+    if (!networkInstance) {{ initFlowChart(); }}
     if (!netEdges || !netNodes) return;
+
+    const critField = flowCritMode === 'ccpm' ? '_is_resource_critical' : '_is_structural_critical';
 
     const allEdges = netEdges.get();
     const edgeUpdates = allEdges.map(edge => {{
       if (flowCriticalActive) {{
-        if (edge._is_critical) {{
+        if (edge[critField]) {{
           return {{
             id: edge.id,
             color: {{ color: '#FFD700', highlight: '#FFE55C', hover: '#FFE55C' }},
@@ -1710,7 +1843,7 @@ def export_interactive_gantt(
 
     const allNodes = netNodes.get();
     const nodeUpdates = allNodes.map(node => {{
-      if (flowCriticalActive && node._is_critical) {{
+      if (flowCriticalActive && node[critField]) {{
         return {{
           id: node.id,
           borderWidth: 3.5,
@@ -1731,6 +1864,9 @@ def export_interactive_gantt(
       }}
     }});
     netNodes.update(nodeUpdates);
+
+    const msgs = {{ cpm: '📐 Structural Path (CPM)', ccpm: '🔗 Resource Chain (CCPM)', off: '✓ Standard View' }};
+    showToast(msgs[flowCritMode]);
   }}
 
   function flowFit() {{
