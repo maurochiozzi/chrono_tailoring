@@ -1432,7 +1432,6 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">      zoomMin: 1000 * 60 * 60,</span>
 <span class="s2">      zoomMax: 1000 * 60 * 60 * 24 * 365 * 2,</span>
 <span class="s2">      margin: </span><span class="se">{{</span><span class="s2"> item: </span><span class="se">{{</span><span class="s2"> horizontal: 2, vertical: 4 </span><span class="se">}}</span><span class="s2">, axis: 6 </span><span class="se">}}</span><span class="s2">,</span>
-<span class="s2">      groupWidth: AXIS_WIDTH,</span>
 <span class="s2">      format: </span><span class="se">{{</span>
 <span class="s2">        minorLabels: </span><span class="se">{{</span>
 <span class="s2">          minute: 'HH:mm', hour: 'HH:mm',</span>
@@ -1720,26 +1719,33 @@ window.runMermaid = runMermaid;</script>
 <span class="s2">  </span><span class="se">}}</span>
 
 <span class="s2">  function exportJSON() </span><span class="se">{{</span>
-<span class="s2">    const rows = ALL_ITEMS.map(item =&gt; (</span><span class="se">{{</span>
+<span class="s2">    const tasks = ALL_ITEMS.filter(item =&gt; item._task_id !== undefined);</span>
+<span class="s2">    const rows = tasks.map(item =&gt; (</span><span class="se">{{</span>
 <span class="s2">      id: item._task_id, name: item._name,</span>
 <span class="s2">      milestone: item._milestone, type: item._type,</span>
 <span class="s2">      part: item._part, duration_h: item._duration_h,</span>
 <span class="s2">      start: item._start, end: item._end,</span>
-<span class="s2">      predecessors: item._preds, successors: item._succs,</span>
+<span class="s2">      predecessors: item._preds === '—' ? '' : item._preds,</span>
+<span class="s2">      successors: item._succs === '—' ? '' : item._succs,</span>
 <span class="s2">    </span><span class="se">}}</span><span class="s2">));</span>
 <span class="s2">    _download(new Blob([JSON.stringify(rows, null, 2)], </span><span class="se">{{</span><span class="s2">type: 'application/json'</span><span class="se">}}</span><span class="s2">), 'gantt_tasks.json');</span>
 <span class="s2">    showToast('✓ JSON exported');</span>
 <span class="s2">  </span><span class="se">}}</span>
 
 <span class="s2">  function exportCSV() </span><span class="se">{{</span>
+<span class="s2">    const tasks = ALL_ITEMS.filter(item =&gt; item._task_id !== undefined);</span>
 <span class="s2">    const cols = ['id','name','milestone','type','part','duration_h','start','end','predecessors','successors'];</span>
-<span class="s2">    const esc  = v =&gt; `"$</span><span class="se">{{</span><span class="s2">String(v ?? '').replace(/"/g,'""')</span><span class="se">}}</span><span class="s2">"`;</span>
+<span class="s2">    const esc  = v =&gt; String(v ?? '');</span>
 <span class="s2">    const rows = [cols.join(',')];</span>
-<span class="s2">    ALL_ITEMS.forEach(item =&gt; rows.push([</span>
-<span class="s2">      item._task_id, item._name, item._milestone, item._type,</span>
-<span class="s2">      item._part,    item._duration_h, item._start, item._end,</span>
-<span class="s2">      item._preds,   item._succs,</span>
-<span class="s2">    ].map(esc).join(',')));</span>
+<span class="s2">    tasks.forEach(item =&gt; </span><span class="se">{{</span>
+<span class="s2">      let preds = (item._preds &amp;&amp; item._preds !== '—') ? String(item._preds).replace(/, /g, ';').replace(/,/g, ';') : '';</span>
+<span class="s2">      let succs = (item._succs &amp;&amp; item._succs !== '—') ? String(item._succs).replace(/, /g, ';').replace(/,/g, ';') : '';</span>
+<span class="s2">      rows.push([</span>
+<span class="s2">        item._task_id, item._name, item._milestone, item._type,</span>
+<span class="s2">        item._part,    item._duration_h, item._start, item._end,</span>
+<span class="s2">        preds, succs,</span>
+<span class="s2">      ].map(esc).join(','));</span>
+<span class="s2">    </span><span class="se">}}</span><span class="s2">);</span>
 <span class="s2">    _download(new Blob([rows.join('</span><span class="se">\\</span><span class="s2">n')], </span><span class="se">{{</span><span class="s2">type: 'text/csv'</span><span class="se">}}</span><span class="s2">), 'gantt_tasks.csv');</span>
 <span class="s2">    showToast('✓ CSV exported');</span>
 <span class="s2">  </span><span class="se">}}</span>
