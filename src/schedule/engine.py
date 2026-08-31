@@ -177,51 +177,67 @@ def calculate_task_dates(
             task.resource_id = fallback_slot
             fallback_slot = (fallback_slot % num_resources) + 1
     
-    # [Req: RF-12, RF-12.1, RF-12.2, RF-12.3, RF-12.4, RF-12.5, RF-12.6] — Critical Path: backward pass to compute slack and flag critical tasks
-    if tasks:
-        # [Req: RF-12.1] — project_end = latest end_date across all tasks
-        project_end = max(t.end_date for t in tasks)
-        
-        # [Req: RF-12.2] — Terminal tasks (no successors) anchor the backward pass at project_end
-        latest_end_times: Dict[int, datetime] = {}
-        terminal_tasks = [t for t in tasks if not t.successors_tasks]
-        for t in terminal_tasks:
-            latest_end_times[t.id] = project_end
-            
-        # 3. Traverse backwards (reverse Kahn's) to find Latest End Times
-        # We process tasks only after all their successors are processed.
-        out_degree: Dict[int, int] = {t.id: len(t.successors_tasks) for t in tasks}
-        
-        # Queue initialized with terminal tasks
-        ready_for_backward = [t.id for t in terminal_tasks]
-        
-        pred_map: Dict[int, List[Task]] = {t.id: [] for t in tasks}
-        for task in tasks:
-            for s in task.successors_tasks:
-                if s.id in pred_map:
-                    pred_map[s.id].append(task)
-                    
-        # [Req: RF-12.3] — Reverse Kahn traversal: propagate latest_end_times backwards via out_degree
-        while ready_for_backward:
-            curr_id = ready_for_backward.pop(0)
-            curr_task = task_map[curr_id]
-            curr_lf = latest_end_times.get(curr_id, curr_task.end_date)
-            # Latest Start Time for current task
-            curr_ls = curr_task.init_date + (curr_lf - curr_task.end_date) # Shift backwards by slack
-            
-            for p in pred_map[curr_id]:
-                if p.id not in latest_end_times or latest_end_times[p.id] > curr_ls:
-                    latest_end_times[p.id] = curr_ls
-                
-                out_degree[p.id] -= 1
-                if out_degree[p.id] == 0:
-                    ready_for_backward.append(p.id)
-                    
-        # 4. Mark tasks as critical if Early Finish == Late Finish
-        # [Req: RF-12.4, RF-12.5] — slack in minutes; is_critical=True when slack==0
-        for task in tasks:
-            task.slack = max(0, int((latest_end_times.get(task.id, task.end_date) - task.end_date).total_seconds() / 60))
-            task.is_critical = (task.slack == 0)
+    # [Req: RF-12, RF-12.1, RF-12.2, RF-12.3, RF-12.4, RF-12.5, RF-12.6] — Identify the unbranching critical path through the DAG
+    compute_critical_path(tasks)
 
     # [Req: RF-12.6] — Final chronological sort used by all exporters
     tasks.sort(key=lambda t: t.init_date if t.init_date else datetime.min)
+
+
+def compute_critical_path(tasks: List[Task]) -> List[Task]:
+    """Identifies the unbranching critical path through the task DAG (the longest path
+    from a root task to a terminal task by cumulative task duration / latest completion).
+    
+    Sets `task.is_critical = True` for all tasks along this exact sequence, and False otherwise.
+
+    Returns:
+        List[Task]: The ordered list of critical path tasks from start to finish.
+    """
+    for t in tasks:
+        t.is_critical = False
+        t.slack = 0
+
+    if not tasks:
+        return []
+
+    memo: Dict[int, Tuple[int, datetime]] = {}
+    next_node: Dict[int, Optional[Task]] = {}
+
+    def get_longest(t: Task) -> Tuple[int, datetime]:
+        if t.id in memo:
+            return memo[t.id]
+        if not getattr(t, 'successors_tasks', []):
+            end_val = t.end_date if t.end_date else datetime.min
+            memo[t.id] = (t.duration_minutes, end_val)
+            next_node[t.id] = None
+            return memo[t.id]
+
+        best_val = (-1, datetime.min)
+        best_succ = None
+        for s in t.successors_tasks:
+            dur, end = get_longest(s)
+            val = (t.duration_minutes + dur, end)
+            if val > best_val:
+                best_val = val
+                best_succ = s
+
+        memo[t.id] = best_val
+        next_node[t.id] = best_succ
+        return memo[t.id]
+
+    roots = [t for t in tasks if not getattr(t, 'predecessors', [])]
+    if not roots:
+        roots = tasks
+
+    best_root = max(roots, key=lambda r: get_longest(r))
+    path: List[Task] = []
+    curr: Optional[Task] = best_root
+    while curr:
+        path.append(curr)
+        curr = next_node.get(curr.id)
+
+    critical_ids = {t.id for t in path}
+    for t in tasks:
+        t.is_critical = (t.id in critical_ids)
+
+    return path

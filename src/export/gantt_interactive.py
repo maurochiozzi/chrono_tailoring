@@ -195,6 +195,7 @@ def export_interactive_gantt(
             "_end":        task.end_date.strftime('%Y-%m-%d %H:%M'),
             "_preds":      preds,
             "_succs":      succs,
+            "_is_critical": bool(getattr(task, 'is_critical', False)),
             "_resource":   getattr(task, 'resource_id', None) or 1,
             # Group keys for the four display modes
             "_group_part":      fname,
@@ -568,6 +569,25 @@ def export_interactive_gantt(
     .btn.active:hover {{
       background: linear-gradient(135deg, #5f9cf6 0%, #9271ff 100%);
       border-color: transparent;
+    }}
+
+    .btn-warning {{
+      border-color: rgba(245, 158, 11, 0.4);
+      color: #fbbf24;
+    }}
+    .btn-warning:hover {{
+      background: rgba(245, 158, 11, 0.15);
+      border-color: #f59e0b;
+      color: #fef08a;
+    }}
+    .btn-warning.active {{
+      background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+      border-color: #f59e0b;
+      color: #fff;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.45);
+    }}
+    .btn-warning.active:hover {{
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
     }}
 
     .search-input {{
@@ -1030,6 +1050,8 @@ def export_interactive_gantt(
       <button id="tabFlow"  class="tab-btn"        onclick="switchTab('flow')">🔀 Flow</button>
       <div class="tab-spacer"></div>
       <div id="flowToolbar" class="flow-toolbar">
+        <button id="flowCritBtn" class="btn btn-warning" onclick="toggleFlowCriticalPath()">⚠️ Critical Path</button>
+        <div class="divider"></div>
         <button class="btn btn-accent" onclick="flowFit()">&#x229E; Fit</button>
       </div>
     </div>
@@ -1543,11 +1565,19 @@ def export_interactive_gantt(
     return {{ shape: 'box', shapeProperties: {{ borderRadius: 8 }} }};
   }}
 
+  let flowCriticalActive = false;
+  let netNodes = null;
+  let netEdges = null;
+
   function _buildFlowData() {{
     const colMap = {{}};
     MILESTONE_META.forEach(m => {{ colMap[m.id] = m.color; }});
 
     const taskItems = ALL_ITEMS.filter(i => i._task_id !== undefined);
+    const criticalMap = {{}};
+    taskItems.forEach(i => {{
+      criticalMap[i._task_id] = !!i._is_critical;
+    }});
 
     const nodes = taskItems.map(item => {{
       const col   = colMap[item._milestone_id] || '#90A4AE';
@@ -1572,6 +1602,8 @@ def export_interactive_gantt(
         borderWidth: 2,
         borderWidthSelected: 2.5,
         title: titleEl,
+        _is_critical: !!item._is_critical,
+        _orig_border: col,
       }}, props);
     }});
 
@@ -1583,13 +1615,16 @@ def export_interactive_gantt(
         const key = `${{item._task_id}}->${{sid}}`;
         if (edgeSet.has(key)) return;
         edgeSet.add(key);
+        const isCritEdge = (item._is_critical === true) && (criticalMap[sid] === true);
         edges.push({{
+          id:   key,
           from: item._task_id,
           to:   sid,
           arrows: {{ to: {{ enabled: true, scaleFactor: 0.55 }} }},
           color: {{ color: '#2a2f4a', highlight: '#4C8BF5', hover: '#4C8BF5' }},
           smooth: {{ type: 'cubicBezier', forceDirection: 'horizontal', roundness: 0.4 }},
           width: 1, selectionWidth: 2.5,
+          _is_critical: isCritEdge,
         }});
       }});
     }});
@@ -1624,14 +1659,78 @@ def export_interactive_gantt(
       return;
     }}
     const {{ nodes, edges }} = _buildFlowData();
-    const netNodes = new vis.DataSet(nodes);
-    const netEdges = new vis.DataSet(edges);
+    netNodes = new vis.DataSet(nodes);
+    netEdges = new vis.DataSet(edges);
     networkInstance = new vis.Network(
       container,
       {{ nodes: netNodes, edges: netEdges }},
       _netOptions()
     );
     networkInstance.fit({{ animation: {{ duration: 600, easingFunction: 'easeInOutQuad' }} }});
+  }}
+
+  function toggleFlowCriticalPath() {{
+    flowCriticalActive = !flowCriticalActive;
+    const btn = document.getElementById('flowCritBtn');
+    if (btn) btn.classList.toggle('active', flowCriticalActive);
+
+    if (!networkInstance) {{
+      initFlowChart();
+    }}
+    if (!netEdges || !netNodes) return;
+
+    const allEdges = netEdges.get();
+    const edgeUpdates = allEdges.map(edge => {{
+      if (flowCriticalActive) {{
+        if (edge._is_critical) {{
+          return {{
+            id: edge.id,
+            color: {{ color: '#FFD700', highlight: '#FFE55C', hover: '#FFE55C' }},
+            width: 4,
+            arrows: {{ to: {{ enabled: true, scaleFactor: 0.95 }} }}
+          }};
+        }} else {{
+          return {{
+            id: edge.id,
+            color: {{ color: 'rgba(42, 47, 74, 0.22)', highlight: '#4C8BF5', hover: '#4C8BF5' }},
+            width: 1,
+            arrows: {{ to: {{ enabled: true, scaleFactor: 0.4 }} }}
+          }};
+        }}
+      }} else {{
+        return {{
+          id: edge.id,
+          color: {{ color: '#2a2f4a', highlight: '#4C8BF5', hover: '#4C8BF5' }},
+          width: 1,
+          arrows: {{ to: {{ enabled: true, scaleFactor: 0.55 }} }}
+        }};
+      }}
+    }});
+    netEdges.update(edgeUpdates);
+
+    const allNodes = netNodes.get();
+    const nodeUpdates = allNodes.map(node => {{
+      if (flowCriticalActive && node._is_critical) {{
+        return {{
+          id: node.id,
+          borderWidth: 3.5,
+          color: {{
+            border: '#FFD700',
+            highlight: {{ border: '#FFE55C' }}
+          }}
+        }};
+      }} else {{
+        return {{
+          id: node.id,
+          borderWidth: 2,
+          color: {{
+            border: node._orig_border,
+            highlight: {{ border: '#ffffff' }}
+          }}
+        }};
+      }}
+    }});
+    netNodes.update(nodeUpdates);
   }}
 
   function flowFit() {{

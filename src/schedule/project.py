@@ -11,7 +11,7 @@ from src.schedule.loader import (
     load_customization_types,
     read_customization_duration
 )
-from src.schedule.engine import calculate_task_dates
+from src.schedule.engine import calculate_task_dates, compute_critical_path
 from src import config
 
 # [Req: RF-03, RF-05, RF-06, RF-07, RF-08, RF-09, RF-10, RF-13] — Orchestrates full schedule: loads, customises, schedules and merges tasks
@@ -126,6 +126,7 @@ class ProjectSchedule:
         # [Req: RF-13] — Optionally merge variant drawing tasks after dates are computed
         if merge_drawings:
             self._group_drawing_tasks()
+            compute_critical_path(self.tasks)
 
         milestone_id_to_object_map = {m.milestone_id: m for m in self.milestones}
         for milestone in self.milestones:
@@ -391,18 +392,23 @@ class ProjectSchedule:
         self.tasks = tasks_to_keep
         task_id_to_task_map = {task.id: task for task in self.tasks}
 
-        # [Req: RF-08.2] — Bridge successors_ids of predecessors over removed (zero-duration) tasks
+        # [Req: RF-08.2] — Bridge successors_ids of predecessors over removed (zero-duration) tasks recursively
+        def _resolve_surviving_successors(succ_ids, visited=None):
+            if visited is None:
+                visited = set()
+            result = set()
+            for sid in succ_ids:
+                if sid in visited:
+                    continue
+                visited.add(sid)
+                if sid in task_id_to_task_map:
+                    result.add(sid)
+                elif sid in removed_task_info:
+                    result.update(_resolve_surviving_successors(removed_task_info[sid]['successors'], visited))
+            return result
+
         for task in self.tasks:
-            new_successors_ids = set()
-            for original_successor_id in getattr(task, 'successors_ids', []):
-                if original_successor_id in task_id_to_task_map:
-                    new_successors_ids.add(original_successor_id)
-                elif original_successor_id in removed_task_info:
-                    removed_succ_info = removed_task_info[original_successor_id]
-                    for indirect_successor_id in removed_succ_info['successors']:
-                        if indirect_successor_id in task_id_to_task_map:
-                            new_successors_ids.add(indirect_successor_id)
-            task.successors_ids = sorted(list(new_successors_ids))
+            task.successors_ids = sorted(list(_resolve_surviving_successors(getattr(task, 'successors_ids', []))))
 
         # [Req: RF-08.3] — Full graph rebuild after task removal to restore consistent object references
         for task in self.tasks:

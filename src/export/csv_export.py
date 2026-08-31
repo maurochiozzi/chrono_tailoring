@@ -101,7 +101,8 @@ def export_critical_path_csv(schedule: ProjectSchedule, file_path: str):
         file_path (str): The output file path.
     """
     try:
-        critical_tasks = [t for t in schedule.tasks if getattr(t, 'is_critical', False)]
+        from src.schedule.engine import compute_critical_path
+        critical_tasks = compute_critical_path(schedule.tasks)
         data = []
         for task in critical_tasks:
             data.append({
@@ -114,7 +115,6 @@ def export_critical_path_csv(schedule: ProjectSchedule, file_path: str):
                 'Start Date': task.init_date.strftime('%Y-%m-%d %H:%M') if task.init_date else '',
                 'End Date': task.end_date.strftime('%Y-%m-%d %H:%M') if task.end_date else '',
                 'Predecessor IDs': ', '.join(str(p.id) for p in task.predecessors),
-                'Successor IDs': ', '.join(str(s.id) for s in getattr(task, 'successors_tasks', [])),
             })
         df = pd.DataFrame(data)
         df.to_csv(file_path, index=False, encoding='utf-8-sig')
