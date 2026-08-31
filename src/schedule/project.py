@@ -14,9 +14,9 @@ from src.schedule.loader import (
 from src.schedule.engine import calculate_task_dates
 from src import config
 
-# [Req: RF-03, RF-05, RF-06, RF-07, RF-08, RF-09, RF-10, RF-13] — Orchestrates full schedule: loads, customises, schedules and consolidates tasks
+# [Req: RF-03, RF-05, RF-06, RF-07, RF-08, RF-09, RF-10, RF-13] — Orchestrates full schedule: loads, customises, schedules and merges tasks
 class ProjectSchedule:
-    """Orchestrates full schedule computing: loads, customises, schedules and consolidates tasks.
+    """Orchestrates full schedule computing: loads, customises, schedules and merges tasks.
     
     .. mermaid::
 
@@ -25,7 +25,7 @@ class ProjectSchedule:
            B --> C{For Each Milestone}
            C --> D[Process Variants & Duplication]
            D --> E[Apply Customizations]
-           E --> F[Consolidate Drawing Tasks]
+           E --> F[Merge Drawing Tasks]
            F --> G[Bridge Zero-Duration Tasks]
            G --> H[Engine: Calculate Dates]
            H --> I[Finish]
@@ -48,7 +48,8 @@ class ProjectSchedule:
         num_resources: int = 1, 
         customization_overview_csv_path: Optional[Path] = None, 
         holidays_path: Optional[Path] = None,
-        project_start_date: Optional[datetime] = None
+        project_start_date: Optional[datetime] = None,
+        merge_drawings: bool = False,
     ):
         self.num_resources = num_resources
         self.project_requirements_path = project_requirements_path
@@ -122,8 +123,9 @@ class ProjectSchedule:
             self.working_start_hour, self.working_end_hour
         )
 
-        # [Req: RF-13] — Consolidate variant drawing tasks after dates are computed
-        self._group_drawing_tasks()
+        # [Req: RF-13] — Optionally merge variant drawing tasks after dates are computed
+        if merge_drawings:
+            self._group_drawing_tasks()
 
         milestone_id_to_object_map = {m.milestone_id: m for m in self.milestones}
         for milestone in self.milestones:
@@ -236,7 +238,7 @@ class ProjectSchedule:
         """Simplifies logic to find drawings and compress them globally.
         
         Modifies `self.tasks` in place by replacing multiple variant drawings 
-        with a single consolidated entity for efficiency.
+        with a single merged entity for efficiency.
         """
         drawing_tasks_by_base_part_number: Dict[str, List[Task]] = {}
         # [Req: RF-13.1, RF-13.2] — Candidate drawings: type=='drawing' AND base part_number NOT starting with '7'
@@ -244,15 +246,15 @@ class ProjectSchedule:
             if task.type.description == "drawing":
                 base_part_number = task.part_number.split('.')[0]
                 if base_part_number.startswith('7'):
-                    continue  # Do not consolidate 7XXXX milestone drawings
+                    continue  # Do not merge 7XXXX milestone drawings
                 if base_part_number not in drawing_tasks_by_base_part_number:
                     drawing_tasks_by_base_part_number[base_part_number] = []
                 drawing_tasks_by_base_part_number[base_part_number].append(task)
         
-        consolidated_tasks: List[Task] = []
-        original_drawing_id_to_consolidated_id_map: Dict[int, int] = {}
+        merged_tasks: List[Task] = []
+        original_drawing_id_to_merged_id_map: Dict[int, int] = {}
 
-        # [Req: RF-13.3, RF-13.4] — Only groups with >1 task are consolidated; duration=sum, init=min, end=max
+        # [Req: RF-13.3, RF-13.4] — Only groups with >1 task are merged; duration=sum, init=min, end=max
         for base_part_number, drawing_tasks in drawing_tasks_by_base_part_number.items():
             if len(drawing_tasks) > 1:
                 valid_inits = [dt.init_date for dt in drawing_tasks if dt.init_date]
@@ -260,45 +262,45 @@ class ProjectSchedule:
                 earliest_init = min(valid_inits) if valid_inits else None
                 latest_end = max(valid_ends) if valid_ends else None
 
-                consolidated_task = Task(
+                merged_task = Task(
                     id=self._next_task_id,
                     part_number=base_part_number,
-                    name=f"Consolidated Drawing for {base_part_number}",
-                    task_type=TaskType(description="drawing", strategy="consolidated"),
+                    name=f"Merged Drawing for {base_part_number}",
+                    task_type=TaskType(description="drawing", strategy="merged"),
                     duration_minutes=int(sum(dt.duration_minutes for dt in drawing_tasks))
                 )
-                consolidated_task.init_date = earliest_init
-                consolidated_task.end_date = latest_end
+                merged_task.init_date = earliest_init
+                merged_task.end_date = latest_end
                 
                 self._next_task_id += 1
                 for dt in drawing_tasks:
-                    original_drawing_id_to_consolidated_id_map[dt.id] = consolidated_task.id
+                    original_drawing_id_to_merged_id_map[dt.id] = merged_task.id
                     
                 # [Req: RF-26] — Trace Log: Record drawing consolidation
                 log_data = {
-                    "event": "drawing_consolidated",
+                    "event": "drawing_merged",
                     "base_part": base_part_number,
                     "consumed_ids": [dt.id for dt in drawing_tasks],
-                    "consolidated_id": consolidated_task.id
+                    "merged_id": merged_task.id
                 }
                 self.transformation_log.append(log_data)
-                audit_logger.info(f"Drawing Consolidated: {log_data}")
+                audit_logger.info(f"Drawing Merged: {log_data}")
                 
-                consolidated_tasks.append(consolidated_task)
+                merged_tasks.append(merged_task)
 
-        # [Req: RF-13.5] — Phase 1: remap all successors_ids pointing to individual variants -> consolidated ID
+        # [Req: RF-13.5] — Phase 1: remap all successors_ids pointing to individual variants -> merged ID
         for task in self.tasks:
             new_successors_ids_set = set()
             for original_successor_id in getattr(task, 'successors_ids', []):
-                if original_successor_id in original_drawing_id_to_consolidated_id_map:
-                    new_successors_ids_set.add(original_drawing_id_to_consolidated_id_map[original_successor_id])
+                if original_successor_id in original_drawing_id_to_merged_id_map:
+                    new_successors_ids_set.add(original_drawing_id_to_merged_id_map[original_successor_id])
                 else:
                     new_successors_ids_set.add(original_successor_id)
             task.successors_ids = sorted(list(new_successors_ids_set))
 
-        # [Req: RF-13.6] — Phase 2: remove individual variant drawing tasks; add consolidated task
-        new_tasks_list = [t for t in self.tasks if t.id not in original_drawing_id_to_consolidated_id_map]
-        new_tasks_list.extend(consolidated_tasks)
+        # [Req: RF-13.6] — Phase 2: remove individual variant drawing tasks; add merged task
+        new_tasks_list = [t for t in self.tasks if t.id not in original_drawing_id_to_merged_id_map]
+        new_tasks_list.extend(merged_tasks)
         self.tasks = new_tasks_list
 
         # [Req: RF-13.7] — Phase 3: rebuild full graph (predecessors + successors_tasks) from updated successors_ids

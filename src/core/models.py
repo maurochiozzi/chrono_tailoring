@@ -9,7 +9,7 @@ class TaskType:
 
     Attributes:
         description (str): The main classification of the task (e.g., 'release', 'drawing').
-        strategy (Optional[str]): Used when a specific processing logic overrides standard behaviour (e.g., 'consolidated').
+        strategy (Optional[str]): Used when a specific processing logic overrides standard behaviour (e.g., 'merged').
     """
     def __init__(self, description: str, strategy: Optional[str] = None):
         self.description = description

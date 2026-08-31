@@ -1,4 +1,5 @@
 import sys
+import argparse
 from pathlib import Path
 from src import config
 from src.schedule.project import ProjectSchedule
@@ -10,8 +11,17 @@ from src.schedule.loader import load_project_requirements
 
 def main():
     import time
+    parser = argparse.ArgumentParser(description='Chrono Tailoring Project Simulation')
+    parser.add_argument(
+        '--merge-drawings', action='store_true', default=False,
+        help='Merge drawing tasks for the same base part number into a single block'
+    )
+    args = parser.parse_args()
+
     start_time = time.time()
     print("--- Starting Chrono Tailoring Project Simulation ---")
+    if args.merge_drawings:
+        print("[Option] Drawing merge: ENABLED")
 
     # Update customization overview matching input structure
     update_customization_overview_csv(config.CUSTOMIZATION_OVERVIEW_CSV_PATH)
@@ -28,7 +38,8 @@ def main():
         project_requirements_path=config.PROJECT_REQUIREMENTS_PATH,
         num_resources=num_resources_to_use,
         customization_overview_csv_path=config.CUSTOMIZATION_OVERVIEW_CSV_PATH,
-        holidays_path=config.HOLIDAYS_PATH
+        holidays_path=config.HOLIDAYS_PATH,
+        merge_drawings=args.merge_drawings,
     )
 
     if not config.OUTPUT_DIR.exists():

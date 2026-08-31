@@ -55,21 +55,20 @@ def get_next_working_time(
     if duration_minutes < 0:
         raise ValueError(f"Duration cannot be negative (got {duration_minutes} minutes).")
 
-    if duration_minutes == 0:  # [Req: RF-09.7] — Zero-duration tasks (milestones) return immediately
-        return current_time
-
     # Fast-forward start to a valid working slot
     if current_time.hour < working_start_hour:  # [Req: RF-09.2] — Advance pre-shift time to shift start
         current_time = current_time.replace(
             hour=working_start_hour, minute=0, second=0, microsecond=0
         )
     elif current_time.hour >= working_end_hour:  # [Req: RF-09.3] — Roll over to next day if past end of shift
-        current_time = (
-            current_time.replace(
-                hour=working_start_hour, minute=0, second=0, microsecond=0
+        # Only roll over exactly at end_hour if we are actually doing work, or if it's strictly past end_hour
+        if current_time.hour > working_end_hour or (current_time.hour == working_end_hour and duration_minutes > 0):
+            current_time = (
+                current_time.replace(
+                    hour=working_start_hour, minute=0, second=0, microsecond=0
+                )
+                + timedelta(days=1)
             )
-            + timedelta(days=1)
-        )
 
     # [Req: RF-09.4, RF-09.5] — Skip weekends and holidays before starting the duration countdown
     while not is_working_day(current_time.date(), holidays):
@@ -77,6 +76,9 @@ def get_next_working_time(
         current_time = current_time.replace(
             hour=working_start_hour, minute=0, second=0, microsecond=0
         )
+
+    if duration_minutes == 0:  # [Req: RF-09.7] — Zero-duration tasks (milestones) return immediately
+        return current_time
 
     end_time = current_time
     # [Req: RF-09.6] — Distribute duration progressively: consume today's remaining minutes first, then full days

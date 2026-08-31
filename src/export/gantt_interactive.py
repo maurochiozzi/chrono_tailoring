@@ -95,8 +95,8 @@ def export_interactive_gantt(
     # Format names to `BasePart - Description`
     def format_task_name(t: Task) -> str:
         base_part = str(t.part_number).split('.')[0]
-        if t.name.startswith("Consolidated Drawing"):
-            return f"{base_part} - Consolidated drawing"
+        if t.name.startswith("Merged Drawing"):
+            return f"{base_part} - Merged drawing"
         return f"{base_part} - {t.name}"
 
     # [Req: RF-17.2] — Swim-lanes = unique task names formatted as 'BasePart - Name', sorted alphabetically
@@ -251,7 +251,7 @@ def export_interactive_gantt(
             task_types.append(td)
     task_types.sort()
 
-    valid_tasks = [t for t in tasks if t.init_date and t.end_date and getattr(t, 'duration_minutes', 0) > 0 and getattr(t.type, 'strategy', None) != 'consolidated']
+    valid_tasks = [t for t in tasks if t.init_date and t.end_date and getattr(t, 'duration_minutes', 0) > 0 and getattr(t.type, 'strategy', None) != 'merged']
     resource_data = []
     
     if valid_tasks:
@@ -324,7 +324,7 @@ def export_interactive_gantt(
         req_text = project_requirements_path.read_text('utf-8')
     # Calculate Efficiency Index
     actual_work_minutes = sum(getattr(t, 'duration_minutes', 0) for t in tasks if getattr(t, 'duration_minutes', 0) > 0)
-    core_work_minutes = sum(getattr(t, 'duration_minutes', 0) for t in tasks if getattr(t, 'duration_minutes', 0) > 0 and getattr(t.type, 'strategy', None) != 'consolidated')
+    core_work_minutes = sum(getattr(t, 'duration_minutes', 0) for t in tasks if getattr(t, 'duration_minutes', 0) > 0 and getattr(t.type, 'strategy', None) != 'merged')
     total_capacity_minutes = 0
     if tasks:
         all_starts = [t.init_date for t in tasks if t.init_date]
@@ -552,6 +552,23 @@ def export_interactive_gantt(
     }}
 
     .divider {{ width: 1px; height: 20px; background: var(--border); margin: 0 3px; }}
+
+    .search-input {{
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 5px 12px;
+      font-size: 0.75rem;
+      font-family: inherit;
+      width: 150px;
+      transition: width 0.2s, border-color 0.15s;
+    }}
+    .search-input:focus {{
+      outline: none;
+      border-color: var(--accent);
+      width: 200px;
+    }}
 
     /* ── Layout ──────────────────────────────────────────────────────────────── */
     .main {{ display: flex; flex: 1; overflow: hidden; }}
@@ -863,6 +880,9 @@ def export_interactive_gantt(
       <button class="btn" onclick="goToday()">◎ Today</button>
       <button class="btn" onclick="toggleSort()">↕ Sort Rows</button>
       <div class="divider"></div>
+      <input type="text" id="searchInput" list="partNumbers" placeholder="Search Part Number..." onchange="searchPart()" class="search-input" />
+      <datalist id="partNumbers"></datalist>
+      <div class="divider"></div>
       <button class="btn btn-export" onclick="exportJSON()">⬇ JSON</button>
       <button class="btn btn-export" onclick="exportCSV()">⬇ CSV</button>
       <div class="divider"></div>
@@ -906,7 +926,7 @@ def export_interactive_gantt(
                 <span class="summary-key info-tooltip-wrap">
                    Gross Eff.
                    <div class="info-tooltip-content">
-                     <b>Gross Efficiency</b><br>Includes 100% of all estimated tasks, including consolidated drawing blocks running in the background. Reflects total systemic density.
+                     <b>Gross Efficiency</b><br>Includes 100% of all estimated tasks, including merged drawing blocks running in the background. Reflects total systemic density.
                    </div>
                 </span>
                 <span class="summary-val" style="color: {{ '#a0ffcb' if efficiency_index >= 0.8 else '#ffcc00' if efficiency_index >= 0.5 else '#ff6b6b' }}">{efficiency_index:.2f}</span>
@@ -915,7 +935,7 @@ def export_interactive_gantt(
                 <span class="summary-key info-tooltip-wrap">
                    Core Eff.
                    <div class="info-tooltip-content">
-                     <b>Core Efficiency</b><br>Excludes consolidated drawings. This matches the visual idleness on the charts and reveals actual capacity gaps when engineers are blocked.
+                     <b>Core Efficiency</b><br>Excludes merged drawings. This matches the visual idleness on the charts and reveals actual capacity gaps when engineers are blocked.
                    </div>
                 </span>
                 <span class="summary-val" style="color: {{ '#a0ffcb' if core_efficiency_index >= 0.8 else '#ffcc00' if core_efficiency_index >= 0.5 else '#ff6b6b' }}">{core_efficiency_index:.2f}</span>
@@ -1279,6 +1299,29 @@ def export_interactive_gantt(
     applyFilters();
   }}
   
+  // ── Search Part ──────────────────────────────────────────────────────────────
+  const datalist = document.getElementById('partNumbers');
+  const uniqueParts = [...new Set(ALL_ITEMS.filter(i => i._part).map(i => i._part))].sort();
+  uniqueParts.forEach(part => {{
+    const option = document.createElement('option');
+    option.value = part;
+    datalist.appendChild(option);
+  }});
+
+  function searchPart() {{
+    const query = document.getElementById('searchInput').value.toLowerCase().trim();
+    if (!query) {{
+      timeline.setSelection([]);
+      return;
+    }}
+    const matchedItems = ALL_ITEMS.filter(item => item._part && String(item._part).toLowerCase().includes(query));
+    if (matchedItems.length > 0) {{
+      const ids = matchedItems.map(i => i.id || i._task_id).filter(id => id);
+      timeline.setSelection(ids, {{focus: true, animation: {{duration: 500, easingFunction: 'easeInOutQuad'}}}});
+    }} else {{
+      timeline.setSelection([]);
+    }}
+  }}
 
   // ── Export ───────────────────────────────────────────────────────────────────
   function showToast(msg) {{

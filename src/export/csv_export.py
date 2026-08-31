@@ -71,8 +71,8 @@ def export_tasks_to_csv(schedule: ProjectSchedule, file_path: str):
                 'Slack (min)': getattr(task, 'slack', 0),
             }
             
-            # [Req: RF-14.3] — Consolidated drawing tasks span multiple milestones; leave Milestone ID blank
-            if task.type.strategy == "consolidated":
+            # [Req: RF-14.3] — Merged drawing tasks span multiple milestones; leave Milestone ID blank
+            if task.type.strategy == "merged":
                 row['Milestone ID'] = '' 
             else:
                 row['Milestone ID'] = getattr(task, 'milestone_id', '')
