@@ -1002,7 +1002,6 @@ def export_interactive_gantt(
       zoomMin: 1000 * 60 * 60,
       zoomMax: 1000 * 60 * 60 * 24 * 365 * 2,
       margin: {{ item: {{ horizontal: 2, vertical: 4 }}, axis: 6 }},
-      groupWidth: AXIS_WIDTH,
       format: {{
         minorLabels: {{
           minute: 'HH:mm', hour: 'HH:mm',
@@ -1290,26 +1289,33 @@ def export_interactive_gantt(
   }}
 
   function exportJSON() {{
-    const rows = ALL_ITEMS.map(item => ({{
+    const tasks = ALL_ITEMS.filter(item => item._task_id !== undefined);
+    const rows = tasks.map(item => ({{
       id: item._task_id, name: item._name,
       milestone: item._milestone, type: item._type,
       part: item._part, duration_h: item._duration_h,
       start: item._start, end: item._end,
-      predecessors: item._preds, successors: item._succs,
+      predecessors: item._preds === '—' ? '' : item._preds,
+      successors: item._succs === '—' ? '' : item._succs,
     }}));
     _download(new Blob([JSON.stringify(rows, null, 2)], {{type: 'application/json'}}), 'gantt_tasks.json');
     showToast('✓ JSON exported');
   }}
 
   function exportCSV() {{
+    const tasks = ALL_ITEMS.filter(item => item._task_id !== undefined);
     const cols = ['id','name','milestone','type','part','duration_h','start','end','predecessors','successors'];
-    const esc  = v => `"${{String(v ?? '').replace(/"/g,'""')}}"`;
+    const esc  = v => String(v ?? '');
     const rows = [cols.join(',')];
-    ALL_ITEMS.forEach(item => rows.push([
-      item._task_id, item._name, item._milestone, item._type,
-      item._part,    item._duration_h, item._start, item._end,
-      item._preds,   item._succs,
-    ].map(esc).join(',')));
+    tasks.forEach(item => {{
+      let preds = (item._preds && item._preds !== '—') ? String(item._preds).replace(/, /g, ';').replace(/,/g, ';') : '';
+      let succs = (item._succs && item._succs !== '—') ? String(item._succs).replace(/, /g, ';').replace(/,/g, ';') : '';
+      rows.push([
+        item._task_id, item._name, item._milestone, item._type,
+        item._part,    item._duration_h, item._start, item._end,
+        preds, succs,
+      ].map(esc).join(','));
+    }});
     _download(new Blob([rows.join('\\n')], {{type: 'text/csv'}}), 'gantt_tasks.csv');
     showToast('✓ CSV exported');
   }}
